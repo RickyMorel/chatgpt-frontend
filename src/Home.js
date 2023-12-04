@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import Navbar from './Navbar';
 import Todos from './Todos';
 
-function App() {
+function Home() {
   const [todos, setTodos] = useState([
     {id: 1, content: 'buy some milk'},
     {id: 2, content: 'play mario kart'}
@@ -19,4 +18,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
