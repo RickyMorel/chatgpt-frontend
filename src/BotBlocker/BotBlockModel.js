@@ -35,6 +35,9 @@ class BotBlockModel extends Component {
   render() {
     const { modalIsOpen, closeModalFunc } = this.props;
     const { loading, error, clients } = this.state;
+    const clientBlocks = this.state.clients?.map(x => {
+      return <ClientBlockComponent {...x}/>
+    })
 
     if (loading) {
       console.log("Loading...");
@@ -48,12 +51,24 @@ class BotBlockModel extends Component {
         isOpen={modalIsOpen}
         onRequestClose={closeModalFunc}
         contentLabel="Example Modal"
+        style={customStyles}
       >
-        {/* Your modal content here */}
+        {clientBlocks}
         <button onClick={closeModalFunc}>Close Modal</button>
       </Modal>
     );
   }
 }
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
 
 export default BotBlockModel;

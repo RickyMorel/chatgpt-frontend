@@ -26,15 +26,12 @@ function App() {
     <div className="App container">
       <h1 className="center blue-text">Todo's</h1>
       <button onClick={openModal}>Open Modal</button>
+      <button data-target="modal1" class="btn modal-trigger">Modal</button>
+      <BotBlockModel modalIsOpen={modalIsOpen} openModalFunc={openModal} closeModalFunc={closeModal}/>
       <ExcelFileInput dataTypeName={"clientes"}/>
       <ExcelFileInput dataTypeName={"productos"}/>
       <DayLocationForm/>
       <ExcelFileOutput/>
-      <BotBlockModel modalIsOpen={modalIsOpen} closeModalFunc={closeModal}/>
-      {/* <Todos todos={todos}/> */}
-      <div className="content">
-        <h1>App Component</h1>
-      </div>
     </div>
   );
 }
