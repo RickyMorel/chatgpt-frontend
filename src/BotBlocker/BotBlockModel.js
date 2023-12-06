@@ -1,77 +1,59 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import ClientBlockComponent from './ClientBlockComponent';
 
-function BotBlockModel({modalIsOpen, closeModalFunc}) {  
-  const [clients, setClients] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+class BotBlockModel extends Component {
+  constructor(props) {
+    super(props);
 
-  const fetchClientData = async () => {
+    this.state = {
+      clients: null,
+      loading: true,
+      error: null,
+    };
+  }
+
+  componentDidMount() {
+    this.fetchClientData();
+  }
+
+  fetchClientData = async () => {
+    console.log("fetchClientData");
     try {
-      const response = await axios.get('https://your-api-endpoint.com/data');
-      setClients(response.data);
+      const response = await axios.get('http://localhost:3000/client-crud');
+      console.log("response:", response)
+      this.setState({ clients: response.data });
+      console.log("clients: ", this.state.clients);
     } catch (error) {
-      setError(error);
+      this.setState({ error: error });
     } finally {
-      setLoading(false);
+      this.setState({ loading: false });
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  else if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  render() {
+    const { modalIsOpen, closeModalFunc } = this.props;
+    const { loading, error, clients } = this.state;
 
-  return (
-    <Modal
-      isOpen={modalIsOpen}
-      onRequestClose={closeModalFunc}
-      contentLabel="Example Modal"
-    >
-      <div className="container">
-        <div className="row">
-          <div className="col s8">
-            <div className="card">
-              <div className="card-content">
-                <span className="card-title">Scroll View Example</span>
-                <div className="scroll-view-container">
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                  <ClientBlockComponent/>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <button onClick={closeModalFunc}>Close Modal</button>
-    </Modal>
+    if (loading) {
+      console.log("Loading...");
+      return <div>Loading...</div>;
+    } else if (error) {
+      return <div>Error: {error.message}</div>;
+    }
+
+    return (
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModalFunc}
+        contentLabel="Example Modal"
+      >
+        {/* Your modal content here */}
+        <button onClick={closeModalFunc}>Close Modal</button>
+      </Modal>
     );
+  }
 }
 
-export default BotBlockModel
+export default BotBlockModel;
