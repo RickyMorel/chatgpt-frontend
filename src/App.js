@@ -1,39 +1,62 @@
-import { useState } from 'react';
-import Navbar from './Navbar';
-import Todos from './Todos';
-import ExcelFileInput from './Excel/ExcelFileInput';
-import DayLocationForm from './DayLocationForm';
-import ExcelFileOutput from './Excel/ExcelFileOutput';
+import React, { Component } from 'react';
 import BotBlockModel from './BotBlocker/BotBlockModel';
+import DayLocationForm from './DayLocationForm';
+import ExcelFileInput from './Excel/ExcelFileInput';
+import ExcelFileOutput from './Excel/ExcelFileOutput';
+import {spawnPopup, PopupStyle} from './Popups/PopupManager'
+import SuccessfulPopup from './Popups/SuccessfulPopup';
 
-function App() {
-  const [todos, setTodos] = useState([
-    {id: 1, content: 'buy some milk'},
-    {id: 2, content: 'play mario kart'}
-  ])
+class App extends Component {
+  constructor(props) {
+    super(props);
 
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+    this.state = {
+      todos: [
+        { id: 1, content: 'buy some milk' },
+        { id: 2, content: 'play mario kart' },
+      ],
+      modalIsOpen: false,
+      currentPopup: null
+    };
+  }
 
-  const openModal = () => {
-    setModalIsOpen(true);
+  openModal = () => {
+    this.setState({ modalIsOpen: true });
   };
 
-  const closeModal = () => {
-    setModalIsOpen(false);
+  closeModal = () => {
+    this.setState({ modalIsOpen: false });
   };
 
-  return (
-    <div className="App container">
-      <h1 className="center blue-text">Todo's</h1>
-      <button onClick={openModal}>Open Modal</button>
-      <button data-target="modal1" class="btn modal-trigger">Modal</button>
-      <BotBlockModel modalIsOpen={modalIsOpen} openModalFunc={openModal} closeModalFunc={closeModal}/>
-      <ExcelFileInput dataTypeName={"clientes"}/>
-      <ExcelFileInput dataTypeName={"productos"}/>
-      <DayLocationForm/>
-      <ExcelFileOutput/>
-    </div>
-  );
+  showPopup = () => {
+    const newPopup = spawnPopup(true, () => {this.setState({currentPopup: null})}, <SuccessfulPopup/>, PopupStyle.Small)
+    console.log("showPopup", newPopup)
+    this.setState({currentPopup: newPopup})
+  }
+
+  render() {
+    const { modalIsOpen } = this.state;
+
+    return (
+      <div className="App container">
+        <h1 className="center blue-text">Todo's</h1>
+        <button onClick={this.openModal}>Open Modal</button>
+        <button data-target="modal1" className="btn modal-trigger">
+          Modal
+        </button>
+        <BotBlockModel
+          modalIsOpen={modalIsOpen}
+          openModalFunc={this.openModal}
+          closeModalFunc={this.closeModal}
+        />
+        {this.state.currentPopup}
+        <ExcelFileInput dataTypeName={'clientes'} showPopupFunc={this.showPopup} />
+        <ExcelFileInput dataTypeName={'productos'} showPopupFunc={this.showPopup} />
+        <DayLocationForm />
+        <ExcelFileOutput />
+      </div>
+    );
+  }
 }
 
 export default App;

@@ -1,9 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
+import GetClientDataFromExcel from './GetClientDataFromExcel';
 
-function ExcelFileInput({dataTypeName}) {
+function ExcelFileInput({dataTypeName, showPopupFunc}) {
   const [excelData, setExcelData] = useState(null);
+  const [popup, setPopup] = useState(null);
   
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -17,29 +19,32 @@ function ExcelFileInput({dataTypeName}) {
       const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
       
       setExcelData(jsonData);
+      GetDataResponse(jsonData)
     };
 
     reader.readAsBinaryString(file);
   }, []);
 
+  const GetDataResponse = async (jsonData) => {
+    const clientData = GetClientDataFromExcel.ExtractClientData(jsonData)
+    showPopupFunc(await GetClientDataFromExcel.PostClientData(clientData))
+  }
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
     <div>
-      <div {...getRootProps()} style={dropzoneStyle}>
-        <input {...getInputProps()} />
-        {isDragActive ? (
-          <p>Drop the Excel file here...</p>
-        ) : (
-          <p>Agregué el Excel de {dataTypeName}</p>
-        )}
-      </div>
-      {excelData && (
-        <div>
-          <h4>Excel Data:</h4>
-          <pre>{JSON.stringify(excelData, null, 2)}</pre>
+      <main>
+        <div {...getRootProps()} style={dropzoneStyle}>
+          <input {...getInputProps()} />
+          {isDragActive ? (
+            <p>Drop the Excel file here...</p>
+          ) : (
+            <p>Agregué el Excel de {dataTypeName}</p>
+          )}
         </div>
-      )}
+      </main>
+      {popup && ({popup})}
     </div>
   );
 }

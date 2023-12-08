@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import ClientBlockComponent from './ClientBlockComponent';
+import { PopupStyle } from '../Popups/PopupManager';
 
 class BotBlockModel extends Component {
   constructor(props) {
@@ -22,9 +23,7 @@ class BotBlockModel extends Component {
     console.log("fetchClientData");
     try {
       const response = await axios.get('http://localhost:3000/client-crud');
-      console.log("response:", response)
       this.setState({ clients: response.data });
-      console.log("clients: ", this.state.clients);
     } catch (error) {
       this.setState({ error: error });
     } finally {
@@ -40,7 +39,6 @@ class BotBlockModel extends Component {
     })
 
     if (loading) {
-      console.log("Loading...");
       return <div>Loading...</div>;
     } else if (error) {
       return <div>Error: {error.message}</div>;
@@ -51,7 +49,7 @@ class BotBlockModel extends Component {
         isOpen={modalIsOpen}
         onRequestClose={closeModalFunc}
         contentLabel="Example Modal"
-        style={customStyles}
+        style={PopupStyle.Small}
       >
         {clientBlocks}
         <button onClick={closeModalFunc}>Close Modal</button>
@@ -59,16 +57,5 @@ class BotBlockModel extends Component {
     );
   }
 }
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-  },
-};
 
 export default BotBlockModel;

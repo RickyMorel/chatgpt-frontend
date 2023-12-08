@@ -10,12 +10,9 @@ class ExcelFileOutput extends Component {
   };
 
   fetchOrderData = async () => {
-    console.log("fetchOrderData");
     try {
       const response = await axios.get('http://localhost:3000/order');
-      console.log("response:", response)
       this.setState({ orders: response.data });
-      console.log("clients: ", this.state.clients);
     } catch (error) {
       this.setState({ error: error });
     } finally {
