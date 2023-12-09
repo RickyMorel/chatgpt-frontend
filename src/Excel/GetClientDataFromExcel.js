@@ -1,24 +1,11 @@
 import axios from 'axios';
-import SuccessfulPopup from '../Popups/SuccessfulPopup';
+import GetDataFromExcel from './GetDataFromExcel';
 
-class GetClientDataFromExcel {
-
-    static FindHeaderIndexes = (inputArray) => {
-        const stringsToFind = ["Nombre", "Numero", "Domicilio"];
-        const indexes = [];
-        for (const searchString of stringsToFind) {
-            for (let i = 0; i < inputArray.length; i++) {
-                const element = inputArray[i];
-                if (element.includes(searchString)) {
-                    indexes.push(i);
-                }
-            }
-        }
-        return indexes;
-    }
+class GetClientDataFromExcel extends GetDataFromExcel {
 
     static ExtractClientData = (clientsJson) => {
-        const headerIndexes = this.FindHeaderIndexes(clientsJson[0])
+        const stringsToFind = ["Nombre", "Numero", "Domicilio"];
+        const headerIndexes = this.FindHeaderIndexes(clientsJson[0], stringsToFind)
         clientsJson.shift()
         let clientData = []
 
@@ -28,19 +15,6 @@ class GetClientDataFromExcel {
         });
         return clientData
     }
-
-    static PostClientData = async (clientData) => {
-        try {
-          //const response = await axios.post('http://localhost:3000/client-crud/createMany', clientData);
-          //console.log("response", response)
-          return <SuccessfulPopup/>
-        } catch (error) {
-            console.log("error", error)
-          //this.setState({ error: error });
-        } finally {
-          //this.setState({ loading: false });
-        }
-      };
 }
 
 export default GetClientDataFromExcel

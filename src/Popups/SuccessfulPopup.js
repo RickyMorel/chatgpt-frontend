@@ -1,55 +1,36 @@
 import React from 'react';
 
-const SuccessfulPopup = ({ isOpen, onRequestClose }) => {
+const SuccessfulPopup = ({ isOpen, closeFunc, errorMsg }) => {
+  const successMessage = "Guardo los datos correctamente."
+
   return (
-    <div class="row valign-wrapper card grey ">
+    <div class="row valign-wrapper card">
         <div className="col s3">
-        <img width="150" height="150" src="images/tick.png" alt="" class="circle responsive-img"/>
+        <img width="200" height="200" src={errorMsg == null ? "images/tick.png" : "images/failIcon.png"} alt="" class="circle responsive-img"/>
         </div>
     <div class="col s9">
       <div>
-        <div class="card-content white-text">
-          <h6>Guardo los datos correctamente.</h6>
+        <div class="card-content">
+          <h6>{errorMsg == null ? successMessage : GetSameStringLength(successMessage.length, errorMsg.message)}</h6>
         </div>
-        <div class="card-action center">
-            <button className='waves-effect waves btn blue'>Close</button>
+        <div>
+            <button onClick={closeFunc} className='waves-effect btn red lighten-1 waves grey-text'>Close</button>
         </div>
       </div>
     </div>
   </div>
-    // <div className="card valign-wrapper">
-    //     <div class="row">
-    //         <div className="card valign-wrapper">
-    //             <div class="col s2">
-    //                 <img width="150" height="150" src="images/tick.png" alt="" class="circle responsive-img"/>
-    //             </div>
-    //             <div class="col s10">
-    //                 <span class="black-text">
-    //                     Guardo los datos correctamente
-    //                 </span>
-    //                 <button className='waves-effect waves btn blue'>Close</button>
-    //             </div>
-    //         </div>
-    //     </div>
-    // </div>
-    //     <div class="row">
-    //     <div class="col s12 m7">
-    //       <div class="card">
-    //         <div class="card-image">
-    //           <img src="images/tick.png"/>
-    //           <span class="card-title">Card Title</span>
-    //         </div>
-    //         <div class="card-content">
-    //           <p>I am a very simple card. I am good at containing small bits of information.
-    //           I am convenient because I require little markup to use effectively.</p>
-    //         </div>
-    //         <div class="card-action">
-    //           <a href="#">This is a link</a>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
   );
 };
+
+const GetSameStringLength = (wantedLength, currentString) => {
+  const lengthDifference = wantedLength - currentString.length
+  let newString = currentString
+
+  for (let i = 0; i < lengthDifference; i++) {
+    newString += " ";
+  }
+
+  return newString
+}
 
 export default SuccessfulPopup;

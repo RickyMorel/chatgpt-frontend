@@ -28,9 +28,10 @@ class App extends Component {
     this.setState({ modalIsOpen: false });
   };
 
-  showPopup = () => {
-    const newPopup = spawnPopup(true, () => {this.setState({currentPopup: null})}, <SuccessfulPopup/>, PopupStyle.Small)
-    console.log("showPopup", newPopup)
+  showPopup = (error) => {
+    const closePopupFunc = () => {this.setState({currentPopup: null})}
+    const popupHtml = <SuccessfulPopup closeFunc={closePopupFunc} errorMsg={error}/>
+    const newPopup = spawnPopup(true, popupHtml, PopupStyle.Small)
     this.setState({currentPopup: newPopup})
   }
 

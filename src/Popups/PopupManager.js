@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 
-const spawnPopup = (isOpen, onClose, popup, style) => {
-  console.log("spawnPopup", isOpen, popup)
-
+const spawnPopup = (isOpen, popup, style) => {
   return (
     <Modal
         isOpen={isOpen}
         style={style}
     >
         {popup}
-        {/* <div className="row valign-wrapper">
-          <button onClick={onClose} className='waves-effect waves-light btn blue-dark centered'>Close</button>
-        </div> */}
     </Modal>
   );
 };
