@@ -35,9 +35,9 @@ function ExcelFileInput({dataTypeName, showPopupFunc}) {
   const GetClientDataResponse = async (jsonData) => {
     const clientData = GetClientDataFromExcel.ExtractClientData(jsonData)
 
-    if(clientData[0].address == undefined) {showPopupFunc(new Error("No se encontro 'Domicilio' en el excel"))}
-    else if(clientData[0].phoneNumber == undefined) {showPopupFunc(new Error("No se encontro 'Numero' en el excel"))}
-    else if(clientData[0].name == undefined) {showPopupFunc(new Error("No se encontro 'Nombre' en el excel"))}
+    if(clientData[0].address == undefined) {showPopupFunc(new Error("No se encontro 'Domicilio' en el excel")); return}
+    else if(clientData[0].phoneNumber == undefined) {showPopupFunc(new Error("No se encontro 'Numero' en el excel")); return}
+    else if(clientData[0].name == undefined) {showPopupFunc(new Error("No se encontro 'Nombre' en el excel")); return}
 
     showPopupFunc(await GetClientDataFromExcel.PostData('http://localhost:3000/client-crud/createMany', clientData))
   }
@@ -45,9 +45,9 @@ function ExcelFileInput({dataTypeName, showPopupFunc}) {
   const GetProductDataResponse = async (jsonData) => {
     const productData = GetProductDataFromExcel.ExtractProductData(jsonData)
 
-    if(productData[0].price == undefined) {showPopupFunc(new Error("No se encontro 'Precio' en el excel"))}
-    else if(productData[0].flavourType == undefined) {showPopupFunc(new Error("No se encontro 'Sabor' en el excel"))}
-    else if(productData[0].name == undefined) {showPopupFunc(new Error("No se encontro 'Nombre' en el excel"))}
+    if(productData[0].price == undefined) {showPopupFunc(new Error("No se encontro 'Precio' en el excel")); return}
+    else if(productData[0].flavourType == undefined) {showPopupFunc(new Error("No se encontro 'Sabor' en el excel")); return}
+    else if(productData[0].name == undefined) {showPopupFunc(new Error("No se encontro 'Nombre' en el excel")); return}
 
     showPopupFunc(await GetClientDataFromExcel.PostData('http://localhost:3000/inventory/resetItems', productData))
   }

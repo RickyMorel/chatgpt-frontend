@@ -42,9 +42,6 @@ class App extends Component {
       <div className="App container">
         <h1 className="center blue-text">Todo's</h1>
         <button onClick={this.openModal}>Open Modal</button>
-        <button data-target="modal1" className="btn modal-trigger">
-          Modal
-        </button>
         <BotBlockModel
           modalIsOpen={modalIsOpen}
           openModalFunc={this.openModal}

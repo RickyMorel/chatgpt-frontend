@@ -23,7 +23,7 @@ class GetDataFromExcel {
         } catch (error) {
           return error
         }
-      };
+    };
 }
 
 export default GetDataFromExcel

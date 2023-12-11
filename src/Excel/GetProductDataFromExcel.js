@@ -9,7 +9,7 @@ class GetProductDataFromExcel extends GetDataFromExcel {
         let productData = []
 
         productsJson.forEach(jsonProduct => {
-            const extractedPrice = this.ExtractPriceFromString(jsonProduct[headerIndexes[1]].toString())
+            const extractedPrice = jsonProduct[headerIndexes[1]] ? this.ExtractPriceFromString(jsonProduct[headerIndexes[1]].toString()) : undefined
             const newProduct = {
                 name: jsonProduct[headerIndexes[0]],
                 price: parseInt(extractedPrice), 
