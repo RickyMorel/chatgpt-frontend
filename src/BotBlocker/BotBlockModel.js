@@ -15,15 +15,18 @@ class BotBlockModel extends Component {
     };
   }
 
-  componentDidMount() {
-    this.fetchClientData();
+  componentDidUpdate(prevProps) {
+    if (this.props.modalIsOpen !== prevProps.modalIsOpen) {
+      this.fetchClientData();
+    }
   }
 
   fetchClientData = async () => {
     console.log("fetchClientData");
     try {
       const response = await axios.get('http://localhost:3000/client-crud');
-      this.setState({ clients: response.data });
+      this.setState({ clients: response.data })
+      console.log("got response", this.state.clients)
     } catch (error) {
       this.setState({ error: error });
     } finally {
@@ -32,9 +35,10 @@ class BotBlockModel extends Component {
   };
 
   render() {
+    console.log("Render", this.state.clients)
     const { modalIsOpen, closeModalFunc } = this.props;
     const { loading, error, clients } = this.state;
-    console.log("this.state.clients", this.state.clients)
+
     const clientBlocks = this.state.clients?.map(x => {
       return <ClientBlockComponent {...x}/>
     })
