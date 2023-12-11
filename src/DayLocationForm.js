@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { usePopup } from './Popups/PopupProvider';
 
 class DayLocationForm extends Component {
   constructor(props) {
@@ -57,7 +58,7 @@ class DayLocationForm extends Component {
     e.preventDefault();
 
     if(this.state.isEditingLocations) {return}
-    if(this.state.locations.length != 7) {console.log("No se lleno los 7 dias")}
+    if(this.state.locations.length != 7) {this.props.showPopup(new Error("No se lleno los 7 dias")); return}
 
     try {
       const response = await axios.put('http://localhost:3000/day-location', this.state.locations);
@@ -81,6 +82,7 @@ class DayLocationForm extends Component {
   };
 
   render() {
+    // const { showPopup } = usePopup();
     const dayLocationsHtml = this.state.days.map(x => {
       const dayIndex = this.state.days.indexOf(x)
       const location = this.state.locations.find(x => x.day == dayIndex) ? this.state.locations.find(x => x.day == dayIndex).location : ""
@@ -100,7 +102,7 @@ class DayLocationForm extends Component {
       )
     })
     return (
-        <form className="container" onSubmit={this.handleSubmit}>
+        <form className="container" onSubmit={(e) => this.handleSubmit(e)}>
           <div class="row">
             {dayLocationsHtml}
           </div>

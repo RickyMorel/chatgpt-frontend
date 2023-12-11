@@ -3,10 +3,12 @@ import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import GetClientDataFromExcel from './GetClientDataFromExcel';
 import GetProductDataFromExcel from './GetProductDataFromExcel';
+import { usePopup } from '../Popups/PopupProvider';
 
-function ExcelFileInput({dataTypeName, showPopupFunc}) {
+function ExcelFileInput({dataTypeName}) {
   const [excelData, setExcelData] = useState(null);
   const [popup, setPopup] = useState(null);
+  const { showPopup } = usePopup();
   
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -35,21 +37,21 @@ function ExcelFileInput({dataTypeName, showPopupFunc}) {
   const GetClientDataResponse = async (jsonData) => {
     const clientData = GetClientDataFromExcel.ExtractClientData(jsonData)
 
-    if(clientData[0].address == undefined) {showPopupFunc(new Error("No se encontro 'Domicilio' en el excel")); return}
-    else if(clientData[0].phoneNumber == undefined) {showPopupFunc(new Error("No se encontro 'Numero' en el excel")); return}
-    else if(clientData[0].name == undefined) {showPopupFunc(new Error("No se encontro 'Nombre' en el excel")); return}
+    if(clientData[0].address == undefined) {showPopup(new Error("No se encontro 'Domicilio' en el excel")); return}
+    else if(clientData[0].phoneNumber == undefined) {showPopup(new Error("No se encontro 'Numero' en el excel")); return}
+    else if(clientData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); return}
 
-    showPopupFunc(await GetClientDataFromExcel.PostData('http://localhost:3000/client-crud/createMany', clientData))
+    showPopup(await GetClientDataFromExcel.PostData('http://localhost:3000/client-crud/createMany', clientData))
   }
 
   const GetProductDataResponse = async (jsonData) => {
     const productData = GetProductDataFromExcel.ExtractProductData(jsonData)
 
-    if(productData[0].price == undefined) {showPopupFunc(new Error("No se encontro 'Precio' en el excel")); return}
-    else if(productData[0].flavourType == undefined) {showPopupFunc(new Error("No se encontro 'Sabor' en el excel")); return}
-    else if(productData[0].name == undefined) {showPopupFunc(new Error("No se encontro 'Nombre' en el excel")); return}
+    if(productData[0].price == undefined) {showPopup(new Error("No se encontro 'Precio' en el excel")); return}
+    else if(productData[0].flavourType == undefined) {showPopup(new Error("No se encontro 'Sabor' en el excel")); return}
+    else if(productData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); return}
 
-    showPopupFunc(await GetClientDataFromExcel.PostData('http://localhost:3000/inventory/resetItems', productData))
+    showPopup(await GetClientDataFromExcel.PostData('http://localhost:3000/inventory/resetItems', productData))
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });

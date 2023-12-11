@@ -5,6 +5,7 @@ import ExcelFileInput from './Excel/ExcelFileInput';
 import ExcelFileOutput from './Excel/ExcelFileOutput';
 import {spawnPopup, PopupStyle} from './Popups/PopupManager'
 import SuccessfulPopup from './Popups/SuccessfulPopup';
+import { PopupProvider } from './Popups/PopupProvider';
 
 class App extends Component {
   constructor(props) {
@@ -16,7 +17,6 @@ class App extends Component {
         { id: 2, content: 'play mario kart' },
       ],
       modalIsOpen: false,
-      currentPopup: null
     };
   }
 
@@ -28,31 +28,24 @@ class App extends Component {
     this.setState({ modalIsOpen: false });
   };
 
-  showPopup = (error) => {
-    const closePopupFunc = () => {this.setState({currentPopup: null})}
-    const popupHtml = <SuccessfulPopup closeFunc={closePopupFunc} errorMsg={error}/>
-    const newPopup = spawnPopup(true, popupHtml, PopupStyle.Small)
-    this.setState({currentPopup: newPopup})
-  }
-
   render() {
     const { modalIsOpen } = this.state;
 
     return (
-      <div className="App container">
-        <h1 className="center blue-text">Todo's</h1>
-        <button onClick={this.openModal}>Open Modal</button>
-        <BotBlockModel
-          modalIsOpen={modalIsOpen}
-          openModalFunc={this.openModal}
-          closeModalFunc={this.closeModal}
-        />
-        {this.state.currentPopup}
-        <ExcelFileInput dataTypeName={'clientes'} showPopupFunc={this.showPopup} />
-        <ExcelFileInput dataTypeName={'productos'} showPopupFunc={this.showPopup} />
-        <DayLocationForm showPopupFunc={this.showPopup}/>
-        <ExcelFileOutput />
-      </div>
+        <div className="App container">
+            <h1 className="center blue-text">Todo's</h1>
+            <button onClick={this.openModal}>Open Modal</button>
+            <BotBlockModel
+              modalIsOpen={modalIsOpen}
+              openModalFunc={this.openModal}
+              closeModalFunc={this.closeModal}
+            />
+            {this.state.currentPopup}
+            <ExcelFileInput dataTypeName={'clientes'} />
+            <ExcelFileInput dataTypeName={'productos'} />
+            <DayLocationForm showPopup={this.props.showPopup}/>
+            <ExcelFileOutput />
+        </div>
     );
   }
 }

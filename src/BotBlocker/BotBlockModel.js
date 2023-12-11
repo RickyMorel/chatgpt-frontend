@@ -34,6 +34,7 @@ class BotBlockModel extends Component {
   render() {
     const { modalIsOpen, closeModalFunc } = this.props;
     const { loading, error, clients } = this.state;
+    console.log("this.state.clients", this.state.clients)
     const clientBlocks = this.state.clients?.map(x => {
       return <ClientBlockComponent {...x}/>
     })
