@@ -45,9 +45,9 @@ class ClientBlockComponent extends React.Component {
         <div className="col s4">
           {
             this.state.isBlocked == true ? 
-            <a className="waves-effect waves-light btn red red-button" onClick={() => this.handleBlock(phoneNumber, false)}>Bloquear</a>
+            <a className="waves-effect waves-light btn grey grey-button" onClick={() => this.handleBlock(phoneNumber, false)}>Bloquear</a>
             :
-            <a className="waves-effect waves-light btn grey grey-button" onClick={() => this.handleBlock(phoneNumber, true)}>Desbloquear</a>
+            <a className="waves-effect waves-light btn red red-button" onClick={() => this.handleBlock(phoneNumber, true)}>Desbloquear</a>
           }
         </div>
       </div>

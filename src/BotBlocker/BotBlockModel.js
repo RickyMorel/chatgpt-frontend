@@ -10,8 +10,8 @@ class BotBlockModel extends Component {
 
     this.state = {
       clients: null,
-      loading: true,
-      error: null,
+      searchInput: '',
+      filteredClients: null,
     };
   }
 
@@ -22,11 +22,12 @@ class BotBlockModel extends Component {
   }
 
   fetchClientData = async () => {
-    console.log("fetchClientData");
     try {
       const response = await axios.get('http://localhost:3000/client-crud');
-      this.setState({ clients: response.data })
-      console.log("got response", this.state.clients)
+      this.setState({
+        clients: response.data,
+        filteredClients: response.data,
+      });
     } catch (error) {
       this.setState({ error: error });
     } finally {
@@ -34,20 +35,29 @@ class BotBlockModel extends Component {
     }
   };
 
+  handleSearchInputChange = (event) => {
+    const searchInput = event.target.value;
+    this.setState({ searchInput }, () => {
+      this.filterClients();
+    });
+  };
+
+  filterClients = () => {
+    const { clients, searchInput } = this.state;
+    const filteredClients = clients.filter(client =>
+      client.name.toLowerCase().includes(searchInput.toLowerCase()) ||
+      client.phoneNumber.toLowerCase().includes(searchInput.toLowerCase())
+    );
+    this.setState({ filteredClients });
+  };
+
   render() {
-    console.log("Render", this.state.clients)
     const { modalIsOpen, closeModalFunc } = this.props;
-    const { loading, error, clients } = this.state;
+    const { loading, error, filteredClients } = this.state;
 
-    const clientBlocks = this.state.clients?.map(x => {
-      return <ClientBlockComponent {...x}/>
-    })
-
-    if (loading) {
-      return <div>Loading...</div>;
-    } else if (error) {
-      return <div>Error: {error.message}</div>;
-    }
+    const clientBlocks = filteredClients?.map(x => (
+      <ClientBlockComponent key={x.id} {...x} />
+    ));
 
     return (
       <Modal
@@ -56,6 +66,12 @@ class BotBlockModel extends Component {
         contentLabel="Example Modal"
         style={PopupStyle.Small}
       >
+        <input
+          type="text"
+          placeholder="Buscar clientes..."
+          value={this.state.searchInput}
+          onChange={this.handleSearchInputChange}
+        />
         {clientBlocks}
         <button onClick={closeModalFunc}>Close Modal</button>
       </Modal>
