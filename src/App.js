@@ -50,7 +50,7 @@ class App extends Component {
         {this.state.currentPopup}
         <ExcelFileInput dataTypeName={'clientes'} showPopupFunc={this.showPopup} />
         <ExcelFileInput dataTypeName={'productos'} showPopupFunc={this.showPopup} />
-        <DayLocationForm />
+        <DayLocationForm showPopupFunc={this.showPopup}/>
         <ExcelFileOutput />
       </div>
     );

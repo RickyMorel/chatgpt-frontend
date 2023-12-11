@@ -7,16 +7,25 @@ class DayLocationForm extends Component {
 
     this.state = {
       days: ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo'],
-      locations: []
+      locations: [],
+      isEditingLocations: false
     };
   }
 
-  static PostData = async (url, data) => {
-    console.log("PostData", url)
+  componentDidMount() {
+      this.GetDayLocations();
+  }
+
+  GetDayLocations = async () => {
     try {
-      const response = await axios.post(url, data);
-      return null
+      const response = await axios.get('http://localhost:3000/day-location');
+      console.log("response", response.data)
+
+      this.setState({
+        locations: [...response.data]
+      })
     } catch (error) {
+      console.log("error", error)
       return error
     }
 };
@@ -27,32 +36,27 @@ class DayLocationForm extends Component {
       day: dayIndex,
       location: newLocation
     }
-    //console.log("handleLocationChange", day, dayLocationObj)
 
     let newLocationArray = this.state.locations
     console.log(dayIndex)
-    console.log("this.state.locations.includes(x => x.day == dayIndex)", this.state.locations.find(x => x.day == dayIndex))
+    const dayToUpdateIndex = this.state.locations.findIndex(x => x.day === dayIndex);
 
-    if(this.state.locations.includes(x => x.day == dayIndex)){
-      console.log("found")
-      const dayToUpdateIndex = newLocationArray.findIndex(x => x.day == dayIndex)
+    if(dayToUpdateIndex !== -1){
       newLocationArray[dayToUpdateIndex] = dayLocationObj
     }
     else {
-      console.log("push")
       newLocationArray.push(dayLocationObj)
     }
 
     this.setState({
-      locations: newLocationArray,
+      locations: [...newLocationArray],
     });
-
-    console.log("newLocationArray", this.state.locations)
   };
 
   handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(this.state.isEditingLocations) {return}
     if(this.state.locations.length != 7) {console.log("No se lleno los 7 dias")}
 
     try {
@@ -68,13 +72,29 @@ class DayLocationForm extends Component {
     this.handleLocationChange(day, selectedLocation);
   };
 
+  handleEditLocations = (e) => {
+    const isEdting = !this.state.isEditingLocations;
+
+    this.setState({
+      isEditingLocations: isEdting
+    })
+  };
+
   render() {
     const dayLocationsHtml = this.state.days.map(x => {
+      const dayIndex = this.state.days.indexOf(x)
+      const location = this.state.locations.find(x => x.day == dayIndex) ? this.state.locations.find(x => x.day == dayIndex).location : ""
+
       return(
         <div>
             <div class="col s6"><p className='centered'>{x}</p></div>
             <div class="col s6">
-              <input type="text" onChange={(e) => this.handleLocationChange(x, e.target.value)} placeholder="Lugar..."/>
+              {
+                this.state.isEditingLocations == true ?
+                <input type="text" onChange={(e) => this.handleLocationChange(x, e.target.value)} value={location} placeholder="Lugar..."/>
+                :
+                <p>{location == "" ? "-" : location}</p>
+              }
             </div>
         </div>
       )
@@ -84,7 +104,8 @@ class DayLocationForm extends Component {
           <div class="row">
             {dayLocationsHtml}
           </div>
-          <button type="submit">Submit</button>
+          <button onClick={this.handleEditLocations}>{this.state.isEditingLocations ? "Save" : "Edit"}</button>
+          {/* <button type="submit">Submit</button> */}
         </form>
     );
   }
