@@ -6,6 +6,9 @@ import ExcelFileOutput from './Excel/ExcelFileOutput';
 import {spawnPopup, PopupStyle} from './Popups/PopupManager'
 import SuccessfulPopup from './Popups/SuccessfulPopup';
 import { PopupProvider } from './Popups/PopupProvider';
+import {Helmet} from 'react-helmet';
+import { Color } from './Colors';
+import ProductListModal from './Products/ProductListModal';
 
 class App extends Component {
   constructor(props) {
@@ -16,16 +19,16 @@ class App extends Component {
         { id: 1, content: 'buy some milk' },
         { id: 2, content: 'play mario kart' },
       ],
-      modalIsOpen: false,
+      modalIsOpen: 0,
     };
   }
 
-  openModal = () => {
-    this.setState({ modalIsOpen: true });
+  openModal = (modalNum) => {
+    this.setState({ modalIsOpen: modalNum });
   };
 
   closeModal = () => {
-    this.setState({ modalIsOpen: false });
+    this.setState({ modalIsOpen: 0 });
   };
 
   render() {
@@ -33,11 +36,18 @@ class App extends Component {
 
     return (
         <div className="App container">
-            <h1 className="center blue-text">Todo's</h1>
-            <button onClick={this.openModal}>Open Modal</button>
+            <Helmet>
+              <style>{`body { background-color: #E9EBE3; }`}</style>
+            </Helmet>
+            <h1 className="center">WhiskChat</h1>
+            <button onClick={() => this.openModal(1)}>Bloquear Chat</button>
+            <button onClick={() => this.openModal(2)}>Ver Productos</button>
             <BotBlockModel
-              modalIsOpen={modalIsOpen}
-              openModalFunc={this.openModal}
+              modalIsOpen={modalIsOpen == 1}
+              closeModalFunc={this.closeModal}
+            />
+            <ProductListModal
+              modalIsOpen={modalIsOpen == 2}
               closeModalFunc={this.closeModal}
             />
             {this.state.currentPopup}

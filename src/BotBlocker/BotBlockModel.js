@@ -3,6 +3,7 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import ClientBlockComponent from './ClientBlockComponent';
 import { PopupStyle } from '../Popups/PopupManager';
+import { Color } from '../Colors';
 
 class BotBlockModel extends Component {
   constructor(props) {
@@ -66,14 +67,21 @@ class BotBlockModel extends Component {
         contentLabel="Example Modal"
         style={PopupStyle.Small}
       >
-        <input
-          type="text"
-          placeholder="Buscar clientes..."
-          value={this.state.searchInput}
-          onChange={this.handleSearchInputChange}
-        />
-        {clientBlocks}
-        <button onClick={closeModalFunc}>Close Modal</button>
+      <div className={`card bordered ${Color.Background}`}>
+        <div className="card-content">
+          <span className="card-title">Bloquear Chat</span>
+          <input
+            type="text"
+            placeholder="Buscar clientes..."
+            value={this.state.searchInput}
+            onChange={this.handleSearchInputChange}
+          />
+          {clientBlocks}
+        </div>
+        <div className="card-action">
+          <button className={`waves-effect waves-light btn ${Color.Fourth}`} onClick={closeModalFunc}>Cerrar</button>
+        </div>
+      </div>
       </Modal>
     );
   }
