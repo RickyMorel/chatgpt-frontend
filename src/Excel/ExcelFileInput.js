@@ -59,12 +59,14 @@ function ExcelFileInput({dataTypeName}) {
   return (
     <div>
       <main>
-        <div {...getRootProps()} style={dropzoneStyle}>
+        <div className="valign-wrapper" {...getRootProps()} style={dropzoneStyle}>
           <input {...getInputProps()} />
           {isDragActive ? (
             <p>Drop the Excel file here...</p>
           ) : (
-            <p>Agregué el Excel de {dataTypeName}</p>
+            <div className='center-align'>
+              <p>Agregué el Excel de {dataTypeName}</p>
+            </div>
           )}
         </div>
       </main>
@@ -79,6 +81,9 @@ const dropzoneStyle = {
   padding: '20px',
   textAlign: 'center',
   cursor: 'pointer',
+  width: '100%', // Adjust the width as needed
+  height: '200px', // Adjust the height to match the width
 };
+
 
 export default ExcelFileInput;

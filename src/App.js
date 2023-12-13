@@ -39,9 +39,15 @@ class App extends Component {
             <Helmet>
               <style>{`body { background-color: #E9EBE3; }`}</style>
             </Helmet>
-            <h1 className="center">WhiskChat</h1>
-            <button onClick={() => this.openModal(1)}>Bloquear Chat</button>
-            <button onClick={() => this.openModal(2)}>Ver Productos</button>
+            <h1 className="center">Chatbot</h1>
+            <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.openModal(1)}>
+              <i className="material-icons left">contacts</i>
+              Bloquear Chat
+            </button>
+            <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.openModal(2)}>
+              <i className="material-icons left">local_mall</i>
+              Ver Productos
+            </button>
             <BotBlockModel
               modalIsOpen={modalIsOpen == 1}
               closeModalFunc={this.closeModal}
@@ -51,9 +57,18 @@ class App extends Component {
               closeModalFunc={this.closeModal}
             />
             {this.state.currentPopup}
-            <ExcelFileInput dataTypeName={'clientes'} />
-            <ExcelFileInput dataTypeName={'productos'} />
-            <DayLocationForm showPopup={this.props.showPopup}/>
+            <div className='row'>
+              <div style={{ height: '100%' }} className='col s6'>
+                <h6>Actualizar Clientes</h6>
+                <ExcelFileInput dataTypeName={'clientes'} />
+                <p> </p>
+                <h6>Actualizar Productos</h6>
+                <ExcelFileInput dataTypeName={'productos'} />
+              </div>
+              <div className='col s6'>
+                <DayLocationForm showPopup={this.props.showPopup}/>
+              </div>
+            </div>
             <ExcelFileOutput />
         </div>
     );

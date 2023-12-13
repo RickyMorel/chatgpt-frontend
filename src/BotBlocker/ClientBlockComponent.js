@@ -37,18 +37,24 @@ class ClientBlockComponent extends React.Component {
 
     return (
       <div className="row list-item z-depth-2 border">
-        <div className="col s4">
+        <div className="col s7">
           <span className="client-name">{name}</span>
         </div>
-        <div className="col s4">
+        <div className="col s3">
+
           <span className="client-name">+{phoneNumber}</span>
         </div>
-        <div className="col s4">
+        <div className="col s2">
           {
             this.state.isBlocked == true ? 
-            <a className={`waves-effect waves-light btn ${Color.Second}`} onClick={() => this.handleBlock(phoneNumber, false)}>Bloquear</a>
+            <a className={`waves-effect waves-light btn btn-small right ${Color.four
+            }`} onClick={() => this.handleBlock(phoneNumber, false)}>
+              <i className="material-icons">check</i>
+            </a>
             :
-            <a className={`waves-effect waves-light btn ${Color.First}`} onClick={() => this.handleBlock(phoneNumber, true)}>Desbloquear</a>
+            <a className={`waves-effect waves-light btn btn-small right ${Color.First}`} onClick={() => this.handleBlock(phoneNumber, true)}>
+              <i className="material-icons">remove_circle</i>
+            </a>
           }
         </div>
       </div>

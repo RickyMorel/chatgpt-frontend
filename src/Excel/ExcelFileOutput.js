@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
+import { Color } from '../Colors';
 
 class ExcelFileOutput extends Component {
   state = {
@@ -56,7 +57,10 @@ class ExcelFileOutput extends Component {
   render() {
     return (
       <div>
-        <button onClick={this.handleDownload}>Descargar pedidos</button>
+        <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleDownload}>
+          <i className="material-icons left">cloud_download</i>
+          Descargar pedidos
+        </button>
       </div>
     );
   }

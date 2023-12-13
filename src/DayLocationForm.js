@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { usePopup } from './Popups/PopupProvider';
+import { Color } from './Colors';
 
 class DayLocationForm extends Component {
   constructor(props) {
@@ -106,7 +107,10 @@ class DayLocationForm extends Component {
           <div class="row">
             {dayLocationsHtml}
           </div>
-          <button onClick={this.handleEditLocations}>{this.state.isEditingLocations ? "Save" : "Edit"}</button>
+          <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleEditLocations}>
+            <i className="material-icons left">{this.state.isEditingLocations ? "save" : "edit"}</i>
+            {this.state.isEditingLocations ? "Save" : "Edit"}
+          </button>
           {/* <button type="submit">Submit</button> */}
         </form>
     );

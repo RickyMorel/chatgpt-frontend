@@ -76,7 +76,7 @@ class ProductListModal extends Component {
           {productBlocks}
         </div>
         <div className="card-action">
-          <button className={`waves-effect waves-light btn ${Color.Fourth}`} onClick={closeModalFunc}>Cerrar</button>
+          <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={closeModalFunc}>Cerrar</button>
         </div>
       </div>
       </Modal>
