@@ -48,7 +48,6 @@ const mediumStyle = {
     width: '40%',  
     height: '60%', 
     background: 'transparent',
-    overflow: 'hidden',
   },
 };
 

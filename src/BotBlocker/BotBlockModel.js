@@ -21,6 +21,7 @@ class BotBlockModel extends Component {
   componentDidUpdate(prevProps) {
     if (this.props.modalIsOpen !== prevProps.modalIsOpen) {
       this.fetchClientData();
+      this.fetchGlobalData()
     }
   }
 
@@ -44,6 +45,17 @@ class BotBlockModel extends Component {
     }
   };
 
+  fetchGlobalData = async () => {
+    try {
+      const response = await axios.get('http://localhost:3000/global-config');
+      this.setState({
+        isGloballyBlocked: response.data.isGloballyBlocked
+      });
+    } catch (error) {
+      this.setState({ error: error });
+    }
+  }
+
   handleSearchInputChange = (event) => {
     const searchInput = event.target.value;
     this.setState({ searchInput }, () => {
@@ -54,7 +66,7 @@ class BotBlockModel extends Component {
   handleGlobalBlock = async (event) => {
     try {
       const globallyBlocked = event.target.checked;
-      const response = await axios.put('http://localhost:3000/client-crud/blockClientChat', {isBlocked: globallyBlocked});
+      const response = await axios.put('http://localhost:3000/global-config', {isGloballyBlocked: globallyBlocked});
       console.log("handleGlobalBlock", globallyBlocked)
       this.setState({
         isGloballyBlocked: globallyBlocked
@@ -112,7 +124,7 @@ class BotBlockModel extends Component {
         isOpen={modalIsOpen}
         onRequestClose={closeModalFunc}
         contentLabel="Example Modal"
-        style={PopupStyle.Small}
+        style={PopupStyle.Medium}
       >
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
@@ -125,7 +137,7 @@ class BotBlockModel extends Component {
             <div class="switch">
               <label>
                 No
-                <input type="checkbox" onChange={this.handleGlobalBlock}/>
+                <input type="checkbox" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/>
                 <span class="lever"></span>
                 Si
               </label>
