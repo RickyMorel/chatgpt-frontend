@@ -77,6 +77,23 @@ class BotBlockModel extends Component {
     }
   };
 
+  handleClearAllBlocks = async (event) => {
+    try {
+      const response = await axios.put('http://localhost:3000/client-crud/unblockAllChats');
+      let clients = [...this.state.clientIsBlockedStateList]
+      clients.forEach(client => {
+        client.isBlocked = false
+      });
+      console.log("handleClearAllBlocks", clients)
+      this.setState({
+        clientIsBlockedStateList: [...clients]
+      });
+      return response
+    } catch (error) {
+      return error
+    }
+  };
+
   clientRegisterBlockedStateFunc = (phoneNumber, isBlocked) => {
     console.log("clientRegisterBlockedStateFunc", phoneNumber, isBlocked)
     let newList = [...this.state.clientIsBlockedStateList]
@@ -128,20 +145,26 @@ class BotBlockModel extends Component {
       >
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
-          <div className="row">
-            <div className="col s8">
+        <div className="row">
+            <div className="col s6">
               <span className="card-title">Bloquear Chat</span>
             </div>
             <div className="col s4">
               <label className='small-text'>Bloquear Chatbot</label>
-            <div class="switch">
-              <label>
-                No
-                <input type="checkbox" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/>
-                <span class="lever"></span>
-                Si
-              </label>
+              <div class="switch">
+                <label>
+                  No
+                  <input type="checkbox" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/>
+                  <span class="lever"></span>
+                  Si
+                </label>
+              </div>
             </div>
+            <div className="col s2">
+              <label className='right'>Resetear</label>
+              <a className={`waves-effect waves-light btn-small right ${Color.Fifths}`} onClick={this.handleClearAllBlocks}>
+                <i className="material-icons">autorenew</i>
+              </a>
             </div>
           </div>
           <input
