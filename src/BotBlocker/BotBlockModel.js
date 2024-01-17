@@ -27,7 +27,7 @@ class BotBlockModel extends Component {
 
   fetchClientData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/client-crud');
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud`);
       let newList = []
       response.data.forEach(client => {
         const newClientState = {client: client, isBlocked: client.chatIsBlocked}
@@ -47,7 +47,7 @@ class BotBlockModel extends Component {
 
   fetchGlobalData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/global-config');
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
       this.setState({
         isGloballyBlocked: response.data.isGloballyBlocked
       });
@@ -66,7 +66,7 @@ class BotBlockModel extends Component {
   handleGlobalBlock = async (event) => {
     try {
       const globallyBlocked = event.target.checked;
-      const response = await axios.put('http://localhost:3000/global-config', {isGloballyBlocked: globallyBlocked});
+      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config`, {isGloballyBlocked: globallyBlocked});
       console.log("handleGlobalBlock", globallyBlocked)
       this.setState({
         isGloballyBlocked: globallyBlocked
@@ -79,7 +79,7 @@ class BotBlockModel extends Component {
 
   handleClearAllBlocks = async (event) => {
     try {
-      const response = await axios.put('http://localhost:3000/client-crud/unblockAllChats');
+      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/unblockAllChats`);
       let clients = [...this.state.clientIsBlockedStateList]
       clients.forEach(client => {
         client.isBlocked = false

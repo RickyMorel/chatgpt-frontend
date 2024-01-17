@@ -31,7 +31,7 @@ class ClientBlockComponent extends React.Component {
   handleBlock = async (phoneNumber, newBlockedState, clientRegisterBlockedStateFunc) => {
     console.log("handleBlock")
     try {
-      const response = await axios.put('http://localhost:3000/client-crud/blockClientChat', {phoneNumber: phoneNumber, isBlocked: newBlockedState});
+      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/blockClientChat`, {phoneNumber: phoneNumber, isBlocked: newBlockedState});
       clientRegisterBlockedStateFunc(phoneNumber, newBlockedState)
       this.setState({
         isBlocked: newBlockedState

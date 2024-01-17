@@ -41,7 +41,7 @@ function ExcelFileInput({dataTypeName}) {
     else if(clientData[0].phoneNumber == undefined) {showPopup(new Error("No se encontro 'Numero' en el excel")); return}
     else if(clientData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); return}
 
-    showPopup(await GetClientDataFromExcel.PostData('http://localhost:3000/client-crud/createMany', clientData))
+    showPopup(await GetClientDataFromExcel.PostData(`${process.env.REACT_APP_HOST_URL}/client-crud/createMany`, clientData))
   }
 
   const GetProductDataResponse = async (jsonData) => {
@@ -51,7 +51,7 @@ function ExcelFileInput({dataTypeName}) {
     else if(productData[0].flavourType == undefined) {showPopup(new Error("No se encontro 'Sabor' en el excel")); return}
     else if(productData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); return}
 
-    showPopup(await GetClientDataFromExcel.PostData('http://localhost:3000/inventory/resetItems', productData))
+    showPopup(await GetClientDataFromExcel.PostData(`${process.env.REACT_APP_HOST_URL}/inventory/resetItems`, productData))
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });

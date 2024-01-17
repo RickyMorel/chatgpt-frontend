@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
 import BotBlockModel from './BotBlocker/BotBlockModel';
+import { Color } from './Colors';
 import DayLocationForm from './DayLocationForm';
 import ExcelFileInput from './Excel/ExcelFileInput';
 import ExcelFileOutput from './Excel/ExcelFileOutput';
-import {spawnPopup, PopupStyle} from './Popups/PopupManager'
-import SuccessfulPopup from './Popups/SuccessfulPopup';
-import { PopupProvider } from './Popups/PopupProvider';
-import {Helmet} from 'react-helmet';
-import { Color } from './Colors';
+import OrderListModal from './Orders/OrderListModal';
 import ProductListModal from './Products/ProductListModal';
 
 class App extends Component {
@@ -48,12 +46,20 @@ class App extends Component {
               <i className="material-icons left">local_mall</i>
               Ver Productos
             </button>
+            <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.openModal(3)}>
+              <i className="material-icons left">shopping_cart</i>
+              Ver Pedidos
+            </button>
             <BotBlockModel
               modalIsOpen={modalIsOpen == 1}
               closeModalFunc={this.closeModal}
             />
             <ProductListModal
               modalIsOpen={modalIsOpen == 2}
+              closeModalFunc={this.closeModal}
+            />
+            <OrderListModal
+              modalIsOpen={modalIsOpen == 3}
               closeModalFunc={this.closeModal}
             />
             {this.state.currentPopup}

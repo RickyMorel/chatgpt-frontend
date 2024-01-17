@@ -3,31 +3,31 @@ import React, { Component } from 'react';
 import Modal from 'react-modal';
 import { Color } from '../Colors';
 import { PopupStyle } from '../Popups/PopupManager';
-import ProductComponent from './ProductComponent';
+import OrderComponent from './OrderComponent';
 
-class ProductListModal extends Component {
+class OrderListModal extends Component {
     constructor(props) {
         super(props);
     
         this.state = {
-          products: null,
-          filteredProducts: null,
+          orders: null,
+          filteredOrders: null,
           searchInput: '',
         };
     }
 
   componentDidUpdate(prevProps) {
     if (this.props.modalIsOpen !== prevProps.modalIsOpen) {
-      this.fetchClientData();
+      this.fetchOrderData();
     }
   }
 
-  fetchClientData = async () => {
+  fetchOrderData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/allItems`);
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
       this.setState({
-        products: response.data,
-        filteredProducts: response.data,
+        orders: response.data,
+        filteredOrders: response.data,
       });
     } catch (error) {
 
@@ -37,25 +37,27 @@ class ProductListModal extends Component {
   handleSearchInputChange = (event) => {
     const searchInput = event.target.value;
     this.setState({ searchInput }, () => {
-      this.filterProducts();
+      this.filterOrders();
     });
   };
 
-  filterProducts = () => {
-    const { products, searchInput } = this.state;
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchInput.toLowerCase())
+  filterOrders = () => {
+    const { orders, searchInput } = this.state;
+    const filteredOrders = orders.filter(order =>
+        order.name.toLowerCase().includes(searchInput.toLowerCase())
     );
-    this.setState({ filteredProducts });
+    this.setState({ filteredOrders });
   };
 
   render() {
     const { modalIsOpen, closeModalFunc } = this.props;
-    const { filteredProducts } = this.state;
+    const { filteredOrders } = this.state;
 
-    const productBlocks = filteredProducts?.map(x => (
-      <ProductComponent key={x.id} {...x} />
-    ));
+    let i = 0
+    const orderBlocks = filteredOrders?.map(x => {
+      i += 1
+      return <OrderComponent key={x.phoneNumber} {...x} orderNumber ={i} />
+    });
 
     return (
       <Modal
@@ -66,14 +68,16 @@ class ProductListModal extends Component {
       >
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
-          <span className="card-title">Productos Cargados</span>
+          <span className="card-title">Pedidos Recibidos</span>
           <input
             type="text"
-            placeholder="Buscar clientes..."
+            placeholder="Buscar pedidos..."
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          {productBlocks}
+          <ul class="collapsible expandable">
+            {orderBlocks}
+          </ul>
         </div>
         <div className="card-action">
           <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={closeModalFunc}>Cerrar</button>
@@ -84,4 +88,4 @@ class ProductListModal extends Component {
   }
 }
 
-export default ProductListModal;
+export default OrderListModal;

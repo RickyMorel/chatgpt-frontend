@@ -12,7 +12,7 @@ class ExcelFileOutput extends Component {
 
   fetchOrderData = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/order');
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
       this.setState({ orders: response.data });
     } catch (error) {
       this.setState({ error: error });
