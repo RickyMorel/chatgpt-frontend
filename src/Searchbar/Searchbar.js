@@ -18,23 +18,25 @@ class SearchBar extends Component {
     }
 
 
-    handleSearchInputChange = (event) => {
+    handleSearchInputChange = (event, OnSearchCallback) => {
         const searchInput = event.target.value;
         this.setState({ searchInput }, () => {
-            this.filterProducts();
+            this.filterProducts(OnSearchCallback);
         });
     };
 
-    filterProducts = () => {
+    filterProducts = (OnSearchCallback) => {
         const { items, searchInput } = this.state;
         const filteredItems = items.filter(item =>
             item.name.toLowerCase().includes(searchInput.toLowerCase())
         );
         this.setState({ filteredItems });
+
+        OnSearchCallback(filteredItems)
       };
 
     render() {
-        const { searchText } = this.props;
+        const { searchText, OnSearchCallback } = this.props;
 
         return (
         <div>
@@ -42,7 +44,7 @@ class SearchBar extends Component {
                 type="text"
                 placeholder={searchText}
                 value={this.state.searchInput}
-                onChange={(e) => this.handleSearchInputChange(e)}
+                onChange={(e) => this.handleSearchInputChange(e, OnSearchCallback)}
             />
         </div>
         );

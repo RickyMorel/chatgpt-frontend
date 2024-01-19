@@ -4,6 +4,7 @@ import Modal from 'react-modal';
 import { Color } from '../Colors';
 import { PopupStyle } from '../Popups/PopupManager';
 import ProductComponent from './ProductComponent';
+import SearchBar from '../Searchbar/Searchbar';
 
 class ProductListModal extends Component {
     constructor(props) {
@@ -34,20 +35,11 @@ class ProductListModal extends Component {
     }
   };
 
-  handleSearchInputChange = (event) => {
-    const searchInput = event.target.value;
-    this.setState({ searchInput }, () => {
-      this.filterProducts();
-    });
-  };
-
-  filterProducts = () => {
-    const { products, searchInput } = this.state;
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchInput.toLowerCase())
-    );
-    this.setState({ filteredProducts });
-  };
+  handleSearch = (filteredList) => {
+      this.setState({
+        filteredProducts: filteredList
+      })
+  }
 
   render() {
     const { modalIsOpen, closeModalFunc } = this.props;
@@ -67,12 +59,7 @@ class ProductListModal extends Component {
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
           <span className="card-title">Productos Cargados</span>
-          <input
-            type="text"
-            placeholder="Buscar clientes..."
-            value={this.state.searchInput}
-            onChange={this.handleSearchInputChange}
-          />
+          <SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>
           {productBlocks}
         </div>
         <div className="card-action">
