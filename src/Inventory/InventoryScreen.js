@@ -33,11 +33,12 @@ class InventoryScreen extends Component {
     };
 
     fetchGlobalConfig = async () => {
+        console.log("fetchGlobalConfig")
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getDayInventories`);
             this.setState({
-                dayInventories: response.data.dayInventories,
-                selectedDayInventory: response.data.dayInventories[0]
+                dayInventories: response.data,
+                selectedDayInventory: response.data[0]
             });
         } catch (error) {}
     }
@@ -60,7 +61,7 @@ class InventoryScreen extends Component {
         const allProductsList = this.state.filteredProducts?.map(x => (
             <ProductComponent key={x.id} {...x} />
           ));
-        const selectedDayProductsList = this.state.selectedDayInventory?.map(x => (
+        const selectedDayProductsList = this.state.selectedDayInventory?.items?.map(x => (
             <ProductComponent key={x.id} {...x} />
         ));
 
