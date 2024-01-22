@@ -21,8 +21,8 @@ class App extends Component {
               <style>{`body { background-color: #E9EBE3; }`}</style>
             </Helmet>
             <Switch>
-              <Route exact path="/"><MainMenu/></Route>
-              <Route exact path="/inventory"><InventoryScreen/></Route>
+              <Route exact path="/"><MainMenu showPopup={this.props.showPopup}/></Route>
+              <Route exact path="/inventory"><InventoryScreen showPopup={this.props.showPopup}/></Route>
             </Switch>            
         </div>
       </Router>

@@ -27,6 +27,7 @@ class MainMenu extends Component {
 
     render() {
         const { modalIsOpen } = this.state;
+        console.log("this.props.showPopup MAINMENU", this.props.showPopup)
 
         return (
             <div>

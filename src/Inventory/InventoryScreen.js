@@ -13,7 +13,8 @@ class InventoryScreen extends Component {
           filteredProducts: null,
           searchInput: '',
           dayInventories: null,
-          selectedDayInventory: null
+          selectedDayInventory: null,
+          recommendedDailyItemAmount: 1
         };
     }
 
@@ -43,19 +44,50 @@ class InventoryScreen extends Component {
     }
 
     handleItemClick = (movedItem, isInDailyInventory) => {
-        var currentSelectedItems = [...this.state.selectedDayInventory.items]
-        currentSelectedItems.push(movedItem)
-        const newSelectedInventory = {day: this.state.selectedDayInventory.day, items: currentSelectedItems}
+        if(!isInDailyInventory) {
+            this.addToDailyInventory(movedItem);
+        } else {
+            this.removeFromDailyInventory(movedItem);
+        }
+    }
+
+    addToDailyInventory(movedItem) {
+        var currentSelectedItems = [...this.state.selectedDayInventory.items];
+
+        if (!currentSelectedItems.find(x => x.code == movedItem.code)) { currentSelectedItems.push(movedItem); }
+
+        const newSelectedInventory = { day: this.state.selectedDayInventory.day, items: currentSelectedItems };
 
         this.setState({
             selectedDayInventory: newSelectedInventory
-        })
+        });
 
-        console.log("currentSelectedItems", currentSelectedItems)
+        this.checkDailyItemOverload();
+    }
+
+    removeFromDailyInventory(movedItem) {
+        var currentSelectedItems = [...this.state.selectedDayInventory.items];
+
+        currentSelectedItems = currentSelectedItems.filter(x => x.code != movedItem.code)
+
+        const newSelectedInventory = { day: this.state.selectedDayInventory.day, items: currentSelectedItems };
+
+        this.setState({
+            selectedDayInventory: newSelectedInventory
+        });
+    }
+
+    checkDailyItemOverload = () => {
+        if(this.state.selectedDayInventory.items.length == this.state.recommendedDailyItemAmount) {
+            this.props.showPopup(new Error(`Se aconseja mantener menos de ${this.state.recommendedDailyItemAmount} items, ya que la inteligencia artificial tiende a confundirse cuando hay una gran cantidad de productos`));
+        }
     }
 
     handleDayTabClick = (selectedDayNumber) => {
+        this.saveDailyInventories()
+
         const allInventories = this.state.dayInventories
+
         this.setState({
             selectedDayInventory: allInventories[selectedDayNumber]
         })
@@ -66,13 +98,43 @@ class InventoryScreen extends Component {
           filteredProducts: filteredList
         })
     }
-    
+
+    saveDailyInventories = async () => {
+        var newDayInventories = this.state.dayInventories
+        const selectedDayInventory = this.state.selectedDayInventory
+
+        //Remove all day inventory
+        newDayInventories = newDayInventories.filter(x => x.day != selectedDayInventory.day)
+        //add new one
+        newDayInventories.push(selectedDayInventory)
+        
+        var newDayInventoriesDto = []
+
+        newDayInventories.forEach(dayInv => {
+            const dayInvDto = {day: dayInv.day, itemIds: dayInv.items.map(x => x.code)}
+            newDayInventoriesDto.push(dayInvDto)
+        });
+
+        try {
+            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayInventory`, {inventories: newDayInventoriesDto});
+            this.setState({
+                dayInventories: response.data,
+            });
+        } catch (error) {
+            this.props.showPopup(error);
+        }
+    }
+
     render() {
         const {selectedDayInventory, filteredProducts} = this.state
 
-        const allProductsList = filteredProducts?.map(x => (
-            <InventoryItemComponent key={x.id} item={x} isInDailyInventory={false} handleClickCallback={this.handleItemClick} />
-          ));
+        const allProductsList = filteredProducts?.map(x => {
+            if(selectedDayInventory?.items?.find(y => y.code == x.code)) {return null;}
+
+            return(
+                <InventoryItemComponent key={x.id} item={x} isInDailyInventory={false} handleClickCallback={this.handleItemClick} />
+            )
+        });
         const selectedDayProductsList = selectedDayInventory?.items?.map(x => (
             <InventoryItemComponent key={x.id} item={x} isInDailyInventory={true} handleClickCallback={this.handleItemClick} />
         ));
@@ -103,7 +165,7 @@ class InventoryScreen extends Component {
                     </div>
                 </div>
                 <div className='col s6'>
-                    <SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>
+                    {this.state.products && (<SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>)}
                     <div style={{ overflowY: 'scroll', height: '600px' }}>
                         {selectedDayProductsList}
                     </div>
