@@ -112,11 +112,11 @@ class DayLocationForm extends Component {
 
       return(
         <div>
-            <div class="col s4"><p className='centered'>{x}</p></div>
-            <div class="col s4">
+            <div class="col s3"><p className='centered'>{x}</p></div>
+            <div class="col s5">
               {
                 this.state.isEditingLocations == true ?
-                <select value={time} onChange={(e) => this.handleLocationChange(x, null, e.target.value)}>
+                <select value={time} style={{ display: 'block' }} onChange={(e) => this.handleLocationChange(x, null, e.target.value)}>
                   <option value="">Tiempo...</option>
                   <option value="morning">En la mañana</option>
                   <option value="afternoon">En la tarde</option>
@@ -138,7 +138,7 @@ class DayLocationForm extends Component {
     })
     return (
       <div>
-          <h6>Tiempos de entrega</h6>
+          <h6 className="center-align">Tiempos de entrega</h6>
           <form className="container" onSubmit={(e) => this.handleSubmit(e)}>
             <div class="row">
               {dayLocationsHtml}

@@ -20,6 +20,7 @@ class SearchBar extends Component {
 
     filterProducts = (OnSearchCallback, itemList) => {
         const { searchInput } = this.state;
+        console.log("filterProducts", itemList, searchInput)
         const filteredItems = itemList.filter(item =>
             item.name.toLowerCase().includes(searchInput.toLowerCase())
         );

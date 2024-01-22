@@ -36,15 +36,14 @@ class MainMenu extends Component {
                     <i className="material-icons left">contacts</i>
                     Bloquear Chat
                 </button>
-                <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.openModal(2)}>
+                <Link className={`waves-effect waves-light btn ${Color.Button_1}`} to="/inventory">
                     <i className="material-icons left">local_mall</i>
-                    Ver Productos
-                </button>
+                    Inventario
+                </Link>
                 <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.openModal(3)}>
                     <i className="material-icons left">shopping_cart</i>
                     Ver Pedidos
                 </button>
-                <Link className={`waves-effect waves-light btn ${Color.Button_1}`} to="/inventory">Inventario</Link>
                 <BotBlockModel
                     modalIsOpen={modalIsOpen == 1}
                     closeModalFunc={this.closeModal}

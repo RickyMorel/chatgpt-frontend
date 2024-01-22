@@ -29,6 +29,7 @@ const smallStyle = {
     height: '50%', 
     background: 'transparent',
   },
+  overlay: {zIndex: 1000}
 };
 
 
@@ -49,6 +50,7 @@ const mediumStyle = {
     height: '60%', 
     background: 'transparent',
   },
+  overlay: {zIndex: 1000}
 };
 
 const PopupStyle = {

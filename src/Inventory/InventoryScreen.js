@@ -11,10 +11,10 @@ class InventoryScreen extends Component {
         this.state = {
           products: null,
           filteredProducts: null,
-          searchInput: '',
           dayInventories: null,
           selectedDayInventory: null,
-          recommendedDailyItemAmount: 1
+          filteredSelectedDayInventory: null,
+          recommendedDailyItemAmount: 2
         };
     }
 
@@ -38,7 +38,8 @@ class InventoryScreen extends Component {
             const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getDayInventories`);
             this.setState({
                 dayInventories: response.data,
-                selectedDayInventory: response.data[0]
+                selectedDayInventory: response.data[0],
+                filteredSelectedDayInventory: response.data[0]
             });
         } catch (error) {}
     }
@@ -59,7 +60,8 @@ class InventoryScreen extends Component {
         const newSelectedInventory = { day: this.state.selectedDayInventory.day, items: currentSelectedItems };
 
         this.setState({
-            selectedDayInventory: newSelectedInventory
+            selectedDayInventory: newSelectedInventory,
+            filteredSelectedDayInventory: newSelectedInventory
         });
 
         this.checkDailyItemOverload();
@@ -73,7 +75,8 @@ class InventoryScreen extends Component {
         const newSelectedInventory = { day: this.state.selectedDayInventory.day, items: currentSelectedItems };
 
         this.setState({
-            selectedDayInventory: newSelectedInventory
+            selectedDayInventory: newSelectedInventory,
+            filteredSelectedDayInventory: newSelectedInventory
         });
     }
 
@@ -89,13 +92,21 @@ class InventoryScreen extends Component {
         const allInventories = this.state.dayInventories
 
         this.setState({
-            selectedDayInventory: allInventories[selectedDayNumber]
+            selectedDayInventory: allInventories[selectedDayNumber],
+            filteredSelectedDayInventory: allInventories[selectedDayNumber]
         })
     }   
 
     handleSearch = (filteredList) => {
         this.setState({
           filteredProducts: filteredList
+        })
+    }
+
+    handleDailyInventorySearch = (filteredList) => {
+        console.log("handleDailyInventorySearch", filteredList)
+        this.setState({
+          filteredSelectedDayInventory: {day: this.state.selectedDayInventory.day, items: filteredList}
         })
     }
 
@@ -126,7 +137,7 @@ class InventoryScreen extends Component {
     }
 
     render() {
-        const {selectedDayInventory, filteredProducts} = this.state
+        const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory} = this.state
 
         const allProductsList = filteredProducts?.map(x => {
             if(selectedDayInventory?.items?.find(y => y.code == x.code)) {return null;}
@@ -135,7 +146,7 @@ class InventoryScreen extends Component {
                 <InventoryItemComponent key={x.id} item={x} isInDailyInventory={false} handleClickCallback={this.handleItemClick} />
             )
         });
-        const selectedDayProductsList = selectedDayInventory?.items?.map(x => (
+        const selectedDayProductsList = filteredSelectedDayInventory?.items?.map(x => (
             <InventoryItemComponent key={x.id} item={x} isInDailyInventory={true} handleClickCallback={this.handleItemClick} />
         ));
 
@@ -165,7 +176,7 @@ class InventoryScreen extends Component {
                     </div>
                 </div>
                 <div className='col s6'>
-                    {this.state.products && (<SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>)}
+                    {this.state.products && (<SearchBar itemList={selectedDayInventory?.items} searchText="Buscar Productos..." OnSearchCallback={this.handleDailyInventorySearch}/>)}
                     <div style={{ overflowY: 'scroll', height: '600px' }}>
                         {selectedDayProductsList}
                     </div>
