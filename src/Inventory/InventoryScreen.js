@@ -16,7 +16,7 @@ class InventoryScreen extends Component {
           dayInventories: null,
           selectedDayInventory: null,
           filteredSelectedDayInventory: null,
-          recommendedDailyItemAmount: 2
+          recommendedDailyItemAmount: 20
         };
     }
 
@@ -161,7 +161,7 @@ class InventoryScreen extends Component {
         <div>
             <nav className="transparent z-depth-0">
                 <div class="nav-wrapper">
-                    <Link className={`waves-light ${Color.Button_1}`} to="/"><i className="material-icons left teal-text">arrow_back</i></Link>
+                    <Link className={`waves-light ${Color.Button_1}`} to="/" onClick={() => this.saveDailyInventories()}><i className="material-icons left teal-text">arrow_back</i></Link>
                     <ul style={navbarStyle}>
                         <li onClick={() => this.handleDayTabClick(0)} className={`z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Lunes</a></li>
                         <li onClick={() => this.handleDayTabClick(1)} className={`z-depth-${selectedDayInventory?.day == 1 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Martes</a></li>
