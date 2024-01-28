@@ -53,10 +53,30 @@ const mediumStyle = {
   overlay: {zIndex: 1000}
 };
 
+const bigStyle = {
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  content: {
+    border: 'none',
+    borderRadius: '0',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    width: '70%',  
+    height: '80%', 
+    background: 'transparent',
+  },
+  overlay: {zIndex: 1000}
+};
+
 const PopupStyle = {
     Small: smallStyle,
     Medium: mediumStyle,
-    Big: smallStyle
+    Big: bigStyle
 }
 
 export {spawnPopup, PopupStyle}

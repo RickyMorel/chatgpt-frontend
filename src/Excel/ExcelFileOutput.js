@@ -13,6 +13,7 @@ class ExcelFileOutput extends Component {
   fetchOrderData = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
+      console.log("fetchOrderData", response)
       this.setState({ orders: response.data });
     } catch (error) {
       this.setState({ error: error });
@@ -23,6 +24,8 @@ class ExcelFileOutput extends Component {
 
   convertOrderToExcel = async () => {
     await this.fetchOrderData();
+
+    if(this.state.orders.length < 1) { return null}
     
     let allOrders = []
     this.state.orders.forEach(client => {
@@ -42,9 +45,11 @@ class ExcelFileOutput extends Component {
     return allOrders
   }
 
-  handleDownload = () => {
+  handleDownload = async () => {
     // Create a sample workbook
-    const data = this.convertOrderToExcel()
+    const data = await this.convertOrderToExcel()
+
+    if(!data) {return}
 
     const ws = XLSX.utils.aoa_to_sheet(data);
     const wb = XLSX.utils.book_new();

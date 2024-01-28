@@ -1,9 +1,8 @@
 import React, { Component, createRef } from 'react';
 import axios from 'axios';
-import { usePopup } from './Popups/PopupProvider';
-import { Color } from './Colors';
+import { Color } from '../Colors';
 import 'materialize-css/dist/css/materialize.min.css';
-import M from 'materialize-css/dist/js/materialize.min.js';
+import '../MultiSelect.css';
 
 class DayLocationForm extends Component {
   constructor(props) {
@@ -12,6 +11,7 @@ class DayLocationForm extends Component {
     this.state = {
       days: ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo'],
       locations: [],
+      clientLocations: [],
       times: [],
       isEditingLocations: false
     };
@@ -21,24 +21,12 @@ class DayLocationForm extends Component {
 
   componentDidMount() {
       this.GetDayLocations();
-      this.initializeMaterializeSelect();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState?.isEditingLocations !== this.state?.isEditingLocations) {
-      this.initializeMaterializeSelect();
-    }
-  }
-
-  initializeMaterializeSelect() {
-    // Initialize Materialize Select for each select element using refs
-    this.selectRefs.forEach((ref) => M.FormSelect.init(ref.current, {}));
+      this.GetAllClientLocations();
   }
 
   GetDayLocations = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
-      console.log("response", response.data)
 
       this.setState({
         locations: [...response.data.dayLocations]
@@ -47,21 +35,30 @@ class DayLocationForm extends Component {
       console.log("error", error)
       return error
     }
-};
+  };
 
-  handleLocationChange = (day, newLocation, newTime) => {
+  GetAllClientLocations = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getAllClientZones`);
 
+      this.setState({
+        clientLocations: [...response.data]
+      })
+    } catch (error) {
+      console.log("error", error)
+      return error
+    }
+  };
+
+  handleLocationChange = (day, newLocations, newTime) => {
     const dayIndex = this.state.days.findIndex(x => x == day)
-    const location = !newLocation ? this.state.locations[dayIndex].location : newLocation
+    const location = !newLocations ? this.state.locations[dayIndex].location : Array.from(newLocations, (option) => option.value)
     const time = !newTime ? this.state.locations[dayIndex].time : newTime
     const dayLocationObj = {
       day: dayIndex,
-      location: location,
+      locations: location,
       time: time
     }
-
-    console.log("prevLocationObj", this.state.days[dayIndex])
-    console.log("dayLocationObj", dayLocationObj)
       
     let newLocationArray = this.state.locations
     const dayToUpdateIndex = this.state.locations.findIndex(x => x.day === dayIndex);
@@ -77,13 +74,11 @@ class DayLocationForm extends Component {
       locations: [...newLocationArray],
     });
   };
-
-  handleSubmit = async (e) => {
+handleSubmit = async (e, isEdting) => {
     e.preventDefault();
 
-    console.log("this.state.locations", this.state.locations)
+    if(isEdting) {return}
 
-    if(this.state.isEditingLocations) {return}
     if(this.state.locations.length != 7) {this.props.showPopup(new Error("No se lleno los 7 dias")); return}
     if(this.state.locations.includes(x => x.time == "" || x.time == undefined))
      {this.props.showPopup(new Error("No se lleno los 7 tiempos")); return}
@@ -102,13 +97,36 @@ class DayLocationForm extends Component {
     this.setState({
       isEditingLocations: isEdting
     })
+
+    this.handleSubmit(e, isEdting)
   };
 
   render() {
     const dayLocationsHtml = this.state.days.map(x => {
       const dayIndex = this.state.days.indexOf(x)
-      const location = this.state.locations.find(x => x.day == dayIndex) ? this.state.locations.find(x => x.day == dayIndex).location : ""
+      const locations = this.state.locations.find(x => x.day == dayIndex) ? this.state.locations.find(x => x.day == dayIndex).locations : []
       const time = this.state.locations.find(x => x.day == dayIndex)?.time ? this.state.locations.find(x => x.day == dayIndex).time : ""
+
+      const multiSelectStyle = {
+        // Paste the styles here
+          width: '200px',
+          padding: '8px',
+          border: '1px solid #ccc',
+          borderRadius: '4px',
+          position: 'relative',
+          cursor: 'pointer',
+        };
+
+      const selectStyle = {
+        width: '100%',
+        height: '100%',
+        border: 'none',
+        outline: 'none',
+        appearance: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
+        display: 'block' 
+      };
 
       return(
         <div>
@@ -116,7 +134,7 @@ class DayLocationForm extends Component {
             <div class="col s5">
               {
                 this.state.isEditingLocations == true ?
-                <select value={time} style={{ display: 'block' }} onChange={(e) => this.handleLocationChange(x, null, e.target.value)}>
+                <select style={{display: 'block' }} value={time} onChange={(e) => this.handleLocationChange(x, null, e.target.value)}>
                   <option value="">Tiempo...</option>
                   <option value="morning">En la mañana</option>
                   <option value="afternoon">En la tarde</option>
@@ -125,12 +143,18 @@ class DayLocationForm extends Component {
                 <p>{time == "" ? "Elejir Tiempo" : time}</p>
               }
             </div>
-            <div class="col s4">
+            <div class="col s4" style={multiSelectStyle}>
               {
                 this.state.isEditingLocations == true ?
-                <input type="text" onChange={(e) => this.handleLocationChange(x, e.target.value, null)} value={location} placeholder="Lugar..."/>
+                <select style={selectStyle} multiple={true} value={locations} onChange={(e) => this.handleLocationChange(x, e.target.selectedOptions, null)}>
+                  {
+                    this.state.clientLocations && this.state.clientLocations?.map(x => (
+                      <option value={x}>{x}</option>
+                    ))
+                  }
+                </select>
                 :
-                <p>{location == "" ? "-" : location}</p>
+                <p>{locations == "" ? "-" : locations}</p>
               }
             </div>
         </div>
@@ -139,7 +163,7 @@ class DayLocationForm extends Component {
     return (
       <div>
           <h6 className="center-align">Tiempos de entrega</h6>
-          <form className="container" onSubmit={(e) => this.handleSubmit(e)}>
+          <form className="container">
             <div class="row">
               {dayLocationsHtml}
             </div>

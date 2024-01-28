@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import BotBlockModel from './BotBlocker/BotBlockModel';
 import { Color } from './Colors';
-import DayLocationForm from './DayLocationForm';
+import DayLocationForm from './DayLocation/DayLocationForm';
 import ExcelFileInput from './Excel/ExcelFileInput';
 import ExcelFileOutput from './Excel/ExcelFileOutput';
 import OrderListModal from './Orders/OrderListModal';
 import ProductListModal from './Products/ProductListModal';
 import { Link } from 'react-router-dom';
+import DayLocationModal from './DayLocation/DayLocationModal';
 
 class MainMenu extends Component {
     constructor(props) {
@@ -27,7 +28,6 @@ class MainMenu extends Component {
 
     render() {
         const { modalIsOpen } = this.state;
-        console.log("this.props.showPopup MAINMENU", this.props.showPopup)
 
         return (
             <div>
@@ -44,6 +44,10 @@ class MainMenu extends Component {
                     <i className="material-icons left">shopping_cart</i>
                     Ver Pedidos
                 </button>
+                <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.openModal(4)}>
+                    <i className="material-icons left">access_time</i>
+                    Ver Tiempos y Lugares
+                </button>
                 <BotBlockModel
                     modalIsOpen={modalIsOpen == 1}
                     closeModalFunc={this.closeModal}
@@ -56,17 +60,18 @@ class MainMenu extends Component {
                     modalIsOpen={modalIsOpen == 3}
                     closeModalFunc={this.closeModal}
                 />
+                <DayLocationModal
+                    modalIsOpen={modalIsOpen == 4}
+                    closeModalFunc={this.closeModal}
+                />
                 {this.state.currentPopup}
                 <div className='row'>
                     <div style={{ height: '100%' }} className='col s6'>
-                    <h6>Actualizar Clientes</h6>
-                    <ExcelFileInput dataTypeName={'clientes'} />
-                    <p> </p>
-                    <h6>Actualizar Productos</h6>
-                    <ExcelFileInput dataTypeName={'productos'} />
-                    </div>
-                    <div className='col s6'>
-                    <DayLocationForm showPopup={this.props.showPopup}/>
+                        <h6>Actualizar Clientes</h6>
+                        <ExcelFileInput dataTypeName={'clientes'} />
+                        <p> </p>
+                        <h6>Actualizar Productos</h6>
+                        <ExcelFileInput dataTypeName={'productos'} />
                     </div>
                 </div>
                 <ExcelFileOutput />
