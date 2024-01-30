@@ -7,6 +7,7 @@ import Navbar from './Navbar';
 import SideNav from './SideNav';
 import BlockChatScreen from './BotBlocker/BlockChatScreen';
 import OrderScreen from './Orders/OrderScreen';
+import { Color } from './Colors';
 
 class App extends Component {
   constructor(props) {
@@ -18,14 +19,11 @@ class App extends Component {
   }
 
   render() {
-    const style = {
-      "padding-top": "200px"
-    }
     return (
       <Router>
         <Navbar/>
         <div class="row">
-          <div class="col s12 m4 l3">
+          <div class={`col s12 m4 l3 ${Color.SideNav}`} style={{  height: '100vh'}}>
             <SideNav/>
           </div>
           <div class="col s12 m8 l9"> 

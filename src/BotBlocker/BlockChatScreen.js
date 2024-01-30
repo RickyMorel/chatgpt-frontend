@@ -165,9 +165,9 @@ class BlockChatScreen extends Component {
           />
           {clientBlocks}
         </div>
-        <div className="card-action">
+        {/* <div className="card-action">
           <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={closeModalFunc}>Cerrar</button>
-        </div>
+        </div> */}
       </div>
     );
   }
