@@ -24,22 +24,11 @@ class App extends Component {
     return (
       <Router>
         <Navbar/>
-        <div className="row">
-          <div className="col s3">
-            <div style={style}>
-              {/* <ul>
-                <li>aaaaaaaa</li>
-                <li>aaaaaaaa</li>
-                <li>aaaaaaaa</li>
-                <li>aaaaaaaa</li>
-                <li>aaaaaaaa</li>
-                <li>aaaaaaaa</li>
-                <li>aaaaaaaa</li>
-              </ul> */}
-              <SideNav/>
-            </div>
+        <div class="row">
+          <div class="col s12 m4 l3">
+            <SideNav/>
           </div>
-          <div className="col s9">
+          <div class="col s12 m8 l9"> 
               <Helmet>
                 <style>{`body { background-color: #E9EBE3; }`}</style>
               </Helmet>
