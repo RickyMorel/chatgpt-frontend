@@ -1,25 +1,22 @@
 import axios from 'axios';
 import React, { Component } from 'react';
-import Modal from 'react-modal';
 import { Color } from '../Colors';
-import { PopupStyle } from '../Popups/PopupManager';
 import OrderComponent from './OrderComponent';
+import ExcelFileOutput from '../Excel/ExcelFileOutput';
 
-class OrderListModal extends Component {
-    constructor(props) {
-        super(props);
-    
-        this.state = {
-          orders: null,
-          filteredOrders: null,
-          searchInput: '',
-        };
-    }
+class OrderScreen extends Component {
+  constructor(props) {
+      super(props);
+  
+      this.state = {
+        orders: null,
+        filteredOrders: null,
+        searchInput: '',
+      };
+  }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.modalIsOpen !== prevProps.modalIsOpen) {
-      this.fetchOrderData();
-    }
+  componentDidMount() {
+    this.fetchOrderData();
   }
 
   fetchOrderData = async () => {
@@ -60,12 +57,6 @@ class OrderListModal extends Component {
     });
 
     return (
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModalFunc}
-        contentLabel="Example Modal"
-        style={PopupStyle.Medium}
-      >
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
           <span className="card-title">Pedidos Recibidos</span>
@@ -75,17 +66,16 @@ class OrderListModal extends Component {
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          <ul class="collapsible expandable">
+          <div class="collapsible expandable collection">
             {orderBlocks}
-          </ul>
+          </div>
         </div>
         <div className="card-action">
-          <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={closeModalFunc}>Cerrar</button>
+          <ExcelFileOutput />
         </div>
       </div>
-      </Modal>
     );
   }
 }
 
-export default OrderListModal;
+export default OrderScreen;

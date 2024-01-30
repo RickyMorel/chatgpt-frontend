@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
-import BotBlockModel from './BotBlocker/BotBlockModel';
-import { Color } from './Colors';
-import DayLocationForm from './DayLocation/DayLocationForm';
 import ExcelFileInput from './Excel/ExcelFileInput';
 import ExcelFileOutput from './Excel/ExcelFileOutput';
-import OrderListModal from './Orders/OrderListModal';
-import ProductListModal from './Products/ProductListModal';
-import { Link } from 'react-router-dom';
-import DayLocationModal from './DayLocation/DayLocationModal';
 
 class MainMenu extends Component {
     constructor(props) {
@@ -31,39 +24,6 @@ class MainMenu extends Component {
 
         return (
             <div>
-                <h1 className="center">Chatbot</h1>
-                <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.openModal(1)}>
-                    <i className="material-icons left">contacts</i>
-                    Bloquear Chat
-                </button>
-                <Link className={`waves-effect waves-light btn ${Color.Button_1}`} to="/inventory">
-                    <i className="material-icons left">local_mall</i>
-                    Inventario
-                </Link>
-                <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.openModal(3)}>
-                    <i className="material-icons left">shopping_cart</i>
-                    Ver Pedidos
-                </button>
-                <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.openModal(4)}>
-                    <i className="material-icons left">access_time</i>
-                    Ver Tiempos y Lugares
-                </button>
-                <BotBlockModel
-                    modalIsOpen={modalIsOpen == 1}
-                    closeModalFunc={this.closeModal}
-                />
-                <ProductListModal
-                    modalIsOpen={modalIsOpen == 2}
-                    closeModalFunc={this.closeModal}
-                />
-                <OrderListModal
-                    modalIsOpen={modalIsOpen == 3}
-                    closeModalFunc={this.closeModal}
-                />
-                <DayLocationModal
-                    modalIsOpen={modalIsOpen == 4}
-                    closeModalFunc={this.closeModal}
-                />
                 {this.state.currentPopup}
                 <div className='row'>
                     <div style={{ height: '100%' }} className='col s6'>
@@ -74,7 +34,6 @@ class MainMenu extends Component {
                         <ExcelFileInput dataTypeName={'productos'} />
                     </div>
                 </div>
-                <ExcelFileOutput />
             </div>
         )
     }
