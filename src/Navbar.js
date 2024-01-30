@@ -2,12 +2,15 @@ import React from 'react'
 
 function Navbar() {
   return (
-    <nav className="navbar">
-        <h1>The Ricardo Blog</h1>
-        <div className="link">
-            <a href="/">Home</a>
-            <a href="/create">New Blog</a>
-        </div>
+    <nav>
+      <div className="nav-wrapper">
+        <a href="#!" className="brand-logo">Logo</a>
+        <ul className="right hide-on-med-and-down">
+          <li><a href="#!">Home</a></li>
+          <li><a href="#!">About</a></li>
+          <li><a href="#!">Contact</a></li>
+        </ul>
+      </div>
     </nav>
   )
 }
