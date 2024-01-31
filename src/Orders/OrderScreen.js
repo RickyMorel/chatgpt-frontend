@@ -65,9 +65,9 @@ class OrderScreen extends Component {
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          <div class="collapsible expandable collection" style={{ overflowY: 'scroll', height: '76vh', "overflow-x": "hidden" }}>
+          <ul class="collapsible expandable" style={{ overflowY: 'scroll', height: '76vh', "overflow-x": "hidden" }}>
             {orderBlocks}
-          </div>
+          </ul>
         </div>
         <div className="card-action">
           <ExcelFileOutput />
