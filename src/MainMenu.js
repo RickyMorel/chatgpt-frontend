@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ExcelFileInput from './Excel/ExcelFileInput';
 import ExcelFileOutput from './Excel/ExcelFileOutput';
+import { Color } from './Colors';
 
 class MainMenu extends Component {
     constructor(props) {
@@ -23,15 +24,17 @@ class MainMenu extends Component {
         const { modalIsOpen } = this.state;
 
         return (
-            <div>
-                {this.state.currentPopup}
-                <div className='row'>
-                    <div style={{ height: '100%' }} className='col s6'>
-                        <h6>Actualizar Clientes</h6>
-                        <ExcelFileInput dataTypeName={'clientes'} />
-                        <p> </p>
-                        <h6>Actualizar Productos</h6>
-                        <ExcelFileInput dataTypeName={'productos'} />
+            <div className={`card bordered ${Color.Background}`}>
+                <div className="card-content">
+                    {this.state.currentPopup}
+                    <div className='row'>
+                        <div style={{ height: '100%' }} className='col s6 center-align'>
+                            <h6>Actualizar Clientes</h6>
+                            <ExcelFileInput dataTypeName={'clientes'} />
+                            <p> </p>
+                            <h6>Actualizar Productos</h6>
+                            <ExcelFileInput dataTypeName={'productos'} />
+                        </div>
                     </div>
                 </div>
             </div>

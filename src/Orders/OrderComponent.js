@@ -54,6 +54,14 @@ class OrderComponent extends React.Component {
     return (
         <div className="collection-item">
           <div class="collapsible-header">
+            <span class="client-name">{orderNumber}</span>
+            <span class="client-name">{name}</span>
+            <span class="client-name">+{phoneNumber}</span>
+            <span class="client-name">{orderNumber}</span>
+            <a><i className='material-icons'>keyboard_arrow_downs</i></a>
+          </div>
+          <div class="collapsible-body">{orderList}</div>
+          {/* <div class="collapsible-header">
             <div class="row">
               <div class="col s3">
                 <span class="client-name">{orderNumber}</span>
@@ -69,7 +77,7 @@ class OrderComponent extends React.Component {
               </div>
             </div>
           </div>
-          <div class="collapsible-body">{orderList}</div>
+          <div class="collapsible-body">{orderList}</div> */}
         </div>
     );
   }

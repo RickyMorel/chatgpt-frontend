@@ -8,6 +8,7 @@ import SideNav from './SideNav';
 import BlockChatScreen from './BotBlocker/BlockChatScreen';
 import OrderScreen from './Orders/OrderScreen';
 import { Color } from './Colors';
+import DayLocationForm from './DayLocation/DayLocationForm';
 
 class App extends Component {
   constructor(props) {
@@ -23,7 +24,7 @@ class App extends Component {
       <Router>
         <Navbar/>
         <div class="row">
-          <div class={`col s12 m4 l3 ${Color.SideNav}`} style={{  height: '100vh'}}>
+          <div class={`col s12 m4 l3 ${Color.SideNav}`} style={{  height: '93vh'}}>
             <SideNav/>
           </div>
           <div class="col s12 m8 l9"> 
@@ -33,7 +34,7 @@ class App extends Component {
               <Switch>
                 <Route exact path="/"><MainMenu showPopup={this.props.showPopup}/></Route>
                 <Route exact path="/inventory"><InventoryScreen showPopup={this.props.showPopup}/></Route>
-                <Route exact path="/dayLocation"><InventoryScreen showPopup={this.props.showPopup}/></Route>
+                <Route exact path="/dayLocation"><DayLocationForm showPopup={this.props.showPopup}/></Route>
                 <Route exact path="/blockChats"><BlockChatScreen showPopup={this.props.showPopup}/></Route>
                 <Route exact path="/orders"><OrderScreen showPopup={this.props.showPopup}/></Route>
               </Switch>        

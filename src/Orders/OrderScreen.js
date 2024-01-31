@@ -47,7 +47,6 @@ class OrderScreen extends Component {
   };
 
   render() {
-    const { modalIsOpen, closeModalFunc } = this.props;
     const { filteredOrders } = this.state;
 
     let i = 0
@@ -66,7 +65,7 @@ class OrderScreen extends Component {
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          <div class="collapsible expandable collection">
+          <div class="collapsible expandable collection" style={{ overflowY: 'scroll', height: '76vh', "overflow-x": "hidden" }}>
             {orderBlocks}
           </div>
         </div>

@@ -163,11 +163,10 @@ class BlockChatScreen extends Component {
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          {clientBlocks}
+          <div style={{ overflowY: 'scroll', height: '70vh', "overflow-x": "hidden" }}>
+            {clientBlocks}
+          </div>
         </div>
-        {/* <div className="card-action">
-          <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={closeModalFunc}>Cerrar</button>
-        </div> */}
       </div>
     );
   }
