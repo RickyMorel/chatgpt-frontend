@@ -126,7 +126,7 @@ handleSubmit = async (e, isEdting) => {
 
       const selectStyle = {
         width: '100%',
-        height: '100%',
+        height: '60px',
         border: 'none',
         outline: 'none',
         appearance: 'none',

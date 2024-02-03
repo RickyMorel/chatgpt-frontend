@@ -65,7 +65,7 @@ class OrderScreen extends Component {
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          <ul class="collapsible expandable" style={{ overflowY: 'scroll', height: '76vh', "overflow-x": "hidden" }}>
+          <ul class="collapsible expandable" style={{ overflowY: 'scroll', height: '60vh', "overflow-x": "hidden" }}>
             {orderBlocks}
           </ul>
         </div>

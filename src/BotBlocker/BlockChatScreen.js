@@ -163,7 +163,7 @@ class BlockChatScreen extends Component {
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          <div style={{ overflowY: 'scroll', height: '70vh', "overflow-x": "hidden" }}>
+          <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
             {clientBlocks}
           </div>
         </div>

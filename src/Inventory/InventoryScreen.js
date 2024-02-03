@@ -177,13 +177,13 @@ class InventoryScreen extends Component {
                     <div className='row'>
                         <div className='col s6'>
                             <SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>
-                            <div style={{ overflowY: 'scroll', height: '76vh', "overflow-x": "hidden" }}>
+                            <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
                                 {allProductsList}
                             </div>
                         </div>
                         <div className='col s6'>
                             {this.state.products && (<SearchBar itemList={selectedDayInventory?.items} searchText="Buscar Productos..." OnSearchCallback={this.handleDailyInventorySearch}/>)}
-                            <div style={{ overflowY: 'scroll', height: '76vh', "overflow-x": "hidden" }}>
+                            <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
                                 {selectedDayProductsList}
                             </div>
                         </div>
