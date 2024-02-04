@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
 import ClientBlockComponent from './ClientBlockComponent';
-import { PopupStyle } from '../Popups/PopupManager';
 import { Color } from '../Colors';
 
-class BotBlockModel extends Component {
+class BlockChatScreen extends Component {
   constructor(props) {
     super(props);
 
@@ -18,11 +16,9 @@ class BotBlockModel extends Component {
     };
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.modalIsOpen !== prevProps.modalIsOpen) {
-      this.fetchClientData();
-      this.fetchGlobalData()
-    }
+  componentDidMount() {
+    this.fetchClientData();
+    this.fetchGlobalData()
   }
 
   fetchClientData = async () => {
@@ -120,7 +116,8 @@ class BotBlockModel extends Component {
     const { clients, searchInput } = this.state;
     const filteredClients = clients.filter(client =>
       client.name.toLowerCase().includes(searchInput.toLowerCase()) ||
-      client.phoneNumber.toLowerCase().includes(searchInput.toLowerCase())
+      client.phoneNumber.toLowerCase().includes(searchInput.toLowerCase()) ||
+      client.address.toLowerCase().includes(searchInput.toLowerCase())
     );
     this.setState({ filteredClients });
   };
@@ -137,12 +134,6 @@ class BotBlockModel extends Component {
   });
 
     return (
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModalFunc}
-        contentLabel="Example Modal"
-        style={PopupStyle.Medium}
-      >
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
         <div className="row">
@@ -173,15 +164,13 @@ class BotBlockModel extends Component {
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          {clientBlocks}
-        </div>
-        <div className="card-action">
-          <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={closeModalFunc}>Cerrar</button>
+          <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
+            {clientBlocks}
+          </div>
         </div>
       </div>
-      </Modal>
     );
   }
 }
 
-export default BotBlockModel;
+export default BlockChatScreen;

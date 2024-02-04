@@ -3,6 +3,12 @@ import { Helmet } from 'react-helmet';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import MainMenu from './MainMenu';
 import InventoryScreen from './Inventory/InventoryScreen';
+import Navbar from './Navbar';
+import SideNav from './SideNav';
+import BlockChatScreen from './BotBlocker/BlockChatScreen';
+import OrderScreen from './Orders/OrderScreen';
+import { Color } from './Colors';
+import DayLocationForm from './DayLocation/DayLocationForm';
 
 class App extends Component {
   constructor(props) {
@@ -16,14 +22,23 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <div className="App container">
-            <Helmet>
-              <style>{`body { background-color: #E9EBE3; }`}</style>
-            </Helmet>
-            <Switch>
-              <Route exact path="/"><MainMenu showPopup={this.props.showPopup}/></Route>
-              <Route exact path="/inventory"><InventoryScreen showPopup={this.props.showPopup}/></Route>
-            </Switch>            
+        <Navbar/>
+        <div class="row">
+          <div class={`col s12 m4 l3 ${Color.SideNav}`} style={{  height: '93vh'}}>
+            <SideNav/>
+          </div>
+          <div class="col s12 m8 l9"> 
+              <Helmet>
+                <style>{`body { background-color: #E9EBE3; }`}</style>
+              </Helmet>
+              <Switch>
+                <Route exact path="/"><MainMenu showPopup={this.props.showPopup}/></Route>
+                <Route exact path="/inventory"><InventoryScreen showPopup={this.props.showPopup}/></Route>
+                <Route exact path="/dayLocation"><DayLocationForm showPopup={this.props.showPopup}/></Route>
+                <Route exact path="/blockChats"><BlockChatScreen showPopup={this.props.showPopup}/></Route>
+                <Route exact path="/orders"><OrderScreen showPopup={this.props.showPopup}/></Route>
+              </Switch>        
+          </div>
         </div>
       </Router>
     );

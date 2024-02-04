@@ -88,8 +88,9 @@ class InventoryScreen extends Component {
         }
     }
 
-    handleDayTabClick = (selectedDayNumber) => {
-        this.saveDailyInventories()
+    handleDayTabClick = async (selectedDayNumber) => {
+        await this.saveDailyInventories()
+        
 
         const allInventories = this.state.dayInventories
 
@@ -158,36 +159,38 @@ class InventoryScreen extends Component {
         };
 
         return (
-        <div>
-            <nav className="transparent z-depth-0">
-                <div class="nav-wrapper">
-                    <Link className={`waves-light ${Color.Button_1}`} to="/" onClick={() => this.saveDailyInventories()}><i className="material-icons left teal-text">arrow_back</i></Link>
-                    <ul style={navbarStyle}>
-                        <li onClick={() => this.handleDayTabClick(0)} className={`z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Lunes</a></li>
-                        <li onClick={() => this.handleDayTabClick(1)} className={`z-depth-${selectedDayInventory?.day == 1 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Martes</a></li>
-                        <li onClick={() => this.handleDayTabClick(2)} className={`z-depth-${selectedDayInventory?.day == 2 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Miercoles</a></li>
-                        <li onClick={() => this.handleDayTabClick(3)} className={`z-depth-${selectedDayInventory?.day == 3 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Jueves</a></li>
-                        <li onClick={() => this.handleDayTabClick(4)} className={`z-depth-${selectedDayInventory?.day == 4 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Viernes</a></li>
-                        <li onClick={() => this.handleDayTabClick(5)} className={`z-depth-${selectedDayInventory?.day == 5 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Sabado</a></li>
-                        <li onClick={() => this.handleDayTabClick(6)} className={`z-depth-${selectedDayInventory?.day == 6 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Domingo</a></li>
-                    </ul>
-                </div>
-            </nav>
-            <div className='row'>
-                <div className='col s6'>
-                    <SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>
-                    <div style={{ overflowY: 'scroll', height: '85vh' }}>
-                        {allProductsList}
-                    </div>
-                </div>
-                <div className='col s6'>
-                    {this.state.products && (<SearchBar itemList={selectedDayInventory?.items} searchText="Buscar Productos..." OnSearchCallback={this.handleDailyInventorySearch}/>)}
-                    <div style={{ overflowY: 'scroll', height: '85vh' }}>
-                        {selectedDayProductsList}
+            <div className={`card bordered ${Color.Background}`}>
+                <div className="card-content">
+                    <nav className="transparent z-depth-0">
+                        <div class="nav-wrapper">
+                            {/* <Link className={`waves-light ${Color.Button_1}`} to="/" onClick={() => this.saveDailyInventories()}><i className="material-icons left teal-text">arrow_back</i></Link> */}
+                            <ul style={navbarStyle}>
+                                <li onClick={() => this.handleDayTabClick(0)} className={`z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Lunes</a></li>
+                                <li onClick={() => this.handleDayTabClick(1)} className={`z-depth-${selectedDayInventory?.day == 1 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Martes</a></li>
+                                <li onClick={() => this.handleDayTabClick(2)} className={`z-depth-${selectedDayInventory?.day == 2 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Miercoles</a></li>
+                                <li onClick={() => this.handleDayTabClick(3)} className={`z-depth-${selectedDayInventory?.day == 3 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Jueves</a></li>
+                                <li onClick={() => this.handleDayTabClick(4)} className={`z-depth-${selectedDayInventory?.day == 4 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Viernes</a></li>
+                                <li onClick={() => this.handleDayTabClick(5)} className={`z-depth-${selectedDayInventory?.day == 5 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Sabado</a></li>
+                                <li onClick={() => this.handleDayTabClick(6)} className={`z-depth-${selectedDayInventory?.day == 6 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Domingo</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                    <div className='row'>
+                        <div className='col s6'>
+                            <SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>
+                            <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
+                                {allProductsList}
+                            </div>
+                        </div>
+                        <div className='col s6'>
+                            {this.state.products && (<SearchBar itemList={selectedDayInventory?.items} searchText="Buscar Productos..." OnSearchCallback={this.handleDailyInventorySearch}/>)}
+                            <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
+                                {selectedDayProductsList}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         );
     }
 }

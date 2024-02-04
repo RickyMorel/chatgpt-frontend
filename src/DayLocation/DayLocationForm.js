@@ -106,6 +106,13 @@ handleSubmit = async (e, isEdting) => {
       const dayIndex = this.state.days.indexOf(x)
       const locations = this.state.locations.find(x => x.day == dayIndex) ? this.state.locations.find(x => x.day == dayIndex).locations : []
       const time = this.state.locations.find(x => x.day == dayIndex)?.time ? this.state.locations.find(x => x.day == dayIndex).time : ""
+      let locationsString = ""
+
+      locations?.forEach(location => {
+        locationsString += location + ", "
+      });
+
+      const finalLocationsString = locationsString.substring(0, locationsString.length-2)
 
       const multiSelectStyle = {
         // Paste the styles here
@@ -119,7 +126,7 @@ handleSubmit = async (e, isEdting) => {
 
       const selectStyle = {
         width: '100%',
-        height: '100%',
+        height: '60px',
         border: 'none',
         outline: 'none',
         appearance: 'none',
@@ -143,7 +150,7 @@ handleSubmit = async (e, isEdting) => {
                 <p>{time == "" ? "Elejir Tiempo" : time}</p>
               }
             </div>
-            <div class="col s4" style={multiSelectStyle}>
+            <div class="col s4">
               {
                 this.state.isEditingLocations == true ?
                 <select style={selectStyle} multiple={true} value={locations} onChange={(e) => this.handleLocationChange(x, e.target.selectedOptions, null)}>
@@ -154,14 +161,15 @@ handleSubmit = async (e, isEdting) => {
                   }
                 </select>
                 :
-                <p>{locations == "" ? "-" : locations}</p>
+                <p>{finalLocationsString == "" ? "-" : finalLocationsString}</p>
               }
             </div>
         </div>
       )
     })
     return (
-      <div>
+      <div className={`card bordered ${Color.Background}`}>
+        <div className="card-content">
           <h6 className="center-align">Tiempos de entrega</h6>
           <form className="container">
             <div class="row">
@@ -172,6 +180,7 @@ handleSubmit = async (e, isEdting) => {
               {this.state.isEditingLocations ? "Save" : "Edit"}
             </button>
           </form>
+        </div>
       </div>
     );
   }

@@ -56,7 +56,7 @@ class ExcelFileOutput extends Component {
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
     // Save the workbook to a file
-    XLSX.writeFile(wb, 'sample.xlsx');
+    XLSX.writeFile(wb, 'pedidos.xlsx');
   };
 
   render() {
