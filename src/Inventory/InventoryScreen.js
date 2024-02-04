@@ -16,7 +16,8 @@ class InventoryScreen extends Component {
           dayInventories: null,
           selectedDayInventory: null,
           filteredSelectedDayInventory: null,
-          recommendedDailyItemAmount: 20
+          recommendedDailyItemAmount: 20,
+          promoItemCodes: []
         };
     }
 
@@ -38,10 +39,12 @@ class InventoryScreen extends Component {
     fetchGlobalConfig = async () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getDayInventories`);
+            console.log("response", response)
             this.setState({
                 dayInventories: response.data,
                 selectedDayInventory: response.data[0],
-                filteredSelectedDayInventory: response.data[0]
+                filteredSelectedDayInventory: response.data[0],
+                promoItemCodes: response.data[0].promoItemCodes
             });
         } catch (error) {}
     }
@@ -89,14 +92,14 @@ class InventoryScreen extends Component {
     }
 
     handleDayTabClick = async (selectedDayNumber) => {
-        await this.saveDailyInventories()
-        
+        await this.saveDailyInventories()      
 
         const allInventories = this.state.dayInventories
 
         this.setState({
             selectedDayInventory: allInventories[selectedDayNumber],
-            filteredSelectedDayInventory: allInventories[selectedDayNumber]
+            filteredSelectedDayInventory: allInventories[selectedDayNumber],
+            promoItemCodes: allInventories[selectedDayNumber].promoItemCodes
         })
     }   
 
@@ -113,11 +116,31 @@ class InventoryScreen extends Component {
         })
     }
 
+    handleSelectPromoItem = (item) => {
+        let newPromoItems = this.state.promoItemCodes
+        console.log("newPromoItems", newPromoItems)
+
+        if(newPromoItems.includes(item.code) == false) {newPromoItems.unshift(item.code)}
+        else 
+        {
+            const removeIndex = newPromoItems.indexOf(item.code);
+            newPromoItems.splice(removeIndex, 1);
+        }
+
+        if(newPromoItems.length > 3) {newPromoItems.pop()}
+
+        this.setState({
+            promoItems: newPromoItems
+        })
+
+        console.log("newPromoItems", newPromoItems)
+    }
+
     saveDailyInventories = async () => {
         var newDayInventories = this.state.dayInventories
         const selectedDayInventory = this.state.selectedDayInventory
 
-        //Remove all day inventory
+        //Remove old day inventory
         newDayInventories = newDayInventories.filter(x => x.day != selectedDayInventory.day)
         //add new one
         newDayInventories.push(selectedDayInventory)
@@ -125,7 +148,7 @@ class InventoryScreen extends Component {
         var newDayInventoriesDto = []
 
         newDayInventories.forEach(dayInv => {
-            const dayInvDto = {day: dayInv.day, itemIds: dayInv.items.map(x => x.code)}
+            const dayInvDto = {day: dayInv.day, itemIds: dayInv.items.map(x => x.code), promoItemCodes: dayInv.promoItemCodes}
             newDayInventoriesDto.push(dayInvDto)
         });
 
@@ -142,6 +165,9 @@ class InventoryScreen extends Component {
     render() {
         const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory} = this.state
 
+        console.log("selectedDayInventory", selectedDayInventory)
+        console.log("selectedDayInventory", selectedDayInventory)
+
         const allProductsList = filteredProducts?.map(x => {
             if(selectedDayInventory?.items?.find(y => y.code == x.code)) {return null;}
 
@@ -149,9 +175,14 @@ class InventoryScreen extends Component {
                 <InventoryItemComponent key={x.id} item={x} isInDailyInventory={false} handleClickCallback={this.handleItemClick} />
             )
         });
-        const selectedDayProductsList = filteredSelectedDayInventory?.items?.map(x => (
-            <InventoryItemComponent key={x.id} item={x} isInDailyInventory={true} handleClickCallback={this.handleItemClick} />
-        ));
+        const selectedDayProductsList = filteredSelectedDayInventory?.items?.map(x => {
+            const isPromoItem = this.state?.promoItemCodes?.find(y => y == x.code) != undefined
+
+            return(
+            <InventoryItemComponent key={x.id} item={x} isInDailyInventory={true} isPromoItem={isPromoItem} handleClickCallback={this.handleItemClick} handleSelectPromoItemCallback={this.handleSelectPromoItem} />
+            )
+        });
+            
 
         const navbarStyle = {
             display: 'flex',
