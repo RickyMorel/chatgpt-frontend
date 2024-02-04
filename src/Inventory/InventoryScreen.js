@@ -88,8 +88,9 @@ class InventoryScreen extends Component {
         }
     }
 
-    handleDayTabClick = (selectedDayNumber) => {
-        this.saveDailyInventories()
+    handleDayTabClick = async (selectedDayNumber) => {
+        await this.saveDailyInventories()
+        
 
         const allInventories = this.state.dayInventories
 

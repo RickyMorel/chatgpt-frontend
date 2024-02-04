@@ -1,0 +1,17 @@
+{
+  "hosting": {
+    "public": "build",
+    "site": "emporio-chatbot",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

@@ -108,7 +108,7 @@ handleSubmit = async (e, isEdting) => {
       const time = this.state.locations.find(x => x.day == dayIndex)?.time ? this.state.locations.find(x => x.day == dayIndex).time : ""
       let locationsString = ""
 
-      locations.forEach(location => {
+      locations?.forEach(location => {
         locationsString += location + ", "
       });
 

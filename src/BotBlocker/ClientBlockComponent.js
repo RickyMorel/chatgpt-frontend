@@ -43,16 +43,19 @@ class ClientBlockComponent extends React.Component {
   }
 
   render() {
-    const { name, phoneNumber, chatIsBlocked, isGloballyBlocked, clientRegisterBlockedStateFunc } = this.props;
+    const { name, phoneNumber, address, chatIsBlocked, isGloballyBlocked, clientRegisterBlockedStateFunc } = this.props;
 
     console.log(name, chatIsBlocked)
 
     return (
       <div className="row list-item z-depth-2 border">
-        <div className="col s12 m6">
+        <div className="col s12 m4">
           <span className="client-name">{name}</span>
         </div>
-        <div className="col s12 m5">
+        <div className="col s12 m4">
+          <span>{address}</span>
+        </div>
+        <div className="col s12 m3">
           <span>+{phoneNumber}</span>
         </div>
         <div className="col s12 m1">

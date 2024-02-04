@@ -116,7 +116,8 @@ class BlockChatScreen extends Component {
     const { clients, searchInput } = this.state;
     const filteredClients = clients.filter(client =>
       client.name.toLowerCase().includes(searchInput.toLowerCase()) ||
-      client.phoneNumber.toLowerCase().includes(searchInput.toLowerCase())
+      client.phoneNumber.toLowerCase().includes(searchInput.toLowerCase()) ||
+      client.address.toLowerCase().includes(searchInput.toLowerCase())
     );
     this.setState({ filteredClients });
   };
