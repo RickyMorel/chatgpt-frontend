@@ -114,16 +114,6 @@ handleSubmit = async (e, isEdting) => {
 
       const finalLocationsString = locationsString.substring(0, locationsString.length-2)
 
-      const multiSelectStyle = {
-        // Paste the styles here
-          width: '200px',
-          padding: '8px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          position: 'relative',
-          cursor: 'pointer',
-        };
-
       const selectStyle = {
         width: '100%',
         height: '60px',
