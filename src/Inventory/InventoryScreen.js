@@ -17,7 +17,8 @@ class InventoryScreen extends Component {
           selectedDayInventory: null,
           filteredSelectedDayInventory: null,
           recommendedDailyItemAmount: 20,
-          promoItemCodes: []
+          promoItemCodes: [],
+          needsToSave: false
         };
     }
 
@@ -55,6 +56,10 @@ class InventoryScreen extends Component {
         } else {
             this.removeFromDailyInventory(movedItem);
         }
+
+        this.setState({
+            needsToSave: true
+        })
     }
 
     addToDailyInventory(movedItem) {
@@ -110,7 +115,6 @@ class InventoryScreen extends Component {
     }
 
     handleDailyInventorySearch = (filteredList) => {
-        console.log("handleDailyInventorySearch", filteredList)
         this.setState({
           filteredSelectedDayInventory: {day: this.state.selectedDayInventory.day, items: filteredList}
         })
@@ -118,7 +122,6 @@ class InventoryScreen extends Component {
 
     handleSelectPromoItem = (item) => {
         let newPromoItems = this.state.promoItemCodes
-        console.log("newPromoItems", newPromoItems)
 
         if(newPromoItems.includes(item.code) == false) {newPromoItems.unshift(item.code)}
         else 
@@ -130,13 +133,15 @@ class InventoryScreen extends Component {
         if(newPromoItems.length > 3) {newPromoItems.pop()}
 
         this.setState({
-            promoItems: newPromoItems
+            promoItems: newPromoItems,
+            needsToSave: true
         })
-
-        console.log("newPromoItems", newPromoItems)
     }
 
     saveDailyInventories = async () => {
+        this.setState({
+            needsToSave: false
+        })
         var newDayInventories = this.state.dayInventories
         const selectedDayInventory = this.state.selectedDayInventory
 
@@ -147,12 +152,19 @@ class InventoryScreen extends Component {
         
         var newDayInventoriesDto = []
 
+        console.log("saveDailyInventories state promo codes", this.state.promoItemCodes)
+
         newDayInventories.forEach(dayInv => {
-            const dayInvDto = {day: dayInv.day, itemIds: dayInv.items.map(x => x.code), promoItemCodes: dayInv.promoItemCodes}
+            const dayInvDto = 
+            {
+                day: dayInv.day, itemIds: dayInv.items.map(x => x.code),
+                promoItemCodes: this.state.selectedDayInventory.day == dayInv.day ? this.state.promoItemCodes : dayInv.promoItemCodes
+            }
             newDayInventoriesDto.push(dayInvDto)
         });
 
         try {
+            console.log("saveDailyInventories newDayInventoriesDto", newDayInventoriesDto)
             const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayInventory`, {inventories: newDayInventoriesDto});
             this.setState({
                 dayInventories: response.data,
@@ -164,9 +176,6 @@ class InventoryScreen extends Component {
 
     render() {
         const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory} = this.state
-
-        console.log("selectedDayInventory", selectedDayInventory)
-        console.log("selectedDayInventory", selectedDayInventory)
 
         const allProductsList = filteredProducts?.map(x => {
             if(selectedDayInventory?.items?.find(y => y.code == x.code)) {return null;}
@@ -194,6 +203,12 @@ class InventoryScreen extends Component {
                 <div className="card-content">
                     <nav className="transparent z-depth-0">
                         <div class="nav-wrapper">
+                            {
+                                this.state?.needsToSave == true ?
+                                <div className={`waves-effect waves-light btn right ${Color.First}`} onClick={this.saveDailyInventories}>Guardar</div>
+                                :
+                                <div></div>
+                            }
                             {/* <Link className={`waves-light ${Color.Button_1}`} to="/" onClick={() => this.saveDailyInventories()}><i className="material-icons left teal-text">arrow_back</i></Link> */}
                             <ul style={navbarStyle}>
                                 <li onClick={() => this.handleDayTabClick(0)} className={`z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Lunes</a></li>
