@@ -11,6 +11,7 @@ class DayLocationForm extends Component {
     this.state = {
       days: ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado','Domingo'],
       locations: [],
+      nextDayIndex: -1,
       clientLocations: [],
       times: [],
       isEditingLocations: false
@@ -29,7 +30,8 @@ class DayLocationForm extends Component {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
 
       this.setState({
-        locations: [...response.data.dayLocations]
+        locations: [...response.data.dayLocations],
+        nextDayIndex: response.data.nextMessageDayIndex
       })
     } catch (error) {
       console.log("error", error)
@@ -126,8 +128,8 @@ handleSubmit = async (e, isEdting) => {
       };
 
       return(
-        <div>
-            <div class="col s3"><p className='centered'>{x}</p></div>
+        <div className={dayIndex == this.state.nextDayIndex ? `row ${Color.Third}` : `row`}>
+            <div class="col s3"><p class='text-bold'>{dayIndex == this.state.nextDayIndex ? `Hoy Mensajea => ${x}` : x}</p></div>
             <div class="col s5">
               {
                 this.state.isEditingLocations == true ?
@@ -162,9 +164,7 @@ handleSubmit = async (e, isEdting) => {
         <div className="card-content">
           <h6 className="center-align">Tiempos de entrega</h6>
           <form className="container">
-            <div class="row">
-              {dayLocationsHtml}
-            </div>
+            {dayLocationsHtml}
             <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleEditLocations}>
               <i className="material-icons left">{this.state.isEditingLocations ? "save" : "edit"}</i>
               {this.state.isEditingLocations ? "Save" : "Edit"}
