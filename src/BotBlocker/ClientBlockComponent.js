@@ -43,12 +43,12 @@ class ClientBlockComponent extends React.Component {
   }
 
   render() {
-    const { name, phoneNumber, address, chatIsBlocked, isGloballyBlocked, clientRegisterBlockedStateFunc } = this.props;
+    const { name, phoneNumber, address, chatIsBlocked, isGloballyBlocked, clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations } = this.props;
 
-    console.log(name, chatIsBlocked)
+    const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == address)
 
     return (
-      <div className="row list-item z-depth-2 border">
+      <div className={willMessageTommorrow ? `row ${Color.Third} list-item z-depth-2 border` : `row list-item z-depth-2 border`}>
         <div className="col s12 m4">
           <span className="client-name">{name}</span>
         </div>

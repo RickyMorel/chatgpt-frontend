@@ -12,7 +12,9 @@ class BlockChatScreen extends Component {
       searchInput: '',
       filteredClients: null,
       isGloballyBlocked: false,
-      clientIsBlockedStateList: []
+      clientIsBlockedStateList: [],
+      nextDayIndex: -1,
+      dayLocations: []
     };
   }
 
@@ -45,7 +47,9 @@ class BlockChatScreen extends Component {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
       this.setState({
-        isGloballyBlocked: response.data.isGloballyBlocked
+        isGloballyBlocked: response.data.isGloballyBlocked,
+        nextDayIndex: response.data.nextMessageDayIndex,
+        dayLocations: response.data.dayLocations
       });
     } catch (error) {
       this.setState({ error: error });
@@ -124,13 +128,17 @@ class BlockChatScreen extends Component {
 
   render() {
     const { modalIsOpen, closeModalFunc } = this.props;
-    const { loading, error, filteredClients, isGloballyBlocked } = this.state;
+    const { loading, error, filteredClients, isGloballyBlocked, nextDayIndex, dayLocations } = this.state;
+
+    const tomorrowsDayLocationIndex = dayLocations.findIndex(x => x.day == nextDayIndex)
+
+    console.log("dayLocationssssssss", dayLocations)
 
     const clientBlocks = filteredClients?.map(x => {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked
 
       return <ClientBlockComponent key={x.id} {...x} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} 
-        clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc}/>
+        clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
   });
 
     return (

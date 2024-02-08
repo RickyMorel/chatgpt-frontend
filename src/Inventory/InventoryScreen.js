@@ -18,7 +18,8 @@ class InventoryScreen extends Component {
           filteredSelectedDayInventory: null,
           recommendedDailyItemAmount: 20,
           promoItemCodes: [],
-          needsToSave: false
+          needsToSave: false,
+          nextDayIndex: -1,
         };
     }
 
@@ -42,10 +43,11 @@ class InventoryScreen extends Component {
             const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getDayInventories`);
             console.log("response", response)
             this.setState({
-                dayInventories: response.data,
-                selectedDayInventory: response.data[0],
-                filteredSelectedDayInventory: response.data[0],
-                promoItemCodes: response.data[0].promoItemCodes
+                dayInventories: response.data.dayInventories,
+                selectedDayInventory: response.data.dayInventories[0],
+                filteredSelectedDayInventory: response.data.dayInventories[0],
+                promoItemCodes: response.data.dayInventories[0].promoItemCodes,
+                nextDayIndex: response.data.nextDayIndex
             });
         } catch (error) {}
     }
@@ -97,7 +99,7 @@ class InventoryScreen extends Component {
     }
 
     handleDayTabClick = async (selectedDayNumber) => {
-        await this.saveDailyInventories()      
+        //await this.saveDailyInventories()      
 
         const allInventories = this.state.dayInventories
 
@@ -145,8 +147,10 @@ class InventoryScreen extends Component {
         var newDayInventories = this.state.dayInventories
         const selectedDayInventory = this.state.selectedDayInventory
 
+        console.log("newDayInventories", newDayInventories)
+
         //Remove old day inventory
-        newDayInventories = newDayInventories.filter(x => x.day != selectedDayInventory.day)
+        newDayInventories = newDayInventories?.filter(x => x.day != selectedDayInventory.day)
         //add new one
         newDayInventories.push(selectedDayInventory)
         
@@ -167,7 +171,7 @@ class InventoryScreen extends Component {
             console.log("saveDailyInventories newDayInventoriesDto", newDayInventoriesDto)
             const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayInventory`, {inventories: newDayInventoriesDto});
             this.setState({
-                dayInventories: response.data,
+                dayInventories: response.data.dayInventories,
             });
         } catch (error) {
             this.props.showPopup(error);
@@ -211,13 +215,20 @@ class InventoryScreen extends Component {
                             }
                             {/* <Link className={`waves-light ${Color.Button_1}`} to="/" onClick={() => this.saveDailyInventories()}><i className="material-icons left teal-text">arrow_back</i></Link> */}
                             <ul style={navbarStyle}>
-                                <li onClick={() => this.handleDayTabClick(0)} className={`z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Lunes</a></li>
-                                <li onClick={() => this.handleDayTabClick(1)} className={`z-depth-${selectedDayInventory?.day == 1 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Martes</a></li>
-                                <li onClick={() => this.handleDayTabClick(2)} className={`z-depth-${selectedDayInventory?.day == 2 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Miercoles</a></li>
-                                <li onClick={() => this.handleDayTabClick(3)} className={`z-depth-${selectedDayInventory?.day == 3 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Jueves</a></li>
-                                <li onClick={() => this.handleDayTabClick(4)} className={`z-depth-${selectedDayInventory?.day == 4 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Viernes</a></li>
-                                <li onClick={() => this.handleDayTabClick(5)} className={`z-depth-${selectedDayInventory?.day == 5 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Sabado</a></li>
-                                <li onClick={() => this.handleDayTabClick(6)} className={`z-depth-${selectedDayInventory?.day == 6 ? "1" : "0"}`}><a className={`grey-text text-darken-2`}>Domingo</a></li>
+                                <li onClick={() => this.handleDayTabClick(0)} className={`${0 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{0 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Lunes</a></li>
+                                <li onClick={() => this.handleDayTabClick(1)} className={`${1 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 1 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{1 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Martes</a></li>
+                                <li onClick={() => this.handleDayTabClick(2)} className={`${2 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 2 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{2 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Miercoles</a></li>
+                                <li onClick={() => this.handleDayTabClick(3)} className={`${3 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 3 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{3 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Jueves</a></li>
+                                <li onClick={() => this.handleDayTabClick(4)} className={`${4 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 4 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{4 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Viernes</a></li>
+                                <li onClick={() => this.handleDayTabClick(5)} className={`${5 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 5 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{5 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Sabado</a></li>
+                                <li onClick={() => this.handleDayTabClick(6)} className={`${6 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 6 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{6 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Domingo</a></li>
                             </ul>
                         </div>
                     </nav>
