@@ -14,7 +14,9 @@ class DayLocationForm extends Component {
       nextDayIndex: -1,
       clientLocations: [],
       times: [],
-      isEditingLocations: false
+      isEditingLocations: false,
+      sendMessagesTime: "",
+      processOrdersTime: "",
     };
 
     this.selectRefs = this.state.days.map(() => createRef());
@@ -76,7 +78,8 @@ class DayLocationForm extends Component {
       locations: [...newLocationArray],
     });
   };
-handleSubmit = async (e, isEdting) => {
+
+  handleSubmit = async (e, isEdting) => {
     e.preventDefault();
 
     if(isEdting) {return}
@@ -93,6 +96,21 @@ handleSubmit = async (e, isEdting) => {
     }
   };
 
+  handleSendMessages = async () => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/messageTommorrowsClients`);
+      console.log("handleSendMessages", response)
+      return null
+    } catch (error) {
+      console.log("handleSendMessages", error)
+      this.props.showPopup(new Error(error.message));
+    }
+  }
+
+  handleChangeProcessTimes = (e, processTimeId) => {
+    console.log("handleChangeProcessTimes", processTimeId, e.target.value)
+  }
+
   handleEditLocations = (e) => {
     const isEdting = !this.state.isEditingLocations;
 
@@ -104,6 +122,14 @@ handleSubmit = async (e, isEdting) => {
   };
 
   render() {
+    const textStyle = {
+      "margin-left": "5%"
+    };
+    const textStyle2 = {
+      "margin-left": "100%",
+      "marginRight": "100%" 
+    };
+
     const dayLocationsHtml = this.state.days.map(x => {
       const dayIndex = this.state.days.indexOf(x)
       const locations = this.state.locations.find(x => x.day == dayIndex) ? this.state.locations.find(x => x.day == dayIndex).locations : []
@@ -162,6 +188,31 @@ handleSubmit = async (e, isEdting) => {
     return (
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
+          <nav>
+            <div className={`nav-wrapper ${Color.Background}`}>
+              <ul id="nav-mobile" className="valign-wrapper">
+                <li className='black-text' style={textStyle}>Tiempo en el que envia los mensajes</li>
+                <li className='black-text'>
+                  {
+                    this.state.isEditingLocations ? 
+                    <input type="text" class="timepicker padding-s center-align" onChange={(e) => this.handleChangeProcessTimes(e, 1)}/>
+                    :
+                    <p style={textStyle2}>Lol</p>
+                  }
+                </li>
+                <li className='black-text'style={textStyle}>Tiempo en el que procesa los pedidos</li>
+                <li className='black-text'>
+                  {
+                    this.state.isEditingLocations ? 
+                    <input type="text" class="timepicker padding-s center-align"  onChange={(e) => this.handleChangeProcessTimes(e, 2)}/>
+                    :
+                    <span style={textStyle2}>Lol</span>
+                  }
+                </li>
+                <a style={textStyle} className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleSendMessages}>Enviar Mensajes Ahora</a>
+              </ul>
+            </div>
+          </nav>
           <h6 className="center-align">Tiempos de entrega</h6>
           <form className="container">
             {dayLocationsHtml}
