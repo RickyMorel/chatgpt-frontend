@@ -17,6 +17,7 @@ class DayLocationForm extends Component {
       isEditingLocations: false,
       sendMessagesTime: "",
       processOrdersTime: "",
+      canMessageTommorrowsClients: false
     };
 
     this.selectRefs = this.state.days.map(() => createRef());
@@ -25,6 +26,21 @@ class DayLocationForm extends Component {
   componentDidMount() {
       this.GetDayLocations();
       this.GetAllClientLocations();
+      this.GetCanMessageTommorrowsClients();
+  }
+
+  GetCanMessageTommorrowsClients = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/canMessageTommorrowsClients`);
+
+      this.setState({
+        canMessageTommorrowsClients: response.data
+      })
+    } catch(error) {
+      this.setState({
+        canMessageTommorrowsClients: false
+      })
+    }
   }
 
   GetDayLocations = async () => {
@@ -33,11 +49,12 @@ class DayLocationForm extends Component {
 
       this.setState({
         locations: [...response.data.dayLocations],
-        nextDayIndex: response.data.nextMessageDayIndex
+        nextDayIndex: response.data.nextMessageDayIndex,
+        sendMessagesTime: response.data.timeToSendMessages,
+        processOrdersTime: response.data.timeToProcessOrders
       })
     } catch (error) {
-      console.log("error", error)
-      return error
+      this.props.showPopup(new Error(error.response.data.message))
     }
   };
 
@@ -89,26 +106,45 @@ class DayLocationForm extends Component {
      {this.props.showPopup(new Error("No se lleno los 7 tiempos")); return}
 
     try {
-      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayLocations`, {dayLocations: [...this.state.locations]});
+      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayLocations`, 
+        {
+          dayLocations: [...this.state.locations],
+          timeToSendMessages: this.state.sendMessagesTime,
+          timeToProcessOrders: this.state.processOrdersTime
+        }
+      );
+
       return null
     } catch (error) {
-      return error
+      this.props.showPopup(new Error(error.response.data.message))
     }
   };
 
   handleSendMessages = async () => {
     try {
+      this.setState({
+        canMessageTommorrowsClients: false
+      })
       const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/messageTommorrowsClients`);
       console.log("handleSendMessages", response)
       return null
     } catch (error) {
-      console.log("handleSendMessages", error)
-      this.props.showPopup(new Error(error.message));
+      console.log("handleSendMessages ERROR", error)
+      this.props.showPopup(new Error(error.response.data.message))
     }
   }
 
   handleChangeProcessTimes = (e, processTimeId) => {
-    console.log("handleChangeProcessTimes", processTimeId, e.target.value)
+    if(processTimeId == 1) {
+      this.setState({
+        sendMessagesTime: e.target.value
+      })
+    }
+    else if(processTimeId == 2) {
+      this.setState({
+        processOrdersTime: e.target.value
+      })
+    }
   }
 
   handleEditLocations = (e) => {
@@ -126,8 +162,8 @@ class DayLocationForm extends Component {
       "margin-left": "5%"
     };
     const textStyle2 = {
-      "margin-left": "100%",
-      "marginRight": "100%" 
+      "margin-left": "50%",
+      "marginRight": "50%" 
     };
 
     const dayLocationsHtml = this.state.days.map(x => {
@@ -195,21 +231,26 @@ class DayLocationForm extends Component {
                 <li className='black-text'>
                   {
                     this.state.isEditingLocations ? 
-                    <input type="text" class="timepicker padding-s center-align" onChange={(e) => this.handleChangeProcessTimes(e, 1)}/>
+                    <input value={this.state?.sendMessagesTime} style={textStyle} type="time" class="center-align" onChange={(e) => this.handleChangeProcessTimes(e, 1)}/>
                     :
-                    <p style={textStyle2}>Lol</p>
+                    <p style={textStyle2}>{this.state?.sendMessagesTime ?? "__:__?"}</p>
                   }
                 </li>
                 <li className='black-text'style={textStyle}>Tiempo en el que procesa los pedidos</li>
                 <li className='black-text'>
                   {
                     this.state.isEditingLocations ? 
-                    <input type="text" class="timepicker padding-s center-align"  onChange={(e) => this.handleChangeProcessTimes(e, 2)}/>
+                    <input value={this.state?.processOrdersTime} style={textStyle} type="time" class="center-align"  onChange={(e) => this.handleChangeProcessTimes(e, 2)}/>
                     :
-                    <span style={textStyle2}>Lol</span>
+                    <span style={textStyle2}>{this.state?.processOrdersTime ?? "__:__?"}</span>
                   }
                 </li>
-                <a style={textStyle} className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleSendMessages}>Enviar Mensajes Ahora</a>
+                  {
+                    this.state.isEditingLocations ? 
+                    <div></div>
+                    :
+                    <a style={textStyle} className={`waves-effect waves-light btn ${this.state?.canMessageTommorrowsClients ? Color.Fifth : Color.First}`} onClick={this.handleSendMessages}>Enviar Mensajes Ahora</a>
+                  }
               </ul>
             </div>
           </nav>
