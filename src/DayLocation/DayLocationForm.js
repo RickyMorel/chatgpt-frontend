@@ -121,6 +121,14 @@ class DayLocationForm extends Component {
   };
 
   handleSendMessages = async () => {
+    if(this.state.canMessageTommorrowsClients == false) {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/canMessageTommorrowsClients`);
+      } catch(error) {
+        this.props.showPopup(new Error(error.response.data.message))
+      }
+      return;
+    }
     try {
       this.setState({
         canMessageTommorrowsClients: false
