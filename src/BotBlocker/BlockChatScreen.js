@@ -25,7 +25,7 @@ class BlockChatScreen extends Component {
 
   fetchClientData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud`);
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/blockChat`);
       let newList = []
       response.data.forEach(client => {
         const newClientState = {client: client, isBlocked: client.chatIsBlocked}
@@ -67,7 +67,6 @@ class BlockChatScreen extends Component {
     try {
       const globallyBlocked = event.target.checked;
       const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config`, {isGloballyBlocked: globallyBlocked});
-      console.log("handleGlobalBlock", globallyBlocked)
       this.setState({
         isGloballyBlocked: globallyBlocked
       });
@@ -84,7 +83,6 @@ class BlockChatScreen extends Component {
       clients.forEach(client => {
         client.isBlocked = false
       });
-      console.log("handleClearAllBlocks", clients)
       this.setState({
         clientIsBlockedStateList: [...clients]
       });
@@ -95,7 +93,6 @@ class BlockChatScreen extends Component {
   };
 
   clientRegisterBlockedStateFunc = (phoneNumber, isBlocked) => {
-    console.log("clientRegisterBlockedStateFunc", phoneNumber, isBlocked)
     let newList = [...this.state.clientIsBlockedStateList]
     const client = this.state.clients.find(x => x.phoneNumber == phoneNumber)
     const newClientState = {client: client, isBlocked: isBlocked}
@@ -112,8 +109,6 @@ class BlockChatScreen extends Component {
     this.setState({
       clientIsBlockedStateList: newList
     })
-
-    console.log("newList", newList)
   }
 
   filterClients = () => {
@@ -131,8 +126,6 @@ class BlockChatScreen extends Component {
     const { loading, error, filteredClients, isGloballyBlocked, nextDayIndex, dayLocations } = this.state;
 
     const tomorrowsDayLocationIndex = dayLocations.findIndex(x => x.day == nextDayIndex)
-
-    console.log("dayLocationssssssss", dayLocations)
 
     const clientBlocks = filteredClients?.map(x => {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked

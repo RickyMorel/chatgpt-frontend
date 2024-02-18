@@ -43,7 +43,7 @@ class ClientBlockComponent extends React.Component {
   }
 
   render() {
-    const { name, phoneNumber, address, chatIsBlocked, isGloballyBlocked, clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations } = this.props;
+    const { name, phoneNumber, address, chatIsBlocked, isGloballyBlocked, clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite } = this.props;
 
     const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == address)
 
@@ -55,12 +55,19 @@ class ClientBlockComponent extends React.Component {
         <div className="col s12 m4">
           <span>{address}</span>
         </div>
-        <div className="col s12 m3">
+        <div className="col s12 m2">
           <span>+{phoneNumber}</span>
         </div>
         <div className="col s12 m1">
           {
-            // || isGloballyBlocked == true
+            isFavorite == true ? 
+            <a><i style={{ color: "#ff8c00" }} className={`material-icons`}>star</i></a>
+            :
+            <div></div>
+          }
+        </div>
+        <div className="col s12 m1">
+          {
             chatIsBlocked == true || isGloballyBlocked == true ?
             <a className={`waves-effect waves-light btn btn-small right ${Color.First
             }`} onClick={() => this.handleBlock(phoneNumber, false, clientRegisterBlockedStateFunc)}>
