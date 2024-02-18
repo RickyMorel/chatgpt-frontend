@@ -14,13 +14,15 @@ class BlockChatScreen extends Component {
       isGloballyBlocked: false,
       clientIsBlockedStateList: [],
       nextDayIndex: -1,
-      dayLocations: []
+      dayLocations: [],
+      clientLocations: []
     };
   }
 
   componentDidMount() {
     this.fetchClientData();
     this.fetchGlobalData()
+    this.fetchAllClientLocations()
   }
 
   fetchClientData = async () => {
@@ -55,6 +57,19 @@ class BlockChatScreen extends Component {
       this.setState({ error: error });
     }
   }
+
+  fetchAllClientLocations = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getAllClientZones`);
+
+      this.setState({
+        clientLocations: [...response.data]
+      })
+    } catch (error) {
+      console.log("error", error)
+      return error
+    }
+  };
 
   handleSearchInputChange = (event) => {
     const searchInput = event.target.value;
@@ -124,14 +139,15 @@ class BlockChatScreen extends Component {
   render() {
     const { modalIsOpen, closeModalFunc } = this.props;
     const { loading, error, filteredClients, isGloballyBlocked, nextDayIndex, dayLocations } = this.state;
+    console.log("BlockChat", this.props)
 
     const tomorrowsDayLocationIndex = dayLocations.findIndex(x => x.day == nextDayIndex)
 
     const clientBlocks = filteredClients?.map(x => {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked
 
-      return <ClientBlockComponent key={x.id} {...x} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} 
-        clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
+      return <ClientBlockComponent key={x.id} {...x} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {this.state.clientLocations}
+        showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
   });
 
     return (

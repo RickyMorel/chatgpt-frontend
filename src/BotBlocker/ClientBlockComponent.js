@@ -8,7 +8,9 @@ class ClientBlockComponent extends React.Component {
     super(props);
 
     this.state = {
+      isEditing: false,
       isBlocked: false,
+      address: ""
     };
   }
 
@@ -16,17 +18,39 @@ class ClientBlockComponent extends React.Component {
     const wasBlocked = this.props.chatIsBlocked
 
     this.setState({
-      isBlocked: wasBlocked
+      isBlocked: wasBlocked,
+      address: this.props.address
     })
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.chatIsBlocked !== prevProps.chatIsBlocked) {
       this.setState({
-        isBlocked: this.props.chatIsBlocked
+        isBlocked: this.props.chatIsBlocked,
+        address: this.props.address
       })
     }
   }
+
+  handleEditMode = () => {
+    const isEditing = !this.state.isEditing
+    this.setState({
+      isEditing: isEditing
+    })
+  }
+
+  handleAddressChange = async (location) => {
+    try {
+      const clientObj = {phoneNumber: this.props.phoneNumber, address: location}
+      this.setState({
+        address: location
+      })
+      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/updateByNumber`, clientObj);
+      return null
+    } catch (error) {
+      this.props.showPopup(new Error(error.response.data.message))
+    }
+  };
 
   handleBlock = async (phoneNumber, newBlockedState, clientRegisterBlockedStateFunc) => {
     console.log("handleBlock")
@@ -43,17 +67,31 @@ class ClientBlockComponent extends React.Component {
   }
 
   render() {
-    const { name, phoneNumber, address, chatIsBlocked, isGloballyBlocked, clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite } = this.props;
+    const { name, phoneNumber, chatIsBlocked, isGloballyBlocked,
+      clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite, allClientLocations } = this.props;
+    const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == this.state.address)
 
-    const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == address)
+    console.log("renderrrrrr", this.props)
+    
 
     return (
       <div className={willMessageTommorrow ? `row ${Color.Third} list-item z-depth-2 border` : `row list-item z-depth-2 border`}>
         <div className="col s12 m4">
           <span className="client-name">{name}</span>
         </div>
-        <div className="col s12 m4">
-          <span>{address}</span>
+        <div className="col s12 m3">
+          {
+            this.state.isEditing == true ?
+            <select style={{display: 'block' }} value={this.state.address} onChange={(e) => this.handleAddressChange(e.target.value)}>
+              {
+                allClientLocations && allClientLocations?.map(x => (
+                  <option value={x}>{x}</option>
+                ))
+              }
+            </select>
+            :
+            <span>{this.state.address}</span>
+          }
         </div>
         <div className="col s12 m2">
           <span>+{phoneNumber}</span>
@@ -64,6 +102,13 @@ class ClientBlockComponent extends React.Component {
             <a><i style={{ color: "#ff8c00" }} className={`material-icons`}>star</i></a>
             :
             <div></div>
+          }
+        </div>
+        <div className="col s12 m1">
+          {
+            <button className={`waves-effect waves-light btn-small ${this.state.isEditing ? Color.Button_1 : Color.Second}`} onClick={this.handleEditMode}>
+              <i className="material-icons">{this.state.isEditing ? "save" : "edit"}</i>
+            </button>
           }
         </div>
         <div className="col s12 m1">
