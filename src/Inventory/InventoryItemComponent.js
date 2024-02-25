@@ -25,8 +25,11 @@ class InventoryItemComponent extends React.Component {
 
         return (
         <div className="row list-item z-depth-2 border">
-            <div className="col s7">
+            <div className="col s5">
                 <span className="client-name">{item.name}</span>
+            </div>
+            <div className="col s2">
+                <span className="client-name red-text">{item.imageLink == " " ? "Sin imagen" : ""}</span>
             </div>
             <div className="col s3">
                 <span className="client-name">{this.formatPrice(item.price)}</span>
