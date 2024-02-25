@@ -68,11 +68,7 @@ class ClientBlockComponent extends React.Component {
 
   render() {
     const { name, phoneNumber, chatIsBlocked, isGloballyBlocked,
-      clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite, allClientLocations } = this.props;
-    const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == this.state.address)
-
-    console.log("renderrrrrr", this.props)
-    
+      clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite, allClientLocations, willMessageTommorrow } = this.props;
 
     return (
       <div className={willMessageTommorrow ? `row ${Color.Third} list-item z-depth-2 border` : `row list-item z-depth-2 border`}>

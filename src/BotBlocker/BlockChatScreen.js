@@ -139,23 +139,34 @@ class BlockChatScreen extends Component {
   render() {
     const { modalIsOpen, closeModalFunc } = this.props;
     const { loading, error, filteredClients, isGloballyBlocked, nextDayIndex, dayLocations } = this.state;
-    console.log("BlockChat", this.props)
 
     const tomorrowsDayLocationIndex = dayLocations.findIndex(x => x.day == nextDayIndex)
 
+    var clientsToMessage = 0
     const clientBlocks = filteredClients?.map(x => {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked
+      const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == x.address)
+      console.log("willMessageTommorrow", willMessageTommorrow)
+      if(chatIsBlocked == false && willMessageTommorrow != undefined) {clientsToMessage = clientsToMessage + 1}
 
-      return <ClientBlockComponent key={x.id} {...x} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {this.state.clientLocations}
+      return <ClientBlockComponent key={x.id} {...x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {this.state.clientLocations}
         showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
   });
+
+  console.log("clientsToMessage", clientsToMessage)
 
     return (
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
         <div className="row">
-            <div className="col s6">
+            <div className="col s3">
               <span className="card-title">Bloquear Chat</span>
+            </div>
+            <div className="col s3">
+              <span className="">Clientes a mensajear: </span>
+              {
+              <span className="bold green-text">{clientsToMessage}</span>
+              }
             </div>
             <div className="col s4">
               <label className='small-text'>Bloquear Chatbot</label>
