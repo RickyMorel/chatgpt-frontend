@@ -9,6 +9,7 @@ import BlockChatScreen from './BotBlocker/BlockChatScreen';
 import OrderScreen from './Orders/OrderScreen';
 import { Color } from './Colors';
 import DayLocationForm from './DayLocation/DayLocationForm';
+import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
 
 class App extends Component {
   constructor(props) {
@@ -37,6 +38,7 @@ class App extends Component {
                 <Route exact path="/dayLocation"><DayLocationForm showPopup={this.props.showPopup}/></Route>
                 <Route exact path="/blockChats"><BlockChatScreen showPopup={this.props.showPopup}/></Route>
                 <Route exact path="/orders"><OrderScreen showPopup={this.props.showPopup}/></Route>
+                <Route exact path="/problematicChats"><ProblematicChatsScreen showPopup={this.props.showPopup}/></Route>
               </Switch>        
           </div>
         </div>

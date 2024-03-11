@@ -38,6 +38,12 @@ function SideNav()  {
               <i className="material-icons left">access_time</i>
               Ver Tiempos y Lugares
             </Link>
+          </Nav.Item>     
+          <Nav.Item className={GetNavItemColor('/problematicChats')}>
+            <Link to="/problematicChats">
+              <i className="material-icons left">call</i>
+              Chats Problematicos
+            </Link>
           </Nav.Item>      
         </Nav>
       </Sidenav.Body>
