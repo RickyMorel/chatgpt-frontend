@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { Color } from '../Colors';
 import ProblematicChatComponent from './ProblematicChatComponent';
+import axios from 'axios';
 
 class ProblematicChatsScreen extends Component {
     constructor(props) {
@@ -16,29 +17,16 @@ class ProblematicChatsScreen extends Component {
 
     componentDidMount() {
         this.fetchChatData()
+        // const audio = new Audio("https://www.youtube.com/watch?v=yfPJhWo8HR8")
+        // audio.play()
     }
-    
 
     fetchChatData = async () => {
         try {
-        //   const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/blockChat`);
-        //   let newList = []
-        //   response.data.forEach(client => {
-        //     const newClientState = {client: client, isBlocked: client.chatIsBlocked}
-        //     newList.push(newClientState)
-        //   });
-        //   this.setState({
-        //     allChats: response.data,
-        //     filteredChats: response.data,
-        //   });
-        let newList = []
-        for (let i = 0; i < 10; i++) {
-            const chat = {clientName: "Juan piña", chatDescription: "El cliente pregunto a que hora se puede traer la comida", link: "https://web.whatsapp.com/"};
-            newList.push(chat)
-        }
+          const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/problematic-chats`);
           this.setState({
-            allChats: newList,
-            filteredChats: newList,
+            allChats: response.data,
+            filteredChats: response.data,
           });
         } catch (error) {
           this.setState({ error: error });
@@ -56,20 +44,32 @@ class ProblematicChatsScreen extends Component {
 
     filterChats = () => {
         const { allChats, searchInput } = this.state;
+        console.log("allChats", allChats)
         const filteredChats = allChats.filter(chat =>
-            chat.name.toLowerCase().includes(searchInput.toLowerCase())
+            chat.clientName.toLowerCase().includes(searchInput.toLowerCase()) ||
+            chat.phoneNumber.toLowerCase().includes(searchInput.toLowerCase()) ||
+            chat.chatDescription.toLowerCase().includes(searchInput.toLowerCase())
         );
         this.setState({ filteredChats: filteredChats });
     };
 
     render() {
-        // const mockData = [
-        //     {
-        //         clientName: "Juan Carlos",
-
-        //     }
-        // ]
         let i = 0
+        const sortedChats = this.state.filteredChats?.slice().sort((a, b) => {
+            // Sort by attended (true first)
+            const attendedA = a.attended ? 1 : 0;
+            const attendedB = b.attended ? 1 : 0;
+            if (attendedA !== attendedB) {
+                return attendedB - attendedA; // Sort in descending order of attended
+            }
+            
+            // If attended is the same, sort by createdDate
+            const createdDateA = new Date(a.createdDate);
+            const createdDateB = new Date(b.createdDate);
+            if (createdDateA < createdDateB) return -1;
+            if (createdDateA > createdDateB) return 1;
+            return 0;
+        });
         const chatComponents = this.state.filteredChats?.map(x => {
             i = i + 1
 
