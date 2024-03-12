@@ -1,97 +1,69 @@
-
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Color } from '../Colors';
 import ProblematicChatComponent from './ProblematicChatComponent';
 import axios from 'axios';
+import firebase from "../firebaseConfig";
 
-class ProblematicChatsScreen extends Component {
-    constructor(props) {
-        super(props);
-    
-        this.state = {
-            searchInput: '',
-            allChats: null,
-            filteredChats: null,
-        };
-    }
+const ProblematicChatsScreen = () => {
+    const [searchInput, setSearchInput] = useState('');
+    const [allChats, setAllChats] = useState(null);
+    const [filteredChats, setFilteredChats] = useState(null);
 
-    componentDidMount() {
-        this.fetchChatData()
-        // const audio = new Audio("https://www.youtube.com/watch?v=yfPJhWo8HR8")
-        // audio.play()
-    }
+    useEffect(() => {
+        fetchChatData();
+    }, []);
 
-    fetchChatData = async () => {
-        try {
-          const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/problematic-chats`);
-          this.setState({
-            allChats: response.data,
-            filteredChats: response.data,
-          });
-        } catch (error) {
-          this.setState({ error: error });
-        } finally {
-          this.setState({ loading: false });
-        }
-      };
+    const fetchChatData = async () => {
+        const ref = firebase.collection("595971602152").orderBy('createdDate')
 
-    handleSearchInputChange = (event) => {
-        const searchInput = event.target.value;
-        this.setState({ searchInput }, () => {
-          this.filterChats();
-        });
+        ref.onSnapshot(query => {
+            let chats = []
+            console.log("SNAOPSHOITTTT")
+            query.forEach(doc => {
+                chats.push(doc.data())
+            })
+            setAllChats(chats);
+            setFilteredChats(chats);
+        })
     };
 
-    filterChats = () => {
-        const { allChats, searchInput } = this.state;
-        console.log("allChats", allChats)
+    const handleSearchInputChange = (event) => {
+        const input = event.target.value;
+        setSearchInput(input);
+        filterChats(input);
+    };
+
+    const filterChats = (input) => {
         const filteredChats = allChats.filter(chat =>
-            chat.clientName.toLowerCase().includes(searchInput.toLowerCase()) ||
-            chat.phoneNumber.toLowerCase().includes(searchInput.toLowerCase()) ||
-            chat.chatDescription.toLowerCase().includes(searchInput.toLowerCase())
+            chat.clientName.toLowerCase().includes(input.toLowerCase()) ||
+            chat.phoneNumber.toLowerCase().includes(input.toLowerCase()) ||
+            chat.chatDescription.toLowerCase().includes(input.toLowerCase())
         );
-        this.setState({ filteredChats: filteredChats });
+        setFilteredChats(filteredChats);
     };
 
-    render() {
-        let i = 0
-        const sortedChats = this.state.filteredChats?.slice().sort((a, b) => {
-            // Sort by attended (true first)
-            const attendedA = a.attended ? 1 : 0;
-            const attendedB = b.attended ? 1 : 0;
-            if (attendedA !== attendedB) {
-                return attendedB - attendedA; // Sort in descending order of attended
-            }
-            
-            // If attended is the same, sort by createdDate
-            const createdDateA = new Date(a.createdDate);
-            const createdDateB = new Date(b.createdDate);
-            if (createdDateA < createdDateB) return -1;
-            if (createdDateA > createdDateB) return 1;
-            return 0;
-        });
-        const chatComponents = this.state.filteredChats?.map(x => {
-            i = i + 1
+    let i = 0;
+    const chatComponents = allChats?.map(x => {
+        i = i + 1;
+        return <ProblematicChatComponent key={i} data={x} index={i} />;
+    });
 
-            return <ProblematicChatComponent data={x} index={i}/>
-        });
-
-        return (
-            <div className={`card bordered ${Color.Background}`}>
-                <div className="card-content">
-                    <input
-                        type="text"
-                        placeholder="Buscar clientes..."
-                        value={this.state.searchInput}
-                        onChange={this.handleSearchInputChange}
-                    />
-                    <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
-                        {chatComponents}
-                    </div>
+    console.log("allChats", allChats, chatComponents)
+    return (
+        <div className={`card bordered ${Color.Background}`}>
+            <div className="card-content">
+                <input
+                    type="text"
+                    placeholder="Buscar clientes..."
+                    value={searchInput}
+                    onChange={handleSearchInputChange}
+                />
+                <div style={{ overflowY: 'scroll', height: '63vh', overflowX: "hidden" }}>
+                    {chatComponents}
                 </div>
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 export default ProblematicChatsScreen;
