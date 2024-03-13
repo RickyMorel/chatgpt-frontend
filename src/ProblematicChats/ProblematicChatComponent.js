@@ -4,7 +4,7 @@ import { Color } from '../Colors';
 class ProblematicChatComponent extends React.Component {
 
     getTime = (date) => {
-        const reactDate = new Date(date)
+        const reactDate = new Date(date * 1000);
         const hours = reactDate.getHours();
         const minutes = reactDate.getMinutes();
 

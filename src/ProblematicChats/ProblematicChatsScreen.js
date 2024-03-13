@@ -43,7 +43,7 @@ const ProblematicChatsScreen = () => {
     };
 
     let i = 0;
-    const chatComponents = allChats?.map(x => {
+    const chatComponents = filteredChats?.map(x => {
         i = i + 1;
         return <ProblematicChatComponent key={i} data={x} index={i} />;
     });
