@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Color } from '../Colors';
-import ProblematicChatComponent from './ProblematicChatComponent';
-import axios from 'axios';
 import firebase from "../firebaseConfig";
+import ProblematicChatComponent from './ProblematicChatComponent';
 
 const ProblematicChatsScreen = () => {
     const [searchInput, setSearchInput] = useState('');

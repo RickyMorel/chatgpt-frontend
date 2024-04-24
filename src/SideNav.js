@@ -1,10 +1,39 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Sidenav, Nav } from 'rsuite';
 import { Color } from './Colors';
 import { useLocation } from 'react-router-dom'
+import useSound from 'use-sound';
+import firebase from "./firebaseConfig";
 
 function SideNav()  {
+  const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
+  const [playSound] = useSound('problemSFX.mp3');
+
+  useEffect(() => {
+      fetchChatData();
+  }, []);
+
+  const fetchChatData = async () => {
+      const ref = firebase.collection("595971602152").orderBy('createdDate')
+      ref.onSnapshot(query => {
+        let chats = []
+        query.forEach(doc => {
+            chats.push(doc.data())
+        })
+
+        if(chats.length <= 0) { setHasNewProblematicChat(false); return; }
+
+        setHasNewProblematicChat(true)
+        playSound()
+      })
+  };
+
+  const handleNavItemClick = (currentPath) => {
+    console.log("handleNavItemClick", currentPath)
+    if(currentPath == "/problematicChats") { setHasNewProblematicChat(false); }
+  };
+
   return (
     <Sidenav>
       <Sidenav.Body>
@@ -39,10 +68,19 @@ function SideNav()  {
               Ver Tiempos y Lugares
             </Link>
           </Nav.Item>     
-          <Nav.Item className={GetNavItemColor('/problematicChats')}>
+          <Nav.Item className={GetNavItemColor('/problematicChats')} onClick={() => handleNavItemClick('/problematicChats')}>
             <Link to="/problematicChats">
-              <i className="material-icons left">call</i>
-              Chats Problematicos
+              <div className="row">
+                <div className="col s1">
+                  <i className="material-icons left">call</i>
+                </div>
+                <div className="col s9">
+                    Chats Problematicos
+                </div>
+                <div className="col s2">
+                  {hasNewProblematicChat == true ? <i style={{ color: "#bd3020" }} className={`material-icons flicker`}>brightness_1</i> : <div></div>}
+                </div>
+              </div>
             </Link>
           </Nav.Item>      
         </Nav>
