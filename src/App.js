@@ -7,7 +7,7 @@ import Navbar from './Navbar';
 import SideNav from './SideNav';
 import BlockChatScreen from './BotBlocker/BlockChatScreen';
 import OrderScreen from './Orders/OrderScreen';
-import { Color } from './Colors';
+import { Color, ColorHex } from './Colors';
 import DayLocationForm from './DayLocation/DayLocationForm';
 import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
 import LoadSpinner from './LoadSpinner';
@@ -22,10 +22,16 @@ class App extends Component {
     };
   }
 
+  setIsLoading = (loading) => {
+    this.setState({
+      isLoading: loading
+    })
+  }
+
   render() {
     return (
       <Router>
-        <LoadSpinner isLoading={true}/>
+        <LoadSpinner isLoading={this.state.isLoading}/>
         <Navbar/>
         <div class="row">
           <div class={`col s12 m4 l3 ${Color.SideNav}`} style={{  height: '93vh'}}>
@@ -33,15 +39,15 @@ class App extends Component {
           </div>
           <div class="col s12 m8 l9"> 
               <Helmet>
-                <style>{`body { background-color: #E9EBE3; }`}</style>
+                <style>{`body { background-color: ${ColorHex.Background}; }`}</style>
               </Helmet>
               <Switch>
-                <Route exact path="/"><MainMenu showPopup={this.props.showPopup}/></Route>
-                <Route exact path="/inventory"><InventoryScreen showPopup={this.props.showPopup}/></Route>
-                <Route exact path="/dayLocation"><DayLocationForm showPopup={this.props.showPopup}/></Route>
-                <Route exact path="/blockChats"><BlockChatScreen showPopup={this.props.showPopup}/></Route>
-                <Route exact path="/orders"><OrderScreen showPopup={this.props.showPopup}/></Route>
-                <Route exact path="/problematicChats"><ProblematicChatsScreen showPopup={this.props.showPopup}/></Route>
+                <Route exact path="/"><MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
+                <Route exact path="/inventory"><InventoryScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
+                <Route exact path="/dayLocation"><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
+                <Route exact path="/blockChats"><BlockChatScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
+                <Route exact path="/orders"><OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
+                <Route exact path="/problematicChats"><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
               </Switch>        
           </div>
         </div>

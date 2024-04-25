@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Sidenav, Nav } from 'rsuite';
-import { Color } from './Colors';
+import { Color, ColorHex } from './Colors';
 import { useLocation } from 'react-router-dom'
 import useSound from 'use-sound';
 import firebase from "./firebaseConfig";
@@ -78,7 +78,7 @@ function SideNav()  {
                     Chats Problematicos
                 </div>
                 <div className="col s2">
-                  {hasNewProblematicChat == true ? <i style={{ color: "#bd3020" }} className={`material-icons flicker`}>brightness_1</i> : <div></div>}
+                  {hasNewProblematicChat == true ? <i style={{ color: ColorHex.First }} className={`material-icons flicker`}>brightness_1</i> : <div></div>}
                 </div>
               </div>
             </Link>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Circles } from 'react-loader-spinner';
+import { Circles, ColorRing, RotatingSquare } from 'react-loader-spinner';
+import { ColorHex } from './Colors';
 
 class LoadSpinner extends Component {
   constructor(props) {
@@ -21,15 +22,18 @@ class LoadSpinner extends Component {
     };
 
     const spinnerHtml = this.props.isLoading ? (
-      <Circles
-        height="400"
-        width="400"
-        color="#4fa94d"
-        ariaLabel="circles-loading"
-        wrapperStyle={overlayStyles}
-        wrapperClass=""
-        visible={this.props.isLoading}
-      />
+      <div style={overlayStyles}>
+        <ColorRing
+          visible={this.props.isLoading}
+          height="200"
+          width="200"
+          ariaLabel="color-ring-loading"
+          wrapperStyle={{}}
+          wrapperClass="color-ring-wrapper"
+          colors={[ColorHex.First, ColorHex.Fifth, ColorHex.Second, ColorHex.Third, '#849b87']}
+        />
+        <h4>Cargando...</h4>
+      </div>
     ) : (
       <div></div>
     );

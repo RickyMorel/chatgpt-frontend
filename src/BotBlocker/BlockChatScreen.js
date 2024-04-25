@@ -20,9 +20,17 @@ class BlockChatScreen extends Component {
   }
 
   componentDidMount() {
-    this.fetchClientData();
-    this.fetchGlobalData()
-    this.fetchAllClientLocations()
+    this.GetAllData()
+  }
+
+  GetAllData = async () => {
+    this.props.setIsLoading(true)
+
+    await this.fetchClientData();
+    await this.fetchGlobalData()
+    await this.fetchAllClientLocations()
+
+    this.props.setIsLoading(false)
   }
 
   fetchClientData = async () => {
