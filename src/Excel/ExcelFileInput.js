@@ -1,9 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
+import { usePopup } from '../Popups/PopupProvider';
 import GetClientDataFromExcel from './GetClientDataFromExcel';
 import GetProductDataFromExcel from './GetProductDataFromExcel';
-import { usePopup } from '../Popups/PopupProvider';
 
 function ExcelFileInput({dataTypeName}) {
   const [excelData, setExcelData] = useState(null);

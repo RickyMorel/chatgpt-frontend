@@ -10,6 +10,7 @@ import OrderScreen from './Orders/OrderScreen';
 import { Color } from './Colors';
 import DayLocationForm from './DayLocation/DayLocationForm';
 import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
+import LoadSpinner from './LoadSpinner';
 
 class App extends Component {
   constructor(props) {
@@ -17,12 +18,14 @@ class App extends Component {
 
     this.state = {
       modalIsOpen: 0,
+      isLoading: false
     };
   }
 
   render() {
     return (
       <Router>
+        <LoadSpinner isLoading={true}/>
         <Navbar/>
         <div class="row">
           <div class={`col s12 m4 l3 ${Color.SideNav}`} style={{  height: '93vh'}}>
