@@ -8,11 +8,17 @@ import firebase from "./firebaseConfig";
 
 function SideNav()  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
-  const [playSound] = useSound('problemSFX.mp3');
+  const [playSound, setPlaySound] = useState(false);
 
   useEffect(() => {
       fetchChatData();
   }, []);
+
+  useEffect(() => {
+    if (playSound) {
+      handleSoundPlay();
+    }
+  }, [playSound]);
 
   const fetchChatData = async () => {
       const ref = firebase.collection("595971602152").orderBy('createdDate')
@@ -25,8 +31,17 @@ function SideNav()  {
         if(chats.length <= 0) { setHasNewProblematicChat(false); return; }
 
         setHasNewProblematicChat(true)
-        playSound()
+        setPlaySound(true);
+        //PLAY AUDIO HERE
       })
+  };
+
+  const handleSoundPlay = () => {
+    var audio = new Audio('./problemSFX.mp3');
+    audio.play();
+    audio.onended = () => {
+      setPlaySound(false);
+    };
   };
 
   const handleNavItemClick = (currentPath) => {
