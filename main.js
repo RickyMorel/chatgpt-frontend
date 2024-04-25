@@ -11,7 +11,7 @@ function createWindow() {
     },
   });
 
-  mainWindow.loadURL('http://localhost:3000'); // Assumes your React app is running on localhost:3000
+  mainWindow.loadURL('http://localhost:3002'); // Assumes your React app is running on localhost:3000
 
   mainWindow.on('closed', () => {
     mainWindow = null;

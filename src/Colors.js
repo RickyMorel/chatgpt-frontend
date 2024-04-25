@@ -7,3 +7,11 @@ export class Color{
     static Fifth = "teal darken-2"
     static Background = "grey lighten-3"
 }
+
+export class ColorHex {
+    static First = "#bd3020"
+    static Second = "#424242"
+    static Third = "#b2dfdb"
+    static Fifth = "#00796b"
+    static Background = "#E9EBE3"
+}

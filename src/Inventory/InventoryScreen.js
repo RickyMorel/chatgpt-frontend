@@ -24,9 +24,17 @@ class InventoryScreen extends Component {
     }
 
     componentDidMount() {
-        this.fetchGlobalConfig();
-        this.fetchProductData();
+        this.GetAllData();
     }
+
+    GetAllData = async () => {
+        this.props.setIsLoading(true)
+    
+        await this.fetchGlobalConfig();
+        await this.fetchProductData();
+    
+        this.props.setIsLoading(false)
+      }
     
     fetchProductData = async () => {
         try {
@@ -99,8 +107,6 @@ class InventoryScreen extends Component {
     }
 
     handleDayTabClick = async (selectedDayNumber) => {
-        //await this.saveDailyInventories()      
-
         const allInventories = this.state.dayInventories
 
         this.setState({
@@ -195,6 +201,8 @@ class InventoryScreen extends Component {
             <InventoryItemComponent key={x.id} item={x} isInDailyInventory={true} isPromoItem={isPromoItem} handleClickCallback={this.handleItemClick} handleSelectPromoItemCallback={this.handleSelectPromoItem} />
             )
         });
+
+        console.log("filteredSelectedDayInventory?.items", filteredSelectedDayInventory?.items)
             
 
         const navbarStyle = {

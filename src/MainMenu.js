@@ -22,6 +22,7 @@ class MainMenu extends Component {
 
     render() {
         const { modalIsOpen } = this.state;
+        console.log("mainmenu this.props", this.props)
 
         return (
             <div className={`card bordered ${Color.Background}`}>
@@ -30,10 +31,10 @@ class MainMenu extends Component {
                     <div className='row'>
                         <div style={{ height: '100%' }} className='col s6 center-align'>
                             <h6>Actualizar Clientes</h6>
-                            <ExcelFileInput dataTypeName={'clientes'} />
+                            <ExcelFileInput dataTypeName={'clientes'} setIsLoading={this.props.setIsLoading} />
                             <p> </p>
                             <h6>Actualizar Productos</h6>
-                            <ExcelFileInput dataTypeName={'productos'} />
+                            <ExcelFileInput dataTypeName={'productos'} setIsLoading={this.props.setIsLoading}/>
                         </div>
                     </div>
                 </div>

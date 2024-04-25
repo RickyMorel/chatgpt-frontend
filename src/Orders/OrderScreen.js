@@ -20,6 +20,8 @@ class OrderScreen extends Component {
   }
 
   fetchOrderData = async () => {
+    this.props.setIsLoading(true)
+
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
       this.setState({
@@ -29,6 +31,8 @@ class OrderScreen extends Component {
     } catch (error) {
 
     }
+
+    this.props.setIsLoading(false)
   };
 
   handleSearchInputChange = (event) => {

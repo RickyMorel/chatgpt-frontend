@@ -1,10 +1,54 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Sidenav, Nav } from 'rsuite';
-import { Color } from './Colors';
+import { Color, ColorHex } from './Colors';
 import { useLocation } from 'react-router-dom'
+import useSound from 'use-sound';
+import firebase from "./firebaseConfig";
 
 function SideNav()  {
+  const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
+  const [playSound, setPlaySound] = useState(false);
+
+  useEffect(() => {
+      fetchChatData();
+  }, []);
+
+  useEffect(() => {
+    if (playSound) {
+      handleSoundPlay();
+    }
+  }, [playSound]);
+
+  const fetchChatData = async () => {
+      const ref = firebase.collection("595971602152").orderBy('createdDate')
+      ref.onSnapshot(query => {
+        let chats = []
+        query.forEach(doc => {
+            chats.push(doc.data())
+        })
+
+        if(chats.length <= 0) { setHasNewProblematicChat(false); return; }
+
+        setHasNewProblematicChat(true)
+        setPlaySound(true);
+        //PLAY AUDIO HERE
+      })
+  };
+
+  const handleSoundPlay = () => {
+    var audio = new Audio('./problemSFX.mp3');
+    audio.play();
+    audio.onended = () => {
+      setPlaySound(false);
+    };
+  };
+
+  const handleNavItemClick = (currentPath) => {
+    console.log("handleNavItemClick", currentPath)
+    if(currentPath == "/problematicChats") { setHasNewProblematicChat(false); }
+  };
+
   return (
     <Sidenav>
       <Sidenav.Body>
@@ -37,6 +81,21 @@ function SideNav()  {
             <Link to="/dayLocation">
               <i className="material-icons left">access_time</i>
               Ver Tiempos y Lugares
+            </Link>
+          </Nav.Item>     
+          <Nav.Item className={GetNavItemColor('/problematicChats')} onClick={() => handleNavItemClick('/problematicChats')}>
+            <Link to="/problematicChats">
+              <div className="row">
+                <div className="col s1">
+                  <i className="material-icons left">call</i>
+                </div>
+                <div className="col s9">
+                    Chats Problematicos
+                </div>
+                <div className="col s2">
+                  {hasNewProblematicChat == true ? <i style={{ color: ColorHex.First }} className={`material-icons flicker`}>brightness_1</i> : <div></div>}
+                </div>
+              </div>
             </Link>
           </Nav.Item>      
         </Nav>

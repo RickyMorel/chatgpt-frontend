@@ -24,9 +24,17 @@ class DayLocationForm extends Component {
   }
 
   componentDidMount() {
-      this.GetDayLocations();
-      this.GetAllClientLocations();
-      this.GetCanMessageTommorrowsClients();
+    this.GetAllData()
+  }
+
+  GetAllData = async () => {
+    this.props.setIsLoading(true)
+
+    await this.GetDayLocations();
+    await this.GetAllClientLocations();
+    await this.GetCanMessageTommorrowsClients();
+
+    this.props.setIsLoading(false)
   }
 
   GetCanMessageTommorrowsClients = async () => {

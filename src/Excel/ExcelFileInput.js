@@ -1,17 +1,18 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
+import { usePopup } from '../Popups/PopupProvider';
 import GetClientDataFromExcel from './GetClientDataFromExcel';
 import GetProductDataFromExcel from './GetProductDataFromExcel';
-import { usePopup } from '../Popups/PopupProvider';
 
-function ExcelFileInput({dataTypeName}) {
+function ExcelFileInput({dataTypeName, setIsLoading}) {
   const [excelData, setExcelData] = useState(null);
   const [popup, setPopup] = useState(null);
   const { showPopup } = usePopup();
   
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
+    setIsLoading(true)
 
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -41,7 +42,10 @@ function ExcelFileInput({dataTypeName}) {
     else if(clientData[0].phoneNumber == undefined) {showPopup(new Error("No se encontro 'Numero' en el excel")); return}
     else if(clientData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); return}
 
-    showPopup(await GetClientDataFromExcel.PostData(`${process.env.REACT_APP_HOST_URL}/client-crud/createMany`, clientData))
+    const response = await GetClientDataFromExcel.PostData(`${process.env.REACT_APP_HOST_URL}/client-crud/createMany`, clientData)
+
+    setIsLoading(false)
+    showPopup(response)
   }
 
   const GetProductDataResponse = async (jsonData) => {
@@ -51,7 +55,10 @@ function ExcelFileInput({dataTypeName}) {
     else if(productData[0].flavourType == undefined) {showPopup(new Error("No se encontro 'Sabor' en el excel")); return}
     else if(productData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); return}
 
-    showPopup(await GetClientDataFromExcel.PostData(`${process.env.REACT_APP_HOST_URL}/inventory/resetItems`, productData))
+    const response = await GetClientDataFromExcel.PostData(`${process.env.REACT_APP_HOST_URL}/inventory/resetItems`, productData)
+
+    setIsLoading(false)
+    showPopup(response)
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
