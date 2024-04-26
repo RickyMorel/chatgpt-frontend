@@ -9,6 +9,7 @@ import firebase from "./firebaseConfig";
 function SideNav()  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
   const [playSound, setPlaySound] = useState(false);
+  let fetchSoundCount = 0
 
   useEffect(() => {
       fetchChatData();
@@ -26,17 +27,27 @@ function SideNav()  {
         let chats = []
         query.forEach(doc => {
             chats.push(doc.data())
-        })
+        }) 
 
-        if(chats.length <= 0) { setHasNewProblematicChat(false); return; }
-
-        setHasNewProblematicChat(true)
-        setPlaySound(true);
+        handleSoundPlay(chats)
         //PLAY AUDIO HERE
       })
   };
 
-  const handleSoundPlay = () => {
+  const handleSoundPlay = (chats) => {
+
+    console.log("fetchSoundCount before", fetchSoundCount)
+
+    fetchSoundCount = fetchSoundCount + 1
+
+    console.log("fetchSoundCount after", fetchSoundCount)
+
+    if(chats.length <= 0) { setHasNewProblematicChat(false); return; }
+
+    if(fetchSoundCount < 3) {return;}
+
+    setHasNewProblematicChat(true)
+
     var audio = new Audio('./problemSFX.mp3');
     audio.play();
     audio.onended = () => {

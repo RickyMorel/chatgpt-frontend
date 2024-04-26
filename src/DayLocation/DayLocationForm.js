@@ -242,8 +242,8 @@ class DayLocationForm extends Component {
         <div className="card-content">
           <nav>
             <div className={`nav-wrapper ${Color.Background}`}>
-              <ul id="nav-mobile" className="valign-wrapper">
-                <li className='black-text' style={textStyle}>Tiempo en el que envia los mensajes</li>
+              <ul id="nav-mobile" className="valign-wrapper" style={{ display: "flex", justifyContent: "space-between" }}>
+                <li className='black-text' style={textStyle}>Tiempo en el que envia los mensajes:</li>
                 <li className='black-text'>
                   {
                     this.state.isEditingLocations ? 
@@ -252,15 +252,7 @@ class DayLocationForm extends Component {
                     <p style={textStyle2}>{this.state?.sendMessagesTime ?? "__:__?"}</p>
                   }
                 </li>
-                <li className='black-text'style={textStyle}>Tiempo en el que procesa los pedidos</li>
-                <li className='black-text'>
-                  {
-                    this.state.isEditingLocations ? 
-                    <input value={this.state?.processOrdersTime} style={textStyle} type="time" class="center-align"  onChange={(e) => this.handleChangeProcessTimes(e, 2)}/>
-                    :
-                    <span style={textStyle2}>{this.state?.processOrdersTime ?? "__:__?"}</span>
-                  }
-                </li>
+                <li className='white-text'>_________________________________________________________________________________________________________________________</li>
                   {
                     this.state.isEditingLocations ? 
                     <div></div>
