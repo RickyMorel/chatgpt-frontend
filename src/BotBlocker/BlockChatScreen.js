@@ -147,21 +147,40 @@ class BlockChatScreen extends Component {
   render() {
     const { modalIsOpen, closeModalFunc } = this.props;
     const { loading, error, filteredClients, isGloballyBlocked, nextDayIndex, dayLocations } = this.state;
-
+    
     const tomorrowsDayLocationIndex = dayLocations.findIndex(x => x.day == nextDayIndex)
 
+    let orderedClients = filteredClients != undefined ? [...filteredClients] : []
+    
+    orderedClients = orderedClients.sort((a, b) => {
+      const willMessageTommorrow_a = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == a.address)
+      const willMessageTommorrow_b = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == b.address)
+
+      if (willMessageTommorrow_a) return -1;
+
+      if (willMessageTommorrow_b) return 1;
+
+      return 0;
+    });
+
+    orderedClients = orderedClients.sort((a, b) => {
+      // If a is marked and b is not, a comes first
+      if (!a.chatIsBlocked && b.chatIsBlocked) return -1;
+      // If b is marked and a is not, b comes first
+      if (a.chatIsBlocked && !b.chatIsBlocked) return 1;
+      // Otherwise, maintain the current order
+      return 0;
+    });
+
     var clientsToMessage = 0
-    const clientBlocks = filteredClients?.map(x => {
+    const clientBlocks = orderedClients?.map(x => {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked
       const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == x.address)
-      console.log("willMessageTommorrow", willMessageTommorrow)
       if(chatIsBlocked == false && willMessageTommorrow != undefined) {clientsToMessage = clientsToMessage + 1}
 
       return <ClientBlockComponent key={x.id} {...x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {this.state.clientLocations}
         showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
   });
-
-  console.log("clientsToMessage", clientsToMessage)
 
     return (
       <div className={`card bordered ${Color.Background}`}>

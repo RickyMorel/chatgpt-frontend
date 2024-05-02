@@ -252,7 +252,7 @@ class DayLocationForm extends Component {
                     <p style={textStyle2}>{this.state?.sendMessagesTime ?? "__:__?"}</p>
                   }
                 </li>
-                <li className='white-text'>_________________________________________________________________________________________________________________________</li>
+                {/* <li className='white-text'>______________________________________________________________________________</li> */}
                   {
                     this.state.isEditingLocations ? 
                     <div></div>

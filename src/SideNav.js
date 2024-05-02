@@ -101,7 +101,7 @@ function SideNav()  {
                   <i className="material-icons left">call</i>
                 </div>
                 <div className="col s9">
-                    Chats Problematicos
+                  Atención Especial
                 </div>
                 <div className="col s2">
                   {hasNewProblematicChat == true ? <i style={{ color: ColorHex.First }} className={`material-icons flicker`}>brightness_1</i> : <div></div>}

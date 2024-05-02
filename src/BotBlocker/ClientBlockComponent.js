@@ -10,7 +10,7 @@ class ClientBlockComponent extends React.Component {
     this.state = {
       isEditing: false,
       isBlocked: false,
-      address: ""
+      address: props.address
     };
   }
 
@@ -27,6 +27,11 @@ class ClientBlockComponent extends React.Component {
     if (this.props.chatIsBlocked !== prevProps.chatIsBlocked) {
       this.setState({
         isBlocked: this.props.chatIsBlocked,
+      })
+    }
+
+    if (this.props.address !== prevProps.address) {
+      this.setState({
         address: this.props.address
       })
     }
@@ -53,7 +58,6 @@ class ClientBlockComponent extends React.Component {
   };
 
   handleBlock = async (phoneNumber, newBlockedState, clientRegisterBlockedStateFunc) => {
-    console.log("handleBlock")
     try {
       const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/blockClientChat`, {phoneNumber: phoneNumber, isBlocked: newBlockedState});
       clientRegisterBlockedStateFunc(phoneNumber, newBlockedState)
