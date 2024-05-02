@@ -61,6 +61,9 @@ class DayLocationForm extends Component {
         sendMessagesTime: response.data.timeToSendMessages,
         processOrdersTime: response.data.timeToProcessOrders
       })
+
+      console.log("GetDayLocations this.state.locations", response.data.dayLocations)
+
     } catch (error) {
       this.props.showPopup(new Error(error.response.data.message))
     }
@@ -82,7 +85,11 @@ class DayLocationForm extends Component {
   handleLocationChange = (day, newLocations, newTime) => {
     const dayIndex = this.state.days.findIndex(x => x == day)
     const location = !newLocations ? this.state.locations[dayIndex].location : Array.from(newLocations, (option) => option.value)
-    const time = !newTime ? this.state.locations[dayIndex].time : newTime
+    const time = newTime == undefined || newTime == null ? this.state.locations[dayIndex].time : newTime
+
+    console.log("handleLocationChange location", location, dayIndex, this.state.locations)
+    console.log("handleLocationChange newTime", newTime)
+
     const dayLocationObj = {
       day: dayIndex,
       locations: location,
@@ -98,6 +105,23 @@ class DayLocationForm extends Component {
     else {
       newLocationArray.push(dayLocationObj)
     }
+
+    this.setState({
+      locations: [...newLocationArray],
+    });
+  };
+
+  handleTimeChange = (day, newTime) => {
+    const dayIndex = this.state.days.findIndex(x => x == day)
+    const time = newTime == undefined || newTime == null ? this.state.locations[dayIndex].time : newTime
+
+    console.log("handleTimeChange location", dayIndex, this.state.locations)
+    console.log("handleTimeChange newTime", newTime)
+      
+    let newLocationArray = this.state.locations
+    const dayToUpdateIndex = this.state.locations.findIndex(x => x.day === dayIndex);
+
+    newLocationArray[dayToUpdateIndex].time = time
 
     this.setState({
       locations: [...newLocationArray],
@@ -211,11 +235,7 @@ class DayLocationForm extends Component {
             <div class="col s5">
               {
                 this.state.isEditingLocations == true ?
-                <select style={{display: 'block' }} value={time} onChange={(e) => this.handleLocationChange(x, null, e.target.value)}>
-                  <option value="">Tiempo...</option>
-                  <option value="morning">En la mañana</option>
-                  <option value="afternoon">En la tarde</option>
-                </select>
+                <input type="text" maxLength={18} placeholder='Mañana' value={time} onChange={(e) => this.handleTimeChange(x, e.target.value)}/>
                 :
                 <p>{time == "" ? "Elejir Tiempo" : time}</p>
               }
@@ -252,7 +272,6 @@ class DayLocationForm extends Component {
                     <p style={textStyle2}>{this.state?.sendMessagesTime ?? "__:__?"}</p>
                   }
                 </li>
-                {/* <li className='white-text'>______________________________________________________________________________</li> */}
                   {
                     this.state.isEditingLocations ? 
                     <div></div>
@@ -262,9 +281,19 @@ class DayLocationForm extends Component {
               </ul>
             </div>
           </nav>
-          <h6 className="center-align">Tiempos de entrega</h6>
+          <br />
+          <br />
+          <h6 className="center-align"><strong>Tiempos de entrega</strong></h6>
           <form className="container">
+            <hr />
+            <div className="row">
+              <div className="col s4"><strong>Día de Mensaje</strong></div>
+              <div className="col s4"><strong>Día de entrega</strong></div>
+              <div className="col s4"><strong>Zona de entrega</strong></div>
+            </div>
             {dayLocationsHtml}
+            <hr />
+            <br />
             <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleEditLocations}>
               <i className="material-icons left">{this.state.isEditingLocations ? "save" : "edit"}</i>
               {this.state.isEditingLocations ? "Save" : "Edit"}
