@@ -3,28 +3,37 @@ import { Color } from '../Colors';
 import firebase from "../firebaseConfig";
 import ProblematicChatComponent from './ProblematicChatComponent';
 
-const ProblematicChatsScreen = () => {
+const ProblematicChatsScreen = (props) => {
     const [searchInput, setSearchInput] = useState('');
     const [allChats, setAllChats] = useState(null);
     const [filteredChats, setFilteredChats] = useState(null);
 
     useEffect(() => {
-        fetchChatData();
-    }, []);
-
+        if (props.botNumber) {
+            fetchChatData();
+        }
+    }, [props.botNumber]); // Include props.botNumber in the dependency array
+    
     const fetchChatData = async () => {
-        const ref = firebase.collection("595971602152").orderBy('createdDate')
-
-        ref.onSnapshot(query => {
-            let chats = []
-            console.log("SNAOPSHOITTTT")
-            query.forEach(doc => {
-                chats.push(doc.data())
-            })
-            setAllChats(chats);
-            setFilteredChats(chats);
-        })
-    };
+        console.log("props.botNumber", props.botNumber)
+        if (!props.botNumber) {
+            return;
+        }
+    
+        try {
+            const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate');
+            ref.onSnapshot(querySnapshot => {
+                let chats = [];
+                querySnapshot.forEach(doc => {
+                    chats.push(doc.data());
+                });
+                setAllChats(chats);
+                setFilteredChats(chats);
+            });
+        } catch (error) {
+            console.error("Error fetching chat data:", error);
+        }
+    }
 
     const handleSearchInputChange = (event) => {
         const input = event.target.value;
@@ -47,7 +56,6 @@ const ProblematicChatsScreen = () => {
         return <ProblematicChatComponent key={i} data={x} index={i} />;
     });
 
-    console.log("allChats", allChats, chatComponents)
     return (
         <div className={`card bordered ${Color.Background}`}>
             <div className="card-content">

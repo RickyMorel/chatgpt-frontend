@@ -11,6 +11,7 @@ import { Color, ColorHex } from './Colors';
 import DayLocationForm from './DayLocation/DayLocationForm';
 import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
 import LoadSpinner from './LoadSpinner';
+import axios from 'axios';
 
 class App extends Component {
   constructor(props) {
@@ -18,9 +19,26 @@ class App extends Component {
 
     this.state = {
       modalIsOpen: 0,
-      isLoading: false
+      isLoading: false,
+      botNumber: ""
     };
   }
+  
+  componentDidMount() {
+    this.GetBotNumber()
+  }
+
+  GetBotNumber = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config/botNumber`);
+      console.log("response", response.data)
+      this.setState({
+        botNumber: response.data,
+      })
+    } catch (error) {
+      this.props.showPopup(new Error(error.response.data.message))
+    }
+  };
 
   setIsLoading = (loading) => {
     this.setState({
@@ -47,7 +65,9 @@ class App extends Component {
                 <Route exact path="/dayLocation"><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
                 <Route exact path="/blockChats"><BlockChatScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
                 <Route exact path="/orders"><OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
-                <Route exact path="/problematicChats"><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
+                <Route exact path="/problematicChats">
+                  <ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/>
+                </Route>
               </Switch>        
           </div>
         </div>

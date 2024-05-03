@@ -35,12 +35,7 @@ function SideNav()  {
   };
 
   const handleSoundPlay = (chats) => {
-
-    console.log("fetchSoundCount before", fetchSoundCount)
-
     fetchSoundCount = fetchSoundCount + 1
-
-    console.log("fetchSoundCount after", fetchSoundCount)
 
     if(chats.length <= 0) { setHasNewProblematicChat(false); return; }
 
