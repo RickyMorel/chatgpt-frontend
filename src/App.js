@@ -53,7 +53,7 @@ class App extends Component {
         <Navbar/>
         <div class="row">
           <div class={`col s12 m4 l3 ${Color.SideNav}`} style={{  height: '93vh'}}>
-            <SideNav/>
+            <SideNav botNumber={this.state.botNumber}/>
           </div>
           <div class="col s12 m8 l9"> 
               <Helmet>

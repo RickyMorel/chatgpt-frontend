@@ -34,7 +34,7 @@ class InventoryScreen extends Component {
         await this.fetchProductData();
     
         this.props.setIsLoading(false)
-      }
+    }
     
     fetchProductData = async () => {
         try {

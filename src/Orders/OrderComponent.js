@@ -63,7 +63,9 @@ class OrderComponent extends React.Component {
           <div class="collapsible-header">
             <span class="client-name" style={{ width: '80%'  }}>{orderNumber}</span>
             <span class="client-name" style={{ width: '100%'  }}>{name}</span>
-            <span class="client-name" style={{ width: '100%'  }}>+{phoneNumber}</span>
+            <span class="client-name" style={{ width: '100%'  }}>
+              <a href={"https://wa.me/" + phoneNumber} target="_blank" rel="noopener noreferrer" className="underlined-link">{phoneNumber}</a>
+            </span>
             <span class="client-name" style={{ width: '100%'  }}>{orderNumber}</span>
             <a><i className='material-icons' style={{ width: '100%'  }}>keyboard_arrow_downs</i></a>
           </div>

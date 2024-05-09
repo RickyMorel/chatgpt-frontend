@@ -6,14 +6,14 @@ import { useLocation } from 'react-router-dom'
 import useSound from 'use-sound';
 import firebase from "./firebaseConfig";
 
-function SideNav()  {
+function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
   const [playSound, setPlaySound] = useState(false);
   let fetchSoundCount = 0
 
   useEffect(() => {
       fetchChatData();
-  }, []);
+  }, [props.botNumber]);
 
   useEffect(() => {
     if (playSound) {
@@ -22,7 +22,11 @@ function SideNav()  {
   }, [playSound]);
 
   const fetchChatData = async () => {
-      const ref = firebase.collection("595971602152").orderBy('createdDate')
+      if (!props.botNumber) {
+          return;
+      }
+
+      const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate')
       ref.onSnapshot(query => {
         let chats = []
         query.forEach(doc => {

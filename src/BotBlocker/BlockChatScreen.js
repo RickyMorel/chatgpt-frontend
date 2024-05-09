@@ -152,23 +152,18 @@ class BlockChatScreen extends Component {
 
     let orderedClients = filteredClients != undefined ? [...filteredClients] : []
     
-    orderedClients = orderedClients.sort((a, b) => {
+    orderedClients.sort((a, b) => {
       const willMessageTommorrow_a = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == a.address)
       const willMessageTommorrow_b = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == b.address)
 
-      if (willMessageTommorrow_a) return -1;
+    // First, sort by location and whether they will message tomorrow
+    if (willMessageTommorrow_a && !willMessageTommorrow_b) return -1;
+    if (!willMessageTommorrow_a && willMessageTommorrow_b) return 1;
+    
+    // If both will message tomorrow or neither will, sort by chatIsBlocked
+    if (!a.chatIsBlocked && b.chatIsBlocked) return -1;
+    if (a.chatIsBlocked && !b.chatIsBlocked) return 1;
 
-      if (willMessageTommorrow_b) return 1;
-
-      return 0;
-    });
-
-    orderedClients = orderedClients.sort((a, b) => {
-      // If a is marked and b is not, a comes first
-      if (!a.chatIsBlocked && b.chatIsBlocked) return -1;
-      // If b is marked and a is not, b comes first
-      if (a.chatIsBlocked && !b.chatIsBlocked) return 1;
-      // Otherwise, maintain the current order
       return 0;
     });
 
