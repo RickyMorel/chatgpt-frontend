@@ -84,7 +84,7 @@ class InventoryScreen extends Component {
             filteredSelectedDayInventory: newSelectedInventory
         });
 
-        this.checkDailyItemOverload();
+        // this.checkDailyItemOverload();
     }
 
     removeFromDailyInventory(movedItem) {

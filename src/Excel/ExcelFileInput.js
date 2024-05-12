@@ -38,9 +38,9 @@ function ExcelFileInput({dataTypeName, setIsLoading}) {
   const GetClientDataResponse = async (jsonData) => {
     const clientData = GetClientDataFromExcel.ExtractClientData(jsonData)
 
-    if(clientData[0].address == undefined) {showPopup(new Error("No se encontro 'Domicilio' en el excel")); return}
-    else if(clientData[0].phoneNumber == undefined) {showPopup(new Error("No se encontro 'Numero' en el excel")); return}
-    else if(clientData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); return}
+    if(clientData[0].address == undefined) {showPopup(new Error("No se encontro 'Domicilio' en el excel")); setIsLoading(false); return}
+    else if(clientData[0].phoneNumber == undefined) {showPopup(new Error("No se encontro 'Numero' en el excel")); setIsLoading(false); return}
+    else if(clientData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); setIsLoading(false); return}
 
     const response = await GetClientDataFromExcel.PostData(`${process.env.REACT_APP_HOST_URL}/client-crud/createMany`, clientData)
 
@@ -51,9 +51,9 @@ function ExcelFileInput({dataTypeName, setIsLoading}) {
   const GetProductDataResponse = async (jsonData) => {
     const productData = GetProductDataFromExcel.ExtractProductData(jsonData)
 
-    if(productData[0].price == undefined) {showPopup(new Error("No se encontro 'Precio' en el excel")); return}
-    else if(productData[0].flavourType == undefined) {showPopup(new Error("No se encontro 'Sabor' en el excel")); return}
-    else if(productData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); return}
+    if(productData[0].price == undefined) {showPopup(new Error("No se encontro 'Precio' en el excel")); setIsLoading(false); return}
+    else if(productData[0].tags == undefined) {showPopup(new Error("No se encontro 'Etiquetas' en el excel")); setIsLoading(false); return}
+    else if(productData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); setIsLoading(false); return}
 
     const response = await GetClientDataFromExcel.PostData(`${process.env.REACT_APP_HOST_URL}/inventory/resetItems`, productData)
 
