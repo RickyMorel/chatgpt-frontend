@@ -206,6 +206,9 @@ class DayLocationForm extends Component {
       "marginRight": "50%" 
     };
 
+    let orderedLocations = this.state.clientLocations.sort()
+    orderedLocations = orderedLocations.filter(x => x.toString().toLowerCase() != "NO MENSAJEAR".toLowerCase())
+
     const dayLocationsHtml = this.state.days.map(x => {
       const dayIndex = this.state.days.indexOf(x)
       const locations = this.state.locations.find(x => x.day == dayIndex) ? this.state.locations.find(x => x.day == dayIndex).locations : []
@@ -245,7 +248,7 @@ class DayLocationForm extends Component {
                 this.state.isEditingLocations == true ?
                 <select style={selectStyle} multiple={true} value={locations} onChange={(e) => this.handleLocationChange(x, e.target.selectedOptions, null)}>
                   {
-                    this.state.clientLocations && this.state.clientLocations?.map(x => (
+                    orderedLocations && orderedLocations?.map(x => (
                       <option value={x}>{x}</option>
                     ))
                   }
