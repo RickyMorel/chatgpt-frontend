@@ -72,7 +72,7 @@ function SideNav(props)  {
           <Nav.Item className={GetNavItemColor('/blockChats')}>
             <Link to="/blockChats">
               <i className="material-icons left">contacts</i>
-              Bloquear Chat
+              Clientes
             </Link>
           </Nav.Item>
           <Nav.Item className={GetNavItemColor('/inventory')}>

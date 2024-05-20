@@ -56,8 +56,6 @@ class OrderComponent extends React.Component {
       )
       });
 
-    console.log("orderList", orderList)
-
     return (
         <li className="collection-item">
           <div class="collapsible-header">
