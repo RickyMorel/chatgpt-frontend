@@ -10,7 +10,8 @@ class ClientBlockComponent extends React.Component {
     this.state = {
       isEditing: false,
       isBlocked: false,
-      address: props.address
+      address: props.address,
+      // name: props.name
     };
   }
 
@@ -19,6 +20,7 @@ class ClientBlockComponent extends React.Component {
 
     this.setState({
       isBlocked: wasBlocked,
+      name: this.props.name,
       address: this.props.address
     })
   }
@@ -30,6 +32,11 @@ class ClientBlockComponent extends React.Component {
       })
     }
 
+    if (this.props.name !== prevProps.name) {
+      this.setState({
+        name: this.props.name
+      })
+    }
     if (this.props.address !== prevProps.address) {
       this.setState({
         address: this.props.address
@@ -49,6 +56,19 @@ class ClientBlockComponent extends React.Component {
       const clientObj = {phoneNumber: this.props.phoneNumber, address: location}
       this.setState({
         address: location
+      })
+      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/updateByNumber`, clientObj);
+      return null
+    } catch (error) {
+      this.props.showPopup(new Error(error.response.data.message))
+    }
+  };
+
+  handleNameChange = async (newName) => {
+    try {
+      const clientObj = {phoneNumber: this.props.phoneNumber, name: newName}
+      this.setState({
+        name: newName
       })
       const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/updateByNumber`, clientObj);
       return null
@@ -77,7 +97,12 @@ class ClientBlockComponent extends React.Component {
     return (
       <div className={willMessageTommorrow ? `row ${Color.Third} list-item z-depth-2 border` : `row list-item z-depth-2 border`}>
         <div className="col s12 m4">
-          <span className="client-name">{name}</span>
+          {
+            this.state.isEditing == true ?
+            <input style={{display: 'block' }} value={this.state.name} onChange={(e) => this.handleNameChange(e.target.value)}/>
+            :
+            <span className="client-name">{this.state.name}</span>
+          }
         </div>
         <div className="col s12 m3">
           {
