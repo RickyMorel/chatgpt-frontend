@@ -33,6 +33,8 @@ class InventoryScreen extends Component {
         await this.fetchGlobalConfig();
         await this.fetchProductData();
     
+        console.log("Force select day!", this.state.nextDayIndex); this.handleDayTabClick(this.state.nextDayIndex) 
+
         this.props.setIsLoading(false)
     }
     
