@@ -25,7 +25,7 @@ function ExcelFileInput({dataTypeName, setIsLoading}) {
       setExcelData(jsonData);
 
       if(dataTypeName == "productos") {
-        GetProductDataResponse(jsonData)
+        GenerateIsidoraProductExcel(jsonData)
       }
       else if(dataTypeName == "clientes") {
         GetClientDataResponse(jsonData)
@@ -59,6 +59,68 @@ function ExcelFileInput({dataTypeName, setIsLoading}) {
 
     setIsLoading(false)
     showPopup(response)
+  }
+
+  const GenerateIsidoraProductExcel = async (jsonData) => {
+    const productData = GetProductDataFromExcel.ExtractProductData(jsonData)
+
+    console.log("GenerateProductExcel", productData)
+
+    if(productData[0].price == undefined) {showPopup(new Error("No se encontro 'Precio' en el excel")); setIsLoading(false); return}
+    else if(productData[0].tags == undefined) {showPopup(new Error("No se encontro 'Etiquetas' en el excel")); setIsLoading(false); return}
+    else if(productData[0].name == undefined) {showPopup(new Error("No se encontro 'Nombre' en el excel")); setIsLoading(false); return}
+
+    let uniqueObjects = {};
+
+    productData.forEach(item => {
+        if (uniqueObjects[item.name]) {
+          // Merge tags if the object name already exists
+          uniqueObjects[item.name].tags = Array.from(new Set([...uniqueObjects[item.name].tags, item.tags ? item.tags[0] : ""]));
+          uniqueObjects[item.name].tags = uniqueObjects[item.name].tags.filter(x => x.includes("Variante agotada o no disponible") == false && x.length > 0)
+
+          for (let i = 0; i < uniqueObjects[item.name].tags.length; i++) {
+            let tag = uniqueObjects[item.name].tags[i];
+      
+            if (tag.includes("P") == true) { tag = "pequeño"; }
+            else if (tag.includes("M") == true) { tag = "mediano"; }
+            else if (tag.includes("G") == true) { tag = "grande"; }
+            else if (tag.includes("XP") == true) { tag = "extra pequeño"; }
+
+            uniqueObjects[item.name].tags[i] = tag;
+          }
+        } else {
+            item.tags = item.tags ?? []
+
+            FilterIsidoraTag(item);
+            uniqueObjects[item.name] = { ...item };
+        }
+    });
+
+    let filteredData = Object.values(uniqueObjects);
+    console.log("filteredData", filteredData)
+
+    //const response = await GetClientDataFromExcel.PostData(`${process.env.REACT_APP_HOST_URL}/inventory/resetItems`, productData)
+
+    setIsLoading(false)
+    //showPopup(response)
+  }
+
+  const FilterIsidoraTag = (item) => {
+    item.tags = item.tags.filter(x => 
+      x.includes("Variante agotada o no disponible") == false)
+
+    for (let i = 0; i < item.tags.length; i++) {
+      const tag = item.tags[i];
+      let newTag = "";
+
+      if (tag.includes("P") == true) { newTag = "pequeño"; }
+      else if (tag.includes("M") == true) { newTag = "mediano"; }
+      else if (tag.includes("G") == true) { newTag = "grande"; }
+      else if (tag.includes("XP") == true) { newTag = "extra pequeño"; }
+
+      //else {uniqueObjects[item.name].tags.splice(i, 1); return;}
+      item.tags[i] = newTag;
+    }
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });

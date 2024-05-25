@@ -11,7 +11,6 @@ class GetProductDataFromExcel extends GetDataFromExcel {
         productsJson.forEach(jsonProduct => {
             const extractedPrice = jsonProduct[headerIndexes[2]] ? this.ExtractPriceFromString(jsonProduct[headerIndexes[2]].toString()) : undefined
             const tagsArray = jsonProduct[headerIndexes[3]] ? this.ExtractTagsFromString(jsonProduct[headerIndexes[3]].toString()) : undefined
-            console.log("jsonProduct[headerIndexes[2]]", jsonProduct[headerIndexes[2]])
             const newProduct = {
                 name: jsonProduct[headerIndexes[0]],
                 code: jsonProduct[headerIndexes[1]],
@@ -24,7 +23,7 @@ class GetProductDataFromExcel extends GetDataFromExcel {
             }
             productData.push(newProduct)
         });
-        console.log("productData", productData)
+
         return productData
     }
 
