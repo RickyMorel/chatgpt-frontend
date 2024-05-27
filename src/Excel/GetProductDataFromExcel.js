@@ -1,3 +1,4 @@
+import ExcelProductItem from "./ExcelProductItem";
 import GetDataFromExcel from "./GetDataFromExcel";
 
 class GetProductDataFromExcel extends GetDataFromExcel {
@@ -11,16 +12,18 @@ class GetProductDataFromExcel extends GetDataFromExcel {
         productsJson.forEach(jsonProduct => {
             const extractedPrice = jsonProduct[headerIndexes[2]] ? this.ExtractPriceFromString(jsonProduct[headerIndexes[2]].toString()) : undefined
             const tagsArray = jsonProduct[headerIndexes[3]] ? this.ExtractTagsFromString(jsonProduct[headerIndexes[3]].toString()) : undefined
-            const newProduct = {
-                name: jsonProduct[headerIndexes[0]],
-                code: jsonProduct[headerIndexes[1]],
-                description: jsonProduct[headerIndexes[5]],
-                price: parseInt(extractedPrice), 
-                tags: tagsArray,
-                amount: jsonProduct[headerIndexes[4]],
-                imageLink: jsonProduct[headerIndexes[6]],
-                catalogueLink: jsonProduct[headerIndexes[7]],
-            }
+            
+            const newProduct = new ExcelProductItem(
+                jsonProduct[headerIndexes[0]], 
+                jsonProduct[headerIndexes[1]],
+                jsonProduct[headerIndexes[5]],
+                parseInt(extractedPrice),
+                tagsArray,
+                jsonProduct[headerIndexes[4]],
+                jsonProduct[headerIndexes[6]],
+                jsonProduct[headerIndexes[7]]
+            )
+
             productData.push(newProduct)
         });
 

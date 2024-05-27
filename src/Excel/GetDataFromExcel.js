@@ -18,7 +18,8 @@ class GetDataFromExcel {
     static PostData = async (url, data) => {
         try {
           const response = await axios.post(url, data);
-          return null
+          console.log("PostData", response)
+          return response
         } catch (error) {
           return error
         }

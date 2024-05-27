@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import * as XLSX from 'xlsx';
 import axios from 'axios';
+import React, { Component } from 'react';
 import { Color } from '../Colors';
+import ExcelOutputUtils from './ExcelOutputUtils';
 
 class ExcelFileOutput extends Component {
   state = {
@@ -26,6 +26,8 @@ class ExcelFileOutput extends Component {
     await this.fetchOrderData();
 
     if(this.state.orders.length < 1) { return null}
+
+    console.log("this.state.orders", this.state.orders)
     
     let allOrders = []
     this.state.orders.forEach(client => {
@@ -42,21 +44,17 @@ class ExcelFileOutput extends Component {
       allOrders.push(orderEntry)
     });
 
+    console.log("allOrders", allOrders)
+
     return allOrders
   }
 
   handleDownload = async () => {
-    // Create a sample workbook
     const data = await this.convertOrderToExcel()
 
-    if(!data) {return}
+    console.log("handleDownload", data)
 
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-    // Save the workbook to a file
-    XLSX.writeFile(wb, 'pedidos.xlsx');
+    ExcelOutputUtils.handleDownload(data)
   };
 
   render() {
