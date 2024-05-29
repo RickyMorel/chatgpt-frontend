@@ -1,10 +1,11 @@
 
 import axios from 'axios';
 import React, { Component } from 'react';
+import Modal from 'react-modal';
+import { Color } from '../Colors';
 import SearchBar from '../Searchbar/Searchbar';
 import InventoryItemComponent from './InventoryItemComponent';
-import { Link } from 'react-router-dom';
-import { Color } from '../Colors';
+import { PopupStyle } from '../Popups/PopupManager';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -20,6 +21,8 @@ class InventoryScreen extends Component {
           promoItemCodes: [],
           needsToSave: false,
           nextDayIndex: -1,
+          editItemModelOpen: false,
+          itemToEdit: null
         };
     }
 
@@ -45,6 +48,8 @@ class InventoryScreen extends Component {
             products: response.data,
             filteredProducts: response.data,
             });
+
+            console.log("INVENTORY DATA", response.data)
         } catch (error) {}
     };
 
@@ -71,6 +76,13 @@ class InventoryScreen extends Component {
 
         this.setState({
             needsToSave: true
+        })
+    }
+
+    handleEditItem = (item) => {
+        this.setState({
+            editItemModelOpen: item != undefined,
+            itemToEdit: item
         })
     }
 
@@ -193,16 +205,59 @@ class InventoryScreen extends Component {
             if(selectedDayInventory?.items?.find(y => y.code == x.code)) {return null;}
 
             return(
-                <InventoryItemComponent key={x.id} item={x} isInDailyInventory={false} handleClickCallback={this.handleItemClick} />
+                <InventoryItemComponent 
+                    key={x.id}
+                    item={x}
+                    isInDailyInventory={false}
+                    handleClickCallback={this.handleItemClick} 
+                    handleEditItemCallback={this.handleEditItem}
+                />
             )
         });
         const selectedDayProductsList = filteredSelectedDayInventory?.items?.map(x => {
             const isPromoItem = this.state?.promoItemCodes?.find(y => y == x.code) != undefined
 
             return(
-            <InventoryItemComponent key={x.id} item={x} isInDailyInventory={true} isPromoItem={isPromoItem} handleClickCallback={this.handleItemClick} handleSelectPromoItemCallback={this.handleSelectPromoItem} />
+            <InventoryItemComponent 
+                key={x.id} item={x}
+                isInDailyInventory={true} 
+                isPromoItem={isPromoItem} 
+                handleClickCallback={this.handleItemClick}
+                handleSelectPromoItemCallback={this.handleSelectPromoItem} 
+                handleEditItemCallback={this.handleEditItem}
+            />
             )
         });
+
+        const editItemModal =             
+        <Modal
+            isOpen={this.state.editItemModelOpen}
+            onRequestClose={() => this.handleEditItem(undefined)}
+            contentLabel="Example Modal"
+            style={PopupStyle.Big}
+        >
+            <div className={`card bordered ${Color.Background}`}>
+                <div className="card-content">
+                <span className="card-title">{`Editar ${this.state.itemToEdit?.name}`}</span>
+                    <img style={{ display: 'block', width: '300px', height: 'auto' }}  src={this.state.itemToEdit?.imageLink} alt="Example Image"/>
+                    <span>{`Nombre:`}</span>
+                    <input style={{display: 'block' }} value={this.state.itemToEdit?.name}/>
+                    <span>{`Descripción:`}</span>
+                    <input style={{display: 'block' }} value={this.state.itemToEdit?.description}/>
+                    <span>{`Etiquetas:`}</span>
+                    <input style={{display: 'block' }} value={this.state.itemToEdit?.tags}/>
+                    <span>{`Precio:`}</span>
+                    <input style={{display: 'block' }} value={this.state.itemToEdit?.price}/>
+                    <span>{`Imagen URL:`}</span>
+                    <input style={{display: 'block' }} value={this.state.itemToEdit?.imageLink}/>
+                    {/* <img style={{display: 'block' }} src={this.state.itemToEdit?.imageLink} alt="Example Image"/> */}
+                </div>
+                <div className="card-action">
+                    <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.handleEditItem(undefined)}>Guardar</button>
+                    <button className={`waves-effect waves-light btn ${Color.Second}`} onClick={() => this.handleEditItem(undefined)}>Cerrar</button>
+                </div>
+            </div>
+        </Modal>
 
         console.log("filteredSelectedDayInventory?.items", filteredSelectedDayInventory?.items)
             
@@ -214,6 +269,7 @@ class InventoryScreen extends Component {
 
         return (
             <div className={`card bordered ${Color.Background}`}>
+                {editItemModal}
                 <div className="card-content">
                     <nav className="transparent z-depth-0">
                         <div class="nav-wrapper">
