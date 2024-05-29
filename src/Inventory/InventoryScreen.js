@@ -238,23 +238,26 @@ class InventoryScreen extends Component {
         >
             <div className={`card bordered ${Color.Background}`}>
                 <div className="card-content">
-                <span className="card-title">{`Editar ${this.state.itemToEdit?.name}`}</span>
-                    <img style={{ display: 'block', width: '300px', height: 'auto' }}  src={this.state.itemToEdit?.imageLink} alt="Example Image"/>
-                    <span>{`Nombre:`}</span>
-                    <input style={{display: 'block' }} value={this.state.itemToEdit?.name}/>
-                    <span>{`Descripción:`}</span>
-                    <input style={{display: 'block' }} value={this.state.itemToEdit?.description}/>
-                    <span>{`Etiquetas:`}</span>
-                    <input style={{display: 'block' }} value={this.state.itemToEdit?.tags}/>
-                    <span>{`Precio:`}</span>
-                    <input style={{display: 'block' }} value={this.state.itemToEdit?.price}/>
-                    <span>{`Imagen URL:`}</span>
-                    <input style={{display: 'block' }} value={this.state.itemToEdit?.imageLink}/>
-                    {/* <img style={{display: 'block' }} src={this.state.itemToEdit?.imageLink} alt="Example Image"/> */}
-                </div>
-                <div className="card-action">
-                    <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.handleEditItem(undefined)}>Guardar</button>
-                    <button className={`waves-effect waves-light btn ${Color.Second}`} onClick={() => this.handleEditItem(undefined)}>Cerrar</button>
+                    <span className="card-title">{`Editar ${this.state.itemToEdit?.name}`}</span>
+                    <div className="row">
+                        <div className="col s8">
+                            <span>{`Nombre:`}</span>
+                            <input style={{display: 'block' }} value={this.state.itemToEdit?.name}/>
+                            <span>{`Descripción:`}</span>
+                            <input style={{display: 'block' }} value={this.state.itemToEdit?.description}/>
+                            <span>{`Etiquetas:`}</span>
+                            <input style={{display: 'block' }} value={this.state.itemToEdit?.tags}/>
+                            <span>{`Precio:`}</span>
+                            <input style={{display: 'block' }} value={this.state.itemToEdit?.price}/>
+                            <span>{`Imagen URL:`}</span>
+                            <input style={{display: 'block' }} value={this.state.itemToEdit?.imageLink}/>
+                            <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.handleEditItem(undefined)}>Guardar</button>
+                            <button className={`waves-effect waves-light btn ${Color.Second}`} onClick={() => this.handleEditItem(undefined)}>Cerrar</button>
+                        </div>
+                        <div className="col s4">
+                            <img style={{ display: 'block', maxWidth: '100%', height: '400px' }}  src={this.state.itemToEdit?.imageLink} alt="Example Image"/>                     
+                        </div>
+                    </div>
                 </div>
             </div>
         </Modal>
