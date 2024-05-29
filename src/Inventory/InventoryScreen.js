@@ -1,11 +1,10 @@
 
 import axios from 'axios';
 import React, { Component } from 'react';
-import Modal from 'react-modal';
 import { Color } from '../Colors';
 import SearchBar from '../Searchbar/Searchbar';
+import InventoryEditItemModal from './InventoryEditItemModal';
 import InventoryItemComponent from './InventoryItemComponent';
-import { PopupStyle } from '../Popups/PopupManager';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -84,6 +83,16 @@ class InventoryScreen extends Component {
             editItemModelOpen: item != undefined,
             itemToEdit: item
         })
+    }
+
+    handleEditItemTagChange = (e) => {
+        const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+        this.setState(prevState => ({
+            itemToEdit: {
+                ...prevState.itemToEdit,
+                tags: selectedOptions
+            }
+        }));
     }
 
     addToDailyInventory(movedItem) {
@@ -229,38 +238,12 @@ class InventoryScreen extends Component {
             )
         });
 
-        const editItemModal =             
-        <Modal
-            isOpen={this.state.editItemModelOpen}
-            onRequestClose={() => this.handleEditItem(undefined)}
-            contentLabel="Example Modal"
-            style={PopupStyle.Big}
-        >
-            <div className={`card bordered ${Color.Background}`}>
-                <div className="card-content">
-                    <span className="card-title">{`Editar ${this.state.itemToEdit?.name}`}</span>
-                    <div className="row">
-                        <div className="col s8">
-                            <span>{`Nombre:`}</span>
-                            <input style={{display: 'block' }} value={this.state.itemToEdit?.name}/>
-                            <span>{`Descripción:`}</span>
-                            <input style={{display: 'block' }} value={this.state.itemToEdit?.description}/>
-                            <span>{`Etiquetas:`}</span>
-                            <input style={{display: 'block' }} value={this.state.itemToEdit?.tags}/>
-                            <span>{`Precio:`}</span>
-                            <input style={{display: 'block' }} value={this.state.itemToEdit?.price}/>
-                            <span>{`Imagen URL:`}</span>
-                            <input style={{display: 'block' }} value={this.state.itemToEdit?.imageLink}/>
-                            <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.handleEditItem(undefined)}>Guardar</button>
-                            <button className={`waves-effect waves-light btn ${Color.Second}`} onClick={() => this.handleEditItem(undefined)}>Cerrar</button>
-                        </div>
-                        <div className="col s4">
-                            <img style={{ display: 'block', maxWidth: '100%', height: '400px' }}  src={this.state.itemToEdit?.imageLink} alt="Example Image"/>                     
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </Modal>
+        const editItemModal = 
+        <InventoryEditItemModal 
+            isOpen={this.state.editItemModelOpen} 
+            itemToEdit={this.state.itemToEdit} 
+            closeCallback={() => this.handleEditItem(undefined)}
+        />      
 
         console.log("filteredSelectedDayInventory?.items", filteredSelectedDayInventory?.items)
             
@@ -282,7 +265,6 @@ class InventoryScreen extends Component {
                                 :
                                 <div></div>
                             }
-                            {/* <Link className={`waves-light ${Color.Button_1}`} to="/" onClick={() => this.saveDailyInventories()}><i className="material-icons left teal-text">arrow_back</i></Link> */}
                             <ul style={navbarStyle}>
                                 <li onClick={() => this.handleDayTabClick(0)} className={`${0 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}>
                                     <a className={`grey-text text-darken-2`}>{0 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Lunes</a></li>
