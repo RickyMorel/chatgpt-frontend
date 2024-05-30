@@ -36,7 +36,7 @@ class InventoryScreen extends Component {
         await this.fetchGlobalConfig();
         await this.fetchProductData();
     
-        console.log("Force select day!", this.state.nextDayIndex); this.handleDayTabClick(this.state.nextDayIndex) 
+        this.handleDayTabClick(this.state.nextDayIndex) 
 
         this.props.setIsLoading(false)
     }
@@ -137,9 +137,6 @@ class InventoryScreen extends Component {
     }
 
     updateProductLists = (updatedItem) => {
-        console.log("updateProductLists updatedItem.code", updatedItem)
-        console.log("updateProductLists this.state.products", this.state.products)
-        console.log("updateProductLists this.state.filteredProducts", this.state.filteredProducts)
         let updatedProductList = this.state.products?.filter(x => x.code != updatedItem.code)
         updatedProductList.push(updatedItem)
 
@@ -183,13 +180,16 @@ class InventoryScreen extends Component {
     }
 
     saveDailyInventories = async () => {
+
+        console.log("selectedDayInventory", this.state?.selectedDayInventory)
+        if(this.state.selectedDayInventory?.items?.length < 5) {this.props.showPopup(new Error("Cargar al menos 5 productos!")); return;}
+        if(this.state.promoItemCodes.length < 3) {this.props.showPopup(new Error("Hace falta marcar 3 productos especiales!")); return;}
+
         this.setState({
             needsToSave: false
         })
         var newDayInventories = this.state.dayInventories
         const selectedDayInventory = this.state.selectedDayInventory
-
-        console.log("newDayInventories", newDayInventories)
 
         //Remove old day inventory
         newDayInventories = newDayInventories?.filter(x => x.day != selectedDayInventory.day)
@@ -197,8 +197,6 @@ class InventoryScreen extends Component {
         newDayInventories.push(selectedDayInventory)
         
         var newDayInventoriesDto = []
-
-        console.log("saveDailyInventories state promo codes", this.state.promoItemCodes)
 
         newDayInventories.forEach(dayInv => {
             const dayInvDto = 
@@ -210,7 +208,6 @@ class InventoryScreen extends Component {
         });
 
         try {
-            console.log("saveDailyInventories newDayInventoriesDto", newDayInventoriesDto)
             const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayInventory`, {inventories: newDayInventoriesDto});
             this.setState({
                 dayInventories: response.data.dayInventories,
@@ -246,7 +243,6 @@ class InventoryScreen extends Component {
             )
         });
 
-        console.log("filteredSelectedDayInventory", filteredSelectedDayInventory)
         const orderedSelectedDayProducts = filteredSelectedDayInventory?.items?.sort((a, b) => this.sortByName(a, b, "name"))
         const selectedDayProductsList = orderedSelectedDayProducts?.map(x => {
             const isPromoItem = this.state?.promoItemCodes?.find(y => y == x.code) != undefined
@@ -325,12 +321,14 @@ class InventoryScreen extends Component {
                     </nav>
                     <div className='row'>
                         <div className='col s6'>
+                            <h6 className='center'>Todos los Artículos</h6>
                             <SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>
                             <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
                                 {allProductsList}
                             </div>
                         </div>
                         <div className='col s6'>
+                            <h6 className='center'>Artículos Cargados</h6>
                             {this.state.products && (<SearchBar itemList={selectedDayInventory?.items} searchText="Buscar Productos..." OnSearchCallback={this.handleDailyInventorySearch}/>)}
                             <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
                                 {selectedDayProductsList}
