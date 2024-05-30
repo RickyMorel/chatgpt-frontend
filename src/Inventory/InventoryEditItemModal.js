@@ -28,8 +28,25 @@ class InventoryEditItemModal extends Component {
         })
     }
 
+    handleAddNewTag = () => {
+        this.props.addNewTagCallback(this.state.newTagInput)
+
+        this.setState({
+            newTagInput: ""
+        })
+    }
+
     handleStringChange = (e) => {
         const { name, value } = e.target;
+
+        if(name == "newTagInput") {
+            this.setState({
+                newTagInput: e.target.value
+            })
+
+            return;
+        }
+
         this.setState({
             itemToEdit: {
                 ...this.state.itemToEdit,
@@ -47,19 +64,6 @@ class InventoryEditItemModal extends Component {
                 tags: selectedOptions
             }
         }));
-    }
-
-    handleAddNewTag = () => {
-        const newTag = this.state.newTagInput.trim();
-        if (newTag && !this.state.itemToEdit.tags.includes(newTag)) {
-            this.setState(prevState => ({
-                itemToEdit: {
-                    ...prevState.itemToEdit,
-                    tags: [...prevState.itemToEdit.tags, newTag]
-                },
-                newTagInput: ''
-            }));
-        }
     }
 
     render() {
@@ -119,8 +123,9 @@ class InventoryEditItemModal extends Component {
                                 style={{display: 'block' }}
                                 type="text"
                                 placeholder="Nueva etiqueta"
+                                name='newTagInput'
                                 value={this.state.newTagInput}
-                                onChange={this.handleNewTagChange}
+                                onChange={this.handleStringChange}
                             />
                             <Button variant="contained" onClick={this.handleAddNewTag}>Agregar etiqueta</Button>
                         </div>                 

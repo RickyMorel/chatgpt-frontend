@@ -21,7 +21,8 @@ class InventoryScreen extends Component {
           needsToSave: false,
           nextDayIndex: -1,
           editItemModelOpen: false,
-          itemToEdit: null
+          itemToEdit: null,
+          addedTags: []
         };
     }
 
@@ -82,16 +83,6 @@ class InventoryScreen extends Component {
         })
     }
 
-    handleEditItemTagChange = (e) => {
-        const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
-        this.setState(prevState => ({
-            itemToEdit: {
-                ...prevState.itemToEdit,
-                tags: selectedOptions
-            }
-        }));
-    }
-
     addToDailyInventory(movedItem) {
         var currentSelectedItems = [...this.state.selectedDayInventory.items];
 
@@ -135,6 +126,15 @@ class InventoryScreen extends Component {
             promoItemCodes: allInventories[selectedDayNumber].promoItemCodes
         })
     }   
+
+    handleAddNewTag = (tag) => {
+        const newTag = tag.trim();
+        if (newTag && !this.state?.addedTags.includes(newTag)) {
+            this.setState(prevState => ({
+                addedTags: [...prevState.itemToEdit.tags, newTag]
+            }));
+        }
+    }
 
     handleSearch = (filteredList) => {
         this.setState({
@@ -241,6 +241,9 @@ class InventoryScreen extends Component {
             item.tags.forEach(tag => {
                 if(allTags.includes(tag) == false) { allTags.push(tag) }
             });
+            this.state?.addedTags.forEach(addedTag => {
+                if(allTags.includes(addedTag) == false) { allTags.push(addedTag) }
+            });
         });
 
         const editItemModal = 
@@ -249,6 +252,7 @@ class InventoryScreen extends Component {
             itemToEdit={this.state.itemToEdit} 
             closeCallback={() => this.handleEditItem(undefined)}
             allTags={allTags}
+            addNewTagCallback={this.handleAddNewTag}
         />      
             
 
