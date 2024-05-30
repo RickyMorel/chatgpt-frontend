@@ -131,7 +131,7 @@ class InventoryScreen extends Component {
         const newTag = tag.trim();
         if (newTag && !this.state?.addedTags.includes(newTag)) {
             this.setState(prevState => ({
-                addedTags: [...prevState.itemToEdit.tags, newTag]
+                addedTags: [...prevState.addedTags, newTag]
             }));
         }
     }

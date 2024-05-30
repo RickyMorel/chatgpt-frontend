@@ -21,7 +21,10 @@ class InventoryEditItemModal extends Component {
     }
 
     componentDidUpdate = (prevProps) => {
-        if(this.props == prevProps) {return;}
+        //Don't update if user didnt swap items
+        if(this.props?.itemToEdit?.name == prevProps?.itemToEdit?.name) {return;}
+
+        console.log("componentDidUpdate", this.props)
 
         this.setState({
             itemToEdit: this.props.itemToEdit
@@ -29,10 +32,18 @@ class InventoryEditItemModal extends Component {
     }
 
     handleAddNewTag = () => {
-        this.props.addNewTagCallback(this.state.newTagInput)
+        const newTag = this.state.newTagInput
+        this.props.addNewTagCallback(newTag)
+
+        const newTagsArray = [...this.state.itemToEdit.tags, newTag]
+        console.log("[...this.state.itemToEdit.tags, newTag]", newTagsArray)
 
         this.setState({
-            newTagInput: ""
+            itemToEdit: {
+                ...this.state.itemToEdit,
+                tags: newTagsArray
+            },
+            newTagInput: "",
         })
     }
 
@@ -119,15 +130,22 @@ class InventoryEditItemModal extends Component {
                                     ))}
                                 </Select>
                             </FormControl>
-                            <input
-                                style={{display: 'block' }}
-                                type="text"
-                                placeholder="Nueva etiqueta"
-                                name='newTagInput'
-                                value={this.state.newTagInput}
-                                onChange={this.handleStringChange}
-                            />
-                            <Button variant="contained" onClick={this.handleAddNewTag}>Agregar etiqueta</Button>
+                            <span>{`Nueva etiqueta:`}</span>
+                            <div className="row">
+                                <div className="col s8">
+                                    <input
+                                        style={{display: 'block' }}
+                                        type="text"
+                                        placeholder="Nueva etiqueta"
+                                        name='newTagInput'
+                                        value={this.state.newTagInput}
+                                        onChange={this.handleStringChange}
+                                    />
+                                </div>
+                                <div className="col s4">
+                                    <button className={`right waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleAddNewTag}>Agregar etiqueta nueva</button>
+                                </div>
+                            </div>
                         </div>                 
                         <div className="col s4">
                             <img style={{ display: 'block', maxWidth: '100%', height: '400px' }}  src={this.state.itemToEdit?.imageLink} alt="Example Image"/>                     
