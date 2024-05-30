@@ -3,6 +3,7 @@ import { PopupStyle } from '../Popups/PopupManager';
 import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material';
 import Modal from 'react-modal';
 import { Color, ColorHex } from '../Colors';
+import axios from 'axios';
 
 class InventoryEditItemModal extends Component {
     constructor(props) {
@@ -11,6 +12,7 @@ class InventoryEditItemModal extends Component {
         this.state = {
             itemToEdit: {
                 name: '',
+                code: '',
                 description: '',
                 tags: [],
                 price: '',
@@ -36,7 +38,6 @@ class InventoryEditItemModal extends Component {
         this.props.addNewTagCallback(newTag)
 
         const newTagsArray = [...this.state.itemToEdit.tags, newTag]
-        console.log("[...this.state.itemToEdit.tags, newTag]", newTagsArray)
 
         this.setState({
             itemToEdit: {
@@ -45,6 +46,20 @@ class InventoryEditItemModal extends Component {
             },
             newTagInput: "",
         })
+    }
+
+     handleSave = async () => {
+        const itemToEdit = this.state.itemToEdit
+        this.props.closeCallback()
+
+        try {
+            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/inventory/updateItem`, itemToEdit);
+            this.props.updateProductsCallback(itemToEdit)
+            return null
+          } catch (error) {
+            console.log("handleSave showPopup", error)
+            this.props.showPopup(error);
+          }
     }
 
     handleStringChange = (e) => {
@@ -91,9 +106,6 @@ class InventoryEditItemModal extends Component {
                 <a className={`right waves-effect waves-light btn ${Color.Second}`} onClick={closeCallback}>
                     <i className="material-icons">close</i>
                 </a>
-                <a className={`right waves-effect waves-light btn ${Color.Button_1}`} onClick={closeCallback}>
-                    <i className="material-icons">save</i>
-                </a>
                 <div className="card-content">
                     <span className="card-title">{`Editar ${itemToEdit?.name}`}</span>
                     <div className="row">
@@ -103,7 +115,7 @@ class InventoryEditItemModal extends Component {
                             <span>{`Descripción:`}</span>
                             <input style={{display: 'block' }} name="description" value={this.state.itemToEdit?.description} onChange={this.handleStringChange}/>
                             <span>{`Precio:`}</span>
-                            <input style={{display: 'block' }} name="price" value={this.state.itemToEdit?.price} onChange={this.handleStringChange}/>
+                            <input style={{display: 'block' }} type='number' name="price" value={this.state.itemToEdit?.price} onChange={this.handleStringChange}/>
                             <span>{`Imagen URL:`}</span>
                             <input style={{display: 'block' }} name="imageLink" value={this.state.itemToEdit?.imageLink} onChange={this.handleStringChange}/>
                             <span>{`Etiquetas:`}</span>
@@ -146,6 +158,15 @@ class InventoryEditItemModal extends Component {
                                     <button className={`right waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleAddNewTag}>Agregar etiqueta nueva</button>
                                 </div>
                             </div>
+                            {
+                    this.props.itemToEdit != this.state.itemToEdit ?
+                    <a className={`waves-effect waves-light btn ${Color.First}`} onClick={this.handleSave}  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <i className="material-icons">save</i>
+                        Guardar
+                    </a>
+                    :
+                    <div></div>
+                }
                         </div>                 
                         <div className="col s4">
                             <img style={{ display: 'block', maxWidth: '100%', height: '400px' }}  src={this.state.itemToEdit?.imageLink} alt="Example Image"/>                     

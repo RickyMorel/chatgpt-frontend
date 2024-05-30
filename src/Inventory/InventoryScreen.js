@@ -136,6 +136,22 @@ class InventoryScreen extends Component {
         }
     }
 
+    updateProductLists = (updatedItem) => {
+        console.log("updateProductLists updatedItem.code", updatedItem)
+        console.log("updateProductLists this.state.products", this.state.products)
+        console.log("updateProductLists this.state.filteredProducts", this.state.filteredProducts)
+        let updatedProductList = this.state.products?.filter(x => x.code != updatedItem.code)
+        updatedProductList.push(updatedItem)
+
+        let updatedFilteredProductList = this.state.filteredProducts.filter(x => x.code != updatedItem.code)
+        updatedFilteredProductList.push(updatedItem)
+
+        this.setState({
+            products: updatedProductList,
+            filteredProducts: updatedFilteredProductList,
+        })
+    }
+
     handleSearch = (filteredList) => {
         this.setState({
           filteredProducts: filteredList
@@ -204,10 +220,19 @@ class InventoryScreen extends Component {
         }
     }
 
+    sortByName = (a, b, property) => {
+        const itemA = a[property].toLowerCase();
+        const itemB = b[property].toLowerCase();
+        if (itemA < itemB) return -1;
+        if (itemA > itemB) return 1;
+        return 0;
+    }
+
     render() {
         const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory} = this.state
 
-        const allProductsList = filteredProducts?.map(x => {
+        const orderedFilteredProducts = filteredProducts?.sort((a, b) => this.sortByName(a, b, "name"))
+        const allProductsList = orderedFilteredProducts?.map(x => {
             if(selectedDayInventory?.items?.find(y => y.code == x.code)) {return null;}
 
             return(
@@ -220,7 +245,10 @@ class InventoryScreen extends Component {
                 />
             )
         });
-        const selectedDayProductsList = filteredSelectedDayInventory?.items?.map(x => {
+
+        console.log("filteredSelectedDayInventory", filteredSelectedDayInventory)
+        const orderedSelectedDayProducts = filteredSelectedDayInventory?.items?.sort((a, b) => this.sortByName(a, b, "name"))
+        const selectedDayProductsList = orderedSelectedDayProducts?.map(x => {
             const isPromoItem = this.state?.promoItemCodes?.find(y => y == x.code) != undefined
 
             return(
@@ -246,6 +274,8 @@ class InventoryScreen extends Component {
             });
         });
 
+        allTags = allTags?.sort()
+
         const editItemModal = 
         <InventoryEditItemModal 
             isOpen={this.state.editItemModelOpen} 
@@ -253,6 +283,8 @@ class InventoryScreen extends Component {
             closeCallback={() => this.handleEditItem(undefined)}
             allTags={allTags}
             addNewTagCallback={this.handleAddNewTag}
+            updateProductsCallback={this.updateProductLists}
+            showPopup={this.props.showPopup}
         />      
             
 
