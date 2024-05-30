@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { PopupStyle } from '../Popups/PopupManager';
 import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material';
 import Modal from 'react-modal';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
 
 class InventoryEditItemModal extends Component {
     constructor(props) {
@@ -20,15 +20,27 @@ class InventoryEditItemModal extends Component {
         };
     }
 
-    componentDidMount = () => {
+    componentDidUpdate = (prevProps) => {
+        if(this.props == prevProps) {return;}
+
         this.setState({
             itemToEdit: this.props.itemToEdit
         })
     }
 
+    handleStringChange = (e) => {
+        const { name, value } = e.target;
+        this.setState({
+            itemToEdit: {
+                ...this.state.itemToEdit,
+                [name]: value
+            }
+        })
+    }
+
     handleTagChange = (e) => {
-        console.log("e", e)
-        const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+        const selectedOptions = Array.isArray(e.target.value) ? e.target.value : [e.target.value];
+        console.log("selectedOptions", selectedOptions, "e.target.value", e.target.value)
         this.setState(prevState => ({
             itemToEdit: {
                 ...prevState.itemToEdit,
@@ -51,7 +63,7 @@ class InventoryEditItemModal extends Component {
     }
 
     render() {
-        const {isOpen, itemToEdit, closeCallback} = this.props
+        const {isOpen, itemToEdit, closeCallback, allTags} = this.props
 
         const editItemModal =             
         <Modal
@@ -61,29 +73,43 @@ class InventoryEditItemModal extends Component {
             style={PopupStyle.Big}
         >
             <div className={`card bordered ${Color.Background}`}>
+                <a className={`right waves-effect waves-light btn ${Color.Second}`} onClick={closeCallback}>
+                    <i className="material-icons">close</i>
+                </a>
+                <a className={`right waves-effect waves-light btn ${Color.Button_1}`} onClick={closeCallback}>
+                    <i className="material-icons">save</i>
+                </a>
                 <div className="card-content">
                     <span className="card-title">{`Editar ${itemToEdit?.name}`}</span>
                     <div className="row">
                         <div className="col s8">
                             <span>{`Nombre:`}</span>
-                            <input style={{display: 'block' }} value={itemToEdit?.name}/>
+                            <input style={{display: 'block' }} name="name" value={this.state.itemToEdit?.name} onChange={this.handleStringChange}/>
                             <span>{`Descripción:`}</span>
-                            <input style={{display: 'block' }} value={itemToEdit?.description}/>
+                            <input style={{display: 'block' }} name="description" value={this.state.itemToEdit?.description} onChange={this.handleStringChange}/>
                             <span>{`Precio:`}</span>
-                            <input style={{display: 'block' }} value={itemToEdit?.price}/>
+                            <input style={{display: 'block' }} name="price" value={this.state.itemToEdit?.price} onChange={this.handleStringChange}/>
                             <span>{`Imagen URL:`}</span>
-                            <input style={{display: 'block' }} value={itemToEdit?.imageLink}/>
+                            <input style={{display: 'block' }} name="imageLink" value={this.state.itemToEdit?.imageLink} onChange={this.handleStringChange}/>
                             <span>{`Etiquetas:`}</span>
                             <FormControl style={{ width: '100%' }}>
                                 <Select
                                     labelId="tags-label"
                                     multiple
-                                    value={itemToEdit?.tags}
+                                    value={allTags?.filter(tag => this.state?.itemToEdit?.tags?.includes(tag))}
                                     onChange={this.handleTagChange}
                                     renderValue={(selected) => selected.join(', ')}
                                 >
-                                    {itemToEdit?.tags.map((tag) => (
-                                        <MenuItem key={tag} value={tag}>
+                                    {allTags.map((tag) => (
+                                        <MenuItem 
+                                            key={tag} 
+                                            value={tag} 
+                                            style={{ 
+                                                fontWeight: this.state?.itemToEdit?.tags?.includes(tag) ? 'bold' : 'normal', 
+                                                color: this.state?.itemToEdit?.tags?.includes(tag) ? 'blue' : 'black',
+                                                backgroundColor: this.state?.itemToEdit?.tags?.includes(tag) ? ColorHex.Third : 'white'
+                                            }}
+                                        >
                                             {tag}
                                         </MenuItem>
                                     ))}
@@ -97,11 +123,9 @@ class InventoryEditItemModal extends Component {
                                 onChange={this.handleNewTagChange}
                             />
                             <Button variant="contained" onClick={this.handleAddNewTag}>Agregar etiqueta</Button>
-                            <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={() => this.handleEditItem(undefined)}>Guardar</button>
-                            <button className={`waves-effect waves-light btn ${Color.Second}`} onClick={() => this.handleEditItem(undefined)}>Cerrar</button> 
                         </div>                 
                         <div className="col s4">
-                            <img style={{ display: 'block', maxWidth: '100%', height: '400px' }}  src={itemToEdit?.imageLink} alt="Example Image"/>                     
+                            <img style={{ display: 'block', maxWidth: '100%', height: '400px' }}  src={this.state.itemToEdit?.imageLink} alt="Example Image"/>                     
                         </div>
                     </div>
                 </div>

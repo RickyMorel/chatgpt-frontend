@@ -47,15 +47,12 @@ class InventoryScreen extends Component {
             products: response.data,
             filteredProducts: response.data,
             });
-
-            console.log("INVENTORY DATA", response.data)
         } catch (error) {}
     };
 
     fetchGlobalConfig = async () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getDayInventories`);
-            console.log("response", response)
             this.setState({
                 dayInventories: response.data.dayInventories,
                 selectedDayInventory: response.data.dayInventories[0],
@@ -238,14 +235,21 @@ class InventoryScreen extends Component {
             )
         });
 
+        let allTags = []
+
+        this.state?.products?.forEach(item => {
+            item.tags.forEach(tag => {
+                if(allTags.includes(tag) == false) { allTags.push(tag) }
+            });
+        });
+
         const editItemModal = 
         <InventoryEditItemModal 
             isOpen={this.state.editItemModelOpen} 
             itemToEdit={this.state.itemToEdit} 
             closeCallback={() => this.handleEditItem(undefined)}
+            allTags={allTags}
         />      
-
-        console.log("filteredSelectedDayInventory?.items", filteredSelectedDayInventory?.items)
             
 
         const navbarStyle = {

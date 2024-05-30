@@ -31,7 +31,6 @@ class App extends Component {
   GetBotNumber = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config/botNumber`);
-      console.log("response", response.data)
       this.setState({
         botNumber: response.data,
       })
