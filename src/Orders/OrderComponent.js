@@ -1,6 +1,7 @@
 import React from 'react';
 import 'materialize-css/dist/css/materialize.min.css';
 import M from 'materialize-css/dist/js/materialize.min.js';
+import { ColorHex } from '../Colors';
 
 class OrderComponent extends React.Component {
 
@@ -37,9 +38,20 @@ class OrderComponent extends React.Component {
     const { orderNumber ,name, phoneNumber, order } = this.props;
 
     let orderItemCount = 0
+
+    let unsureItemHtml = <p className='green-text'>Seguro de pedido</p>
+
+    for(const item of order) {
+      if(item.botState == "UNSURE") {unsureItemHtml = <p className='orange-text'>Inseguro de pedido</p>}
+      else if(item.botState == "NOT_IN_INVENTORY") {unsureItemHtml = <p className='red-text'>No encontro producto pedido</p>; break;}
+    }
+
     const orderList = order?.map(x => {
       orderItemCount = orderItemCount + 1
       const i = orderItemCount
+      let botStateHtml = <p className='green-text'>Seguro</p>
+      if(x.botState == "UNSURE") {botStateHtml = <p className='orange-text'>Inseguro</p>}
+      else if(x.botState == "NOT_IN_INVENTORY") {botStateHtml = <p className='red-text'>No encontro</p>;}
 
       return(
         <div className='row'>
@@ -49,8 +61,11 @@ class OrderComponent extends React.Component {
           <div className='col s3'>
             <span style={{ width: '100%'  }}>{x.name}</span>
           </div>
-          <div className='col s6'>
+          <div className='col s4'>
             <span style={{ width: '100%'  }}>{x.amount}</span>
+          </div>
+          <div className='col s2'>
+            <span style={{ width: '100%'  }}>{botStateHtml}</span>
           </div>
         </div>
       )
@@ -65,6 +80,7 @@ class OrderComponent extends React.Component {
               <a href={"https://wa.me/" + phoneNumber} target="_blank" rel="noopener noreferrer" className="underlined-link">{phoneNumber}</a>
             </span>
             <span class="client-name" style={{ width: '100%'  }}>{orderNumber}</span>
+            <span class="client-name" style={{ width: '100%'  }}>{unsureItemHtml}</span>
             <a><i className='material-icons' style={{ width: '100%'  }}>keyboard_arrow_downs</i></a>
           </div>
           <div class="collapsible-body">
