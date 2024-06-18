@@ -12,11 +12,14 @@ class OrderScreen extends Component {
         orders: null,
         filteredOrders: null,
         searchInput: '',
+        inventoryItemNames: [],
+        updateTotalSalesFlag: false
       };
   }
 
   componentDidMount() {
     this.fetchOrderData();
+    this.fetchInventoryItemNames();
   }
 
   fetchOrderData = async () => {
@@ -34,6 +37,23 @@ class OrderScreen extends Component {
 
     this.props.setIsLoading(false)
   };
+
+  fetchInventoryItemNames = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNames`);
+      this.setState({
+        inventoryItemNames: response.data,
+      });
+    } catch (error) {
+
+    }
+  };
+
+  updateTotalSales = () => {
+    this.setState({
+      updateTotalSalesFlag: !this.state.updateTotalSalesFlag
+    })
+  }
 
   handleSearchInputChange = (event) => {
     const searchInput = event.target.value;
@@ -60,13 +80,28 @@ class OrderScreen extends Component {
     let i = 0
     const orderBlocks = filteredOrders?.map(x => {
       i += 1
-      return <OrderComponent key={x.phoneNumber} {...x} orderNumber ={i} />
+      return <OrderComponent key={x.phoneNumber} {...x} orderNumber ={i} inventoryItemNames={this.state.inventoryItemNames} updateTotalSalesCallback={this.updateTotalSales}/>
     });
+
+    let totalSales = 0
+
+    this?.state?.orders?.forEach(order => {
+      for(const item of order.order) {
+        if(item.botState != "CONFIRMED") {continue;}
+
+        totalSales += (item.price * item.amount)
+      }
+    });
+
+    console.log("this?.state?.orders?", this?.state?.orders)
 
     return (
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
-          <span className="card-title">Pedidos Recibidos</span>
+          <div style={{"display": "flex", "justify-content": "space-between", "width": "100%"}}>
+            <span className="card-title" style={{ width: '70%'  }}>Pedidos Recibidos</span>
+            <h6 className='green-text'>Total Vendido: ₲{totalSales.toLocaleString()}</h6>
+          </div>
           <input
             type="text"
             placeholder="Buscar pedidos..."
