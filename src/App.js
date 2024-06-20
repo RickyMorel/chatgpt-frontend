@@ -51,10 +51,10 @@ class App extends Component {
         <LoadSpinner isLoading={this.state.isLoading}/>
         <Navbar/>
         <div class="row">
-          <div class={`col s12 m4 l3 ${Color.SideNav}`} style={{  height: '93vh'}}>
+          <div class={`col s2 ${Color.SideNav}`} style={{  height: '93vh'}}>
             <SideNav botNumber={this.state.botNumber}/>
           </div>
-          <div class="col s12 m8 l9"> 
+          <div class="col s10"> 
               <Helmet>
                 <style>{`body { background-color: ${ColorHex.Background}; }`}</style>
               </Helmet>

@@ -22,7 +22,8 @@ class InventoryScreen extends Component {
           nextDayIndex: -1,
           editItemModelOpen: false,
           itemToEdit: null,
-          addedTags: []
+          addedTags: [],
+          productReccomendations: []
         };
     }
 
@@ -32,13 +33,19 @@ class InventoryScreen extends Component {
 
     GetAllData = async () => {
         this.props.setIsLoading(true)
-    
-        await this.fetchGlobalConfig();
-        await this.fetchProductData();
-    
-        this.handleDayTabClick(this.state.nextDayIndex) 
 
-        this.props.setIsLoading(false)
+        const promise1 = await this.fetchGlobalConfig()
+        const promise2 = this.fetchProductData() 
+        const promise3 = this.fetchProductReccomendations()
+          
+        Promise.all([promise1, promise2, promise3])
+        .then((results) => {
+            this.handleDayTabClick(this.state.nextDayIndex) 
+            this.props.setIsLoading(false)
+        })
+        .catch((error) => {
+            console.error('One of the promises rejected:', error);
+        });
     }
     
     fetchProductData = async () => {
@@ -47,6 +54,15 @@ class InventoryScreen extends Component {
             this.setState({
             products: response.data,
             filteredProducts: response.data,
+            });
+        } catch (error) {}
+    };
+
+    fetchProductReccomendations = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/product-correlation/getAllItemReccomendationsList`);
+            this.setState({
+                productReccomendations: response.data,
             });
         } catch (error) {}
     };
@@ -180,8 +196,6 @@ class InventoryScreen extends Component {
     }
 
     saveDailyInventories = async () => {
-
-        console.log("selectedDayInventory", this.state?.selectedDayInventory)
         if(this.state.selectedDayInventory?.items?.length < 5) {this.props.showPopup(new Error("Cargar al menos 5 productos!")); return;}
         if(this.state.promoItemCodes.length < 3) {this.props.showPopup(new Error("Hace falta marcar 3 productos especiales!")); return;}
 
@@ -244,17 +258,22 @@ class InventoryScreen extends Component {
         });
 
         const orderedSelectedDayProducts = filteredSelectedDayInventory?.items?.sort((a, b) => this.sortByName(a, b, "name"))
-        const selectedDayProductsList = orderedSelectedDayProducts?.map(x => {
-            const isPromoItem = this.state?.promoItemCodes?.find(y => y == x.code) != undefined
+        const selectedDayProductsList = orderedSelectedDayProducts?.map(listedItem => {
+            const isPromoItem = this.state?.promoItemCodes?.find(y => y == listedItem.code) != undefined
+            //Only give reccomendations for promo items
+            let reccomendedItems = isPromoItem ? this.state.productReccomendations.find(x => x.itemCode == listedItem.code)?.reccomendedItemCodes.slice(0, 2) : []
+            reccomendedItems = reccomendedItems?.filter(x => this?.state?.promoItemCodes?.includes(x) == false)
+            if(isPromoItem) {console.log(listedItem.code, reccomendedItems, this?.state?.promoItemCodes)}
 
             return(
             <InventoryItemComponent 
-                key={x.id} item={x}
+                key={listedItem.id} item={listedItem}
                 isInDailyInventory={true} 
                 isPromoItem={isPromoItem} 
                 handleClickCallback={this.handleItemClick}
                 handleSelectPromoItemCallback={this.handleSelectPromoItem} 
                 handleEditItemCallback={this.handleEditItem}
+                reccomendations={reccomendedItems}
             />
             )
         });

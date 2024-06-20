@@ -60,7 +60,7 @@ function SideNav(props)  {
   };
 
   return (
-    <Sidenav>
+    <Sidenav >
       <Sidenav.Body>
         <Nav>
           <Nav.Item className={GetNavItemColor('/')} active={true}>
