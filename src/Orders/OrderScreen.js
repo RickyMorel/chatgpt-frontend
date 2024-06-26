@@ -12,7 +12,7 @@ class OrderScreen extends Component {
         orders: null,
         filteredOrders: null,
         searchInput: '',
-        inventoryItemNames: [],
+        inventoryItemNamesWithCodes: [],
         updateTotalSalesFlag: false
       };
   }
@@ -40,9 +40,9 @@ class OrderScreen extends Component {
 
   fetchInventoryItemNames = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNames`);
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
       this.setState({
-        inventoryItemNames: response.data,
+        inventoryItemNamesWithCodes: response.data,
       });
     } catch (error) {
 
@@ -80,7 +80,7 @@ class OrderScreen extends Component {
     let i = 0
     const orderBlocks = filteredOrders?.map(x => {
       i += 1
-      return <OrderComponent key={x.phoneNumber} {...x} orderNumber ={i} inventoryItemNames={this.state.inventoryItemNames} updateTotalSalesCallback={this.updateTotalSales}/>
+      return <OrderComponent key={x.phoneNumber} {...x} orderNumber ={i} inventoryItemNamesWithCodes={this.state.inventoryItemNamesWithCodes} updateTotalSalesCallback={this.updateTotalSales}/>
     });
 
     let totalSales = 0

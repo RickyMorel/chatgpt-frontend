@@ -41,8 +41,9 @@ class OrderComponent extends React.Component {
       return `${formattedNumber}`;
   };
 
-  handleHeaderClick = async () => {
+  handleHeaderClick = async (e) => {
     console.log("handleHeaderClick")
+    e.stopPropagation()
     try {
       const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/updateCheckedBySalesPerson`, {number: this.props.phoneNumber});
       this.setState({
@@ -60,6 +61,12 @@ class OrderComponent extends React.Component {
     editedOrder = editedOrder.filter(x => x != wantedItem)
 
     wantedItem[e.target.name] = e.target.value
+
+    if(e.target.name == "name") 
+    {
+      wantedItem.code = e.target.value
+      wantedItem.name = this.props.inventoryItemNamesWithCodes.find(x => x.code == e.target.value).name
+    }
 
     //editedOrder = editedOrder.filter(x => x.code != orderItemCode && x.askedProductName != orderItemAskedProductName)
     editedOrder.push(wantedItem)
@@ -94,6 +101,10 @@ class OrderComponent extends React.Component {
           orderItems.push(newOrderItem)
         }
 
+        this.setState({
+          order: orderItems
+        })
+
         const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, {phoneNumber: this.props.phoneNumber, order: orderItems});
         this.props.updateTotalSalesCallback()
         return null
@@ -104,7 +115,7 @@ class OrderComponent extends React.Component {
   }
 
   render() {
-    const { orderNumber ,name, phoneNumber, order, inventoryItemNames } = this.props;
+    const { orderNumber ,name, phoneNumber, order, inventoryItemNamesWithCodes } = this.props;
 
     const onlyVendorConfirmed = "CONFIRMADO SOLO POR VENDEDOR"
     const noLongerWantedItem = "CLIENTE NO QUIERE"
@@ -117,7 +128,7 @@ class OrderComponent extends React.Component {
 
     let unsureItemHtml = <p className='green-text'>Pedido confirmado</p>
 
-    let orderItems = [...order]
+    let orderItems = [...this.state.order]
     orderItems = orderItems.filter(x => x.botState != "UNSURE")
 
     for(const item of orderItems) {
@@ -129,6 +140,7 @@ class OrderComponent extends React.Component {
 
     if(orderItems.every(x => x.botState == canceldState)) {unsureItemHtml = <p className='red-text'>Pedido cancelado</p>}
 
+    console.log("orderItems", orderItems)
     const orderList = orderItems?.map(x => {
       orderItemCount = orderItemCount + 1
       const i = orderItemCount
@@ -143,7 +155,6 @@ class OrderComponent extends React.Component {
       const displayedName = x.name.replace("_BAD_FORMAT", "")
 
       const orderItem = this.state.order.find(y => y.code == x.code && y.askedProductName == x.askedProductName)
-      console.log("orderItem", this.state?.order, x.code, x.askedProductName, orderItem)
 
       return(
         <div className='row'>
@@ -156,9 +167,9 @@ class OrderComponent extends React.Component {
           <div className='col s3'>
           {
               this.state.isEditing == true && (orderItem.botState == NOT_IN_INVENTORY || orderItem.botState == SURE) ?
-              <select style={{display: 'block' }} name='name' value={orderItem.name} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
+              <select style={{display: 'block' }} name='name' value={orderItem.code} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
                 {
-                  inventoryItemNames.map(x => <option value={x}>{x}</option>)
+                  inventoryItemNamesWithCodes.map(x => <option value={x.code}>{x.name}</option>)
                 }
               </select>
               :
@@ -192,7 +203,7 @@ class OrderComponent extends React.Component {
 
     return (
         <li className="collection-item">
-          <div class="collapsible-header" onClick={this.handleHeaderClick}>
+          <div className="collapsible-header" onClick={this.handleHeaderClick}>
             <span class="client-name" style={{ width: '40%'  }}>{orderNumber}</span>
             <span class="client-name" style={{ width: '60%'  }}>{name}</span>
             <span class="client-name" style={{ width: '60%'  }}>
