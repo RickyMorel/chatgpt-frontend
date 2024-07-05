@@ -10,7 +10,6 @@ class OrderComponent extends React.Component {
 
     this.state = {
       checked: false,
-      isEditing: false,
       order: []
     };
 }
@@ -43,7 +42,8 @@ class OrderComponent extends React.Component {
 
   handleHeaderClick = async (e) => {
     console.log("handleHeaderClick")
-    e.stopPropagation()
+    this.props.setCurrentOpenOrder(this.props.phoneNumber, this.handleSave)
+
     try {
       const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/updateCheckedBySalesPerson`, {number: this.props.phoneNumber});
       this.setState({
@@ -78,15 +78,6 @@ class OrderComponent extends React.Component {
     })
   }
 
-  handleEditMode = () => {
-    const isEditing = !this.state.isEditing
-    this.setState({
-      isEditing: isEditing
-    })
-
-    if(isEditing == false) {this.handleSave()}
-  }
-
   handleSave = async () => {
     try {
         let orderItems = []
@@ -115,7 +106,9 @@ class OrderComponent extends React.Component {
   }
 
   render() {
-    const { orderNumber ,name, phoneNumber, order, inventoryItemNamesWithCodes } = this.props;
+    const { orderNumber ,name, phoneNumber, order, inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
+
+    console.log("currentOpenOrder", currentOpenOrder, "orerNumber", phoneNumber)
 
     const onlyVendorConfirmed = "CONFIRMADO SOLO POR VENDEDOR"
     const noLongerWantedItem = "CLIENTE NO QUIERE"
@@ -166,7 +159,7 @@ class OrderComponent extends React.Component {
           </div>
           <div className='col s3'>
           {
-              this.state.isEditing == true && (orderItem.botState == NOT_IN_INVENTORY || orderItem.botState == SURE) ?
+              isEditing == true && (orderItem.botState == NOT_IN_INVENTORY || orderItem.botState == SURE) ?
               <select style={{display: 'block' }} name='name' value={orderItem.code} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
                 {
                   inventoryItemNamesWithCodes.map(x => <option value={x.code}>{x.name}</option>)
@@ -178,7 +171,7 @@ class OrderComponent extends React.Component {
           </div>       
           <div className='col s1'>
             {
-              this.state.isEditing == true ?
+              isEditing == true ?
               <input style={{display: 'block' }} name='amount' value={orderItem.amount} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}/>
               :
               <span style={{ width: '100%'  }}>{x.amount}</span>
@@ -186,7 +179,7 @@ class OrderComponent extends React.Component {
           </div>
           <div className='col s2'>
             {
-              this.state.isEditing == true ?
+              isEditing == true ?
               <select style={{display: 'block' }} name='botState' value={orderItem.botState} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
                 <option value={confirmedState}>Confirmado</option>
                 <option value={canceldState}>Cancelado</option>
@@ -212,9 +205,14 @@ class OrderComponent extends React.Component {
             <span class="client-name" style={{ width: '60%'  }}>{orderItems.length}</span>
             <span class="client-name" style={{ width: '100%'  }}>{unsureItemHtml}</span>
             <a href=""><i style={{ color: alertIconColor }} className={`material-icons flicker`}>brightness_1</i></a>
-            <button onClick={this.handleEditMode} style={{"background-color": "transparent", "border": "none"}}>
-              <i className={`${this.state.isEditing ? "orange-text" : "grey-text"} material-icons`}>{this.state.isEditing ? "save" : "edit"}</i>
-            </button>
+            {
+              isEditing && currentOpenOrder == phoneNumber ?
+              <button onClick={this.handleEditMode} style={{"background-color": "transparent", "border": "none"}}>
+                <i className={`${isEditing && currentOpenOrder == phoneNumber ? "orange-text" : "grey-text"} material-icons`}>{isEditing && currentOpenOrder == phoneNumber ? "save" : "edit"}</i>
+              </button>
+              :
+              <div></div>
+            }
             <a><i className='material-icons' style={{ width: '100%'  }}>keyboard_arrow_downs</i></a>
           </div>
           <div class="collapsible-body">

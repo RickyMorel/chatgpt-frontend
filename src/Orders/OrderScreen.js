@@ -13,7 +13,10 @@ class OrderScreen extends Component {
         filteredOrders: null,
         searchInput: '',
         inventoryItemNamesWithCodes: [],
-        updateTotalSalesFlag: false
+        updateTotalSalesFlag: false,
+        isEditing: false,
+        currentOpenOrderClientNumber: '',
+        currentSaveCallback: undefined
       };
   }
 
@@ -37,6 +40,35 @@ class OrderScreen extends Component {
 
     this.props.setIsLoading(false)
   };
+
+  handleEditMode = () => {
+    const isEditing = !this.state.isEditing
+    this.setState({
+      isEditing: isEditing
+    })
+
+    if(isEditing == false) {
+      if(this.state.currentSaveCallback != undefined) {
+        this.state.currentSaveCallback()
+      }
+    }
+  }
+
+  setCurrentOpenOrder = (clientNumber, saveCallback) => {
+    console.log("setCurrentOpenOrder", clientNumber)
+    if(this.state.currentOpenOrderClientNumber == clientNumber) {
+      this.setState({
+        currentOpenOrderClientNumber: '',
+        currentSaveCallback: undefined
+      })
+    }
+    else {
+      this.setState({
+        currentOpenOrderClientNumber: clientNumber,
+        currentSaveCallback: saveCallback
+      })
+    }
+  }
 
   fetchInventoryItemNames = async () => {
     try {
@@ -80,7 +112,7 @@ class OrderScreen extends Component {
     let i = 0
     const orderBlocks = filteredOrders?.map(x => {
       i += 1
-      return <OrderComponent key={x.phoneNumber} {...x} orderNumber ={i} inventoryItemNamesWithCodes={this.state.inventoryItemNamesWithCodes} updateTotalSalesCallback={this.updateTotalSales}/>
+      return <OrderComponent key={x.phoneNumber} {...x} setCurrentOpenOrder={this.setCurrentOpenOrder} orderNumber ={i} currentOpenOrder={this.state.currentOpenOrderClientNumber} isEditing={this.state.isEditing} inventoryItemNamesWithCodes={this.state.inventoryItemNamesWithCodes} updateTotalSalesCallback={this.updateTotalSales}/>
     });
 
     let totalSales = 0
@@ -99,8 +131,11 @@ class OrderScreen extends Component {
       <div className={`card bordered ${Color.Background}`}>
         <div className="card-content">
           <div style={{"display": "flex", "justify-content": "space-between", "width": "100%"}}>
-            <span className="card-title" style={{ width: '70%'  }}>Pedidos Recibidos</span>
+            <span className="card-title" style={{ width: '85%'  }}>Pedidos Recibidos</span>
             <h6 className='green-text'>Total Vendido: ₲{totalSales.toLocaleString()}</h6>
+            <button onClick={this.handleEditMode} style={{"background-color": "transparent", "border": "none"}}>
+              <i className={`${this.state.isEditing ? "orange-text" : "grey-text"} material-icons`}>{this.state.isEditing ? "save" : "edit"}</i>
+            </button>
           </div>
           <input
             type="text"

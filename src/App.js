@@ -49,7 +49,7 @@ class App extends Component {
     return (
       <Router>
         <LoadSpinner isLoading={this.state.isLoading}/>
-        <Navbar/>
+        <Navbar botNumber={this.state.botNumber}/>
         <div class="row">
           <div class={`col s2 ${Color.SideNav}`} style={{  height: '93vh'}}>
             <SideNav botNumber={this.state.botNumber}/>
