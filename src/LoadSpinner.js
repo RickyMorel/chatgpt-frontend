@@ -32,7 +32,7 @@ class LoadSpinner extends Component {
           wrapperClass="color-ring-wrapper"
           colors={[ColorHex.First, ColorHex.Fifth, ColorHex.Second, ColorHex.Third, '#849b87']}
         />
-        <h4>Cargando...</h4>
+        <h4>{this.props.loaderMessge == "" ? "Cargando..." : this.props.loaderMessge}</h4>
       </div>
     ) : (
       <div></div>

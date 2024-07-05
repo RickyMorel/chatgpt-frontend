@@ -20,6 +20,7 @@ class App extends Component {
     this.state = {
       modalIsOpen: 0,
       isLoading: false,
+      loaderMessge: "",
       botNumber: ""
     };
   }
@@ -39,16 +40,17 @@ class App extends Component {
     }
   };
 
-  setIsLoading = (loading) => {
+  setIsLoading = (loading, specialMessage = "") => {
     this.setState({
-      isLoading: loading
+      isLoading: loading,
+      loaderMessge: specialMessage
     })
   }
 
   render() {
     return (
       <Router>
-        <LoadSpinner isLoading={this.state.isLoading}/>
+        <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge}/>
         <Navbar botNumber={this.state.botNumber}/>
         <div class="row">
           <div class={`col s2 ${Color.SideNav}`} style={{  height: '93vh'}}>

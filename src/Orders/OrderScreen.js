@@ -41,6 +41,25 @@ class OrderScreen extends Component {
     this.props.setIsLoading(false)
   };
 
+  handleCheckOrders = async () => {
+    this.props.setIsLoading(true, "Creando pedidos, puede tardar hasta unos minutos...")
+
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/order/processForgottenOrders`);
+      console.log("processForgottenOrders", response)
+      let updatedOrders = [...this.state.orders, ...response.data]
+      this.setState({
+        orders: updatedOrders,
+        filteredOrders: updatedOrders,
+        searchInput: ''
+      })
+    } catch (error) {
+      this.props.showPopup(new Error(error.response.data.message))
+    }
+
+    this.props.setIsLoading(false)
+  }
+
   handleEditMode = () => {
     const isEditing = !this.state.isEditing
     this.setState({
@@ -148,7 +167,13 @@ class OrderScreen extends Component {
           </ul>
         </div>
         <div className="card-action">
-          <ExcelFileOutput />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <ExcelFileOutput />
+            <button className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleCheckOrders}>
+              <i className="material-icons left">autorenew</i>
+              Revisar Pedidos
+            </button>
+          </div>
         </div>
       </div>
     );
