@@ -34,13 +34,12 @@ class InventoryScreen extends Component {
     GetAllData = async () => {
         this.props.setIsLoading(true)
 
-        const promise1 = await this.fetchGlobalConfig()
-        const promise2 = this.fetchProductData() 
+        const promise2 = await this.fetchProductData() 
+        const promise1 = this.fetchGlobalConfig()
         const promise3 = this.fetchProductReccomendations()
           
-        Promise.all([promise1, promise2, promise3])
+        Promise.all([promise1, promise3, promise2])
         .then((results) => {
-            this.handleDayTabClick(this.state.nextDayIndex) 
             this.props.setIsLoading(false)
         })
         .catch((error) => {
@@ -69,14 +68,19 @@ class InventoryScreen extends Component {
 
     fetchGlobalConfig = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getDayInventories`);
+            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+            let selectedInventoryItems = {day: response.data.dayInventories[0].day , items: this.state.products.filter(x => response.data.dayInventories[0].itemIds.includes(x.code))}
+
             this.setState({
                 dayInventories: response.data.dayInventories,
-                selectedDayInventory: response.data.dayInventories[0],
-                filteredSelectedDayInventory: response.data.dayInventories[0],
+                selectedDayInventory: selectedInventoryItems,
+                filteredSelectedDayInventory: selectedInventoryItems,
                 promoItemCodes: response.data.dayInventories[0].promoItemCodes,
-                nextDayIndex: response.data.nextDayIndex
+                nextDayIndex: response.data.nextMessageDayIndex
+            }).then(x => {
+                this.handleDayTabClick(this.state.nextDayIndex) 
             });
+
         } catch (error) {}
     }
 
@@ -135,10 +139,11 @@ class InventoryScreen extends Component {
 
     handleDayTabClick = async (selectedDayNumber) => {
         const allInventories = this.state.dayInventories
+        let selectedInventoryItems = {day: allInventories[selectedDayNumber].day , items: this.state.products.filter(x => allInventories[selectedDayNumber].itemIds.includes(x.code))}
 
         this.setState({
-            selectedDayInventory: allInventories[selectedDayNumber],
-            filteredSelectedDayInventory: allInventories[selectedDayNumber],
+            selectedDayInventory: selectedInventoryItems,
+            filteredSelectedDayInventory: selectedInventoryItems,
             promoItemCodes: allInventories[selectedDayNumber].promoItemCodes
         })
     }   
@@ -208,14 +213,14 @@ class InventoryScreen extends Component {
         //Remove old day inventory
         newDayInventories = newDayInventories?.filter(x => x.day != selectedDayInventory.day)
         //add new one
-        newDayInventories.push(selectedDayInventory)
+        newDayInventories.push({day: selectedDayInventory.day, itemIds: selectedDayInventory.items.map(x => x.code), promoItemCodes: this.state.promoItemCodes})
         
         var newDayInventoriesDto = []
 
         newDayInventories.forEach(dayInv => {
             const dayInvDto = 
             {
-                day: dayInv.day, itemIds: dayInv.items.map(x => x.code),
+                day: dayInv.day, itemIds: dayInv.itemIds,
                 promoItemCodes: this.state.selectedDayInventory.day == dayInv.day ? this.state.promoItemCodes : dayInv.promoItemCodes
             }
             newDayInventoriesDto.push(dayInvDto)
@@ -224,7 +229,7 @@ class InventoryScreen extends Component {
         try {
             const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayInventory`, {inventories: newDayInventoriesDto});
             this.setState({
-                dayInventories: response.data.dayInventories,
+                dayInventories: response.data,
             });
         } catch (error) {
             this.props.showPopup(error);
@@ -232,6 +237,13 @@ class InventoryScreen extends Component {
     }
 
     sortByName = (a, b, property) => {
+
+        if(!property) {
+            if (a < b) return -1;
+            if (a > itemB) return 1;
+            return 0;
+        }
+
         const itemA = a[property].toLowerCase();
         const itemB = b[property].toLowerCase();
         if (itemA < itemB) return -1;
@@ -263,7 +275,6 @@ class InventoryScreen extends Component {
             //Only give reccomendations for promo items
             let reccomendedItems = isPromoItem ? this.state.productReccomendations.find(x => x.itemCode == listedItem.code)?.reccomendedItemCodes.slice(0, 2) : []
             reccomendedItems = reccomendedItems?.filter(x => this?.state?.promoItemCodes?.includes(x) == false)
-            if(isPromoItem) {console.log(listedItem.code, reccomendedItems, this?.state?.promoItemCodes)}
 
             return(
             <InventoryItemComponent 
