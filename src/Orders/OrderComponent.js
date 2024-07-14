@@ -3,6 +3,7 @@ import 'materialize-css/dist/css/materialize.min.css';
 import M from 'materialize-css/dist/js/materialize.min.js';
 import { Color, ColorHex } from '../Colors';
 import axios from 'axios';
+const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
   constructor(props) {
@@ -10,7 +11,8 @@ class OrderComponent extends React.Component {
 
     this.state = {
       checked: false,
-      order: []
+      order: [],
+      selectedMovil: ""
     };
 }
 
@@ -19,7 +21,8 @@ class OrderComponent extends React.Component {
 
     this.setState({
       checked: this.props.checkedBySalesPerson,
-      order: this.props.order
+      order: this.props.order,
+      selectedMovil: this?.props?.movil
     })
   }
 
@@ -41,7 +44,6 @@ class OrderComponent extends React.Component {
   };
 
   handleHeaderClick = async (e) => {
-    console.log("handleHeaderClick")
     this.props.setCurrentOpenOrder(this.props.phoneNumber, this.handleSave)
 
     try {
@@ -54,8 +56,15 @@ class OrderComponent extends React.Component {
     }
   }
 
+  handleEditMovil = (e) => {
+    const wantedMovil = this.props.movilObjs.find(x => x.van == e.target.value)
+
+    this.setState({
+      movil: wantedMovil
+    })
+  }
+
   handleEditOrderItem = (e, orderItemCode, orderItemAskedProductName) => {
-    console.log("this.state.order", this.state.order)
     let editedOrder = [...this.state.order]
     let wantedItem = editedOrder.find(x => x.code == orderItemCode && x.askedProductName == orderItemAskedProductName)
     editedOrder = editedOrder.filter(x => x != wantedItem)
@@ -68,10 +77,7 @@ class OrderComponent extends React.Component {
       wantedItem.name = this.props.inventoryItemNamesWithCodes.find(x => x.code == e.target.value).name
     }
 
-    //editedOrder = editedOrder.filter(x => x.code != orderItemCode && x.askedProductName != orderItemAskedProductName)
     editedOrder.push(wantedItem)
-
-    console.log("handleEditOrderItem",orderItemCode, orderItemAskedProductName, editedOrder)
 
     this.setState({
       order: editedOrder
@@ -81,10 +87,13 @@ class OrderComponent extends React.Component {
   handleSave = async () => {
     try {
         let orderItems = []
+        console.log("handleSave")
         for(const orderItem of this.state.order) {
           if(orderItem.botState == "UNSURE") { continue; }
 
-          let newOrderItem = orderItem
+          let newOrderItem = {...orderItem}
+          let newName = newOrderItem.name.replaceAll('_BAD_FORMAT', '')
+          newOrderItem.name = newName
           
           if(orderItem.botState == "CANCELED") { newOrderItem.botState = "CANCELED" }
           else {newOrderItem.botState = "CONFIRMED"}
@@ -96,19 +105,21 @@ class OrderComponent extends React.Component {
           order: orderItems
         })
 
-        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, {phoneNumber: this.props.phoneNumber, order: orderItems});
+        console.log("this.state.movil.van", this?.state?.movil?.van)
+
+        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, {phoneNumber: this.props.phoneNumber, order: orderItems, movil: this?.state?.movil?.van});
         this.props.updateTotalSalesCallback()
         return null
       } catch (error) {
-        console.log("handleSave showPopup", error)
+        console.log("error", error)
         this.props.showPopup(error);
       }
   }
 
   render() {
-    const { orderNumber ,name, phoneNumber, order, inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
+    const { orderNumber ,name, phoneNumber, order, movil,inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
 
-    console.log("currentOpenOrder", currentOpenOrder, "orerNumber", phoneNumber)
+    console.log("MOVILLL", movil)
 
     const onlyVendorConfirmed = "CONFIRMADO SOLO POR VENDEDOR"
     const noLongerWantedItem = "CLIENTE NO QUIERE"
@@ -122,30 +133,34 @@ class OrderComponent extends React.Component {
     let unsureItemHtml = <p className='green-text'>Pedido confirmado</p>
 
     let orderItems = [...this.state.order]
+    let hasConfirmedItems = orderItems.find(x => x.botState == confirmedState)
     orderItems = orderItems.filter(x => x.botState != "UNSURE")
+    //If agent confirmed order, don't show not confirmed items
+    if(hasConfirmedItems) { orderItems = orderItems.filter(x => x.botState != SURE)}
 
     for(const item of orderItems) {
-      if(item.name.includes("_BAD_FORMAT") == true) { unsureItemHtml = <p className='red-text'>Confirmado con formato incorrecto</p> }
-      else if(item.botState == SURE) {unsureItemHtml = <p className='orange-text'>Algunos items no estan confirmados por el vendedor</p>}
+      if(item.name.includes(badFormatString) == true) { unsureItemHtml = <p className='red-text'>Confirmado con formato incorrecto</p> }
+      else if(item.botState == SURE && !hasConfirmedItems) {unsureItemHtml = <p className='orange-text'>Items no estan confirmados por el vendedor</p>}
       else if(item.botState == "UNSURE") {unsureItemHtml = <p className='orange-text'>Inseguro de pedido</p>}
       else if(item.botState == NOT_IN_INVENTORY) {unsureItemHtml = <p className='red-text'>No encontro producto pedido</p>; break;}
     }
 
     if(orderItems.every(x => x.botState == canceldState)) {unsureItemHtml = <p className='red-text'>Pedido cancelado</p>}
 
-    console.log("orderItems", orderItems)
-    const orderList = orderItems?.map(x => {
+    let orderItemsOrdered = orderItems.sort((a, b) => a.name.localeCompare(b.name));
+
+    const orderList = orderItemsOrdered?.map(x => {
       orderItemCount = orderItemCount + 1
       const i = orderItemCount
       let botStateHtml = <p className='green-text'>Confirmado</p>
-      if(x.name.includes("_BAD_FORMAT") == true) { botStateHtml = <p className='red-text'>Confirmado con formato incorrecto</p> }
+      if(x.name.includes(badFormatString) == true) { botStateHtml = <p className='red-text'>Confirmado con formato incorrecto</p> }
       else if(x.botState == canceldState) { botStateHtml = <p className='red-text'>Cancelado</p> }
       else if(x.botState == SURE) {botStateHtml = <p className='orange-text'>No confirmado por vendedor</p>}
       else if(x.botState == "UNSURE") {botStateHtml = <p className='orange-text'>Inseguro</p>}
       else if(x.botState == NOT_IN_INVENTORY) {botStateHtml = <p className='red-text'>No encontro en inventario</p>;}
 
       const askedProductNameColor = x.askedProductName.includes(onlyVendorConfirmed) || x.askedProductName.includes(noLongerWantedItem) ? "red" : "black"
-      const displayedName = x.name.replace("_BAD_FORMAT", "")
+      const displayedName = x.name.replace(badFormatString, "")
 
       const orderItem = this.state.order.find(y => y.code == x.code && y.askedProductName == x.askedProductName)
 
@@ -159,7 +174,7 @@ class OrderComponent extends React.Component {
           </div>
           <div className='col s3'>
           {
-              isEditing == true && (orderItem.botState == NOT_IN_INVENTORY || orderItem.botState == SURE) ?
+              isEditing == true ?
               <select style={{display: 'block' }} name='name' value={orderItem.code} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
                 {
                   inventoryItemNamesWithCodes.map(x => <option value={x.code}>{x.name}</option>)
@@ -192,8 +207,11 @@ class OrderComponent extends React.Component {
       )
     });
 
-    const alertIconColor = (this.state.checked == false && orderItems.find(x => x.askedProductName == onlyVendorConfirmed || x.askedProductName == noLongerWantedItem)) ? "#bd3020" : "#ffffff"
-
+    const alertIconColor = (this.state.checked == false && orderItemsOrdered.find(x => x.askedProductName == onlyVendorConfirmed || x.askedProductName == noLongerWantedItem)) ? "#bd3020" : "#ffffff"
+    const movilOptions = this?.props?.movilObjs?.map(x => 
+      <option value={x.van}>{x.van}</option>
+    )
+    
     return (
         <li className="collection-item">
           <div className="collapsible-header" onClick={this.handleHeaderClick}>
@@ -202,9 +220,19 @@ class OrderComponent extends React.Component {
             <span class="client-name" style={{ width: '60%'  }}>
               <a href={"https://wa.me/" + phoneNumber} target="_blank" rel="noopener noreferrer" className="underlined-link">{phoneNumber}</a>
             </span>
-            <span class="client-name" style={{ width: '60%'  }}>{orderItems.length}</span>
+            <span class="client-name" style={{ width: '60%'  }}>{orderItemsOrdered.length}</span>
             <span class="client-name" style={{ width: '100%'  }}>{unsureItemHtml}</span>
             <a href=""><i style={{ color: alertIconColor }} className={`material-icons flicker`}>brightness_1</i></a>
+            <span class="client-name" style={{ width: '100%'  }}>
+              {
+                isEditing == true ?
+                <select style={{display: 'block' }} name='movil' value={this?.state?.selectedMovil} onChange={this.handleEditMovil}>
+                  {movilOptions}
+                </select>
+                :
+                <span style={{ width: '100%'  }}>{this?.state?.selectedMovil}</span>
+              }
+            </span>
             {
               isEditing && currentOpenOrder == phoneNumber ?
               <button onClick={this.handleEditMode} style={{"background-color": "transparent", "border": "none"}}>

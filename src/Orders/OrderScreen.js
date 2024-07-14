@@ -10,6 +10,7 @@ class OrderScreen extends Component {
   
       this.state = {
         orders: null,
+        movilObjs: null,
         filteredOrders: null,
         searchInput: '',
         inventoryItemNamesWithCodes: [],
@@ -22,8 +23,22 @@ class OrderScreen extends Component {
 
   componentDidMount() {
     this.fetchOrderData();
+    this.fetchMovilData();
     this.fetchInventoryItemNames();
   }
+
+  fetchMovilData = async () => {
+    this.props.setIsLoading(true)
+
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/extentions/getEmporioMoviles`);
+      this.setState({
+        movilObjs: response.data,
+      });
+    } catch (error) {}
+
+    this.props.setIsLoading(false)
+  };
 
   fetchOrderData = async () => {
     this.props.setIsLoading(true)
@@ -46,7 +61,6 @@ class OrderScreen extends Component {
 
     try {
       const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/order/processForgottenOrders`);
-      console.log("processForgottenOrders", response)
       let updatedOrders = [...this.state.orders, ...response.data]
       this.setState({
         orders: updatedOrders,
@@ -66,15 +80,18 @@ class OrderScreen extends Component {
       isEditing: isEditing
     })
 
+    console.log("handleEditMode")
+
     if(isEditing == false) {
+      console.log("handleEditMode", isEditing)
       if(this.state.currentSaveCallback != undefined) {
+        console.log("SAVE")
         this.state.currentSaveCallback()
       }
     }
   }
 
   setCurrentOpenOrder = (clientNumber, saveCallback) => {
-    console.log("setCurrentOpenOrder", clientNumber)
     if(this.state.currentOpenOrderClientNumber == clientNumber) {
       this.setState({
         currentOpenOrderClientNumber: '',
@@ -131,7 +148,7 @@ class OrderScreen extends Component {
     let i = 0
     const orderBlocks = filteredOrders?.map(x => {
       i += 1
-      return <OrderComponent key={x.phoneNumber} {...x} setCurrentOpenOrder={this.setCurrentOpenOrder} orderNumber ={i} currentOpenOrder={this.state.currentOpenOrderClientNumber} isEditing={this.state.isEditing} inventoryItemNamesWithCodes={this.state.inventoryItemNamesWithCodes} updateTotalSalesCallback={this.updateTotalSales}/>
+      return <OrderComponent key={x.phoneNumber} {...x} setCurrentOpenOrder={this.setCurrentOpenOrder} movilObjs={this.state.movilObjs} orderNumber ={i} currentOpenOrder={this.state.currentOpenOrderClientNumber} isEditing={this.state.isEditing} inventoryItemNamesWithCodes={this.state.inventoryItemNamesWithCodes} updateTotalSalesCallback={this.updateTotalSales}/>
     });
 
     let totalSales = 0
@@ -143,8 +160,6 @@ class OrderScreen extends Component {
         totalSales += (item.price * item.amount)
       }
     });
-
-    console.log("this?.state?.orders?", this?.state?.orders)
 
     return (
       <div className={`card bordered ${Color.Background}`}>
