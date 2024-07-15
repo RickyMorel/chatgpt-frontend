@@ -29,6 +29,10 @@ class OrderScreen extends Component {
     this.fetchInventoryItemNames();
   }
 
+  componentDidUpdate() {
+    this.addCollapsibleListeners(this.state.filteredOrders)
+  }
+
   addCollapsibleListeners(filteredOrders) {
     console.log("addCollapsibleListeners")
     const collapsibleElem = document.querySelectorAll('.collapsible');
