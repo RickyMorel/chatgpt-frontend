@@ -148,7 +148,18 @@ class OrderScreen extends Component {
     let i = 0
     const orderBlocks = filteredOrders?.map(x => {
       i += 1
-      return <OrderComponent key={x.phoneNumber} {...x} setCurrentOpenOrder={this.setCurrentOpenOrder} movilObjs={this.state.movilObjs} orderNumber ={i} currentOpenOrder={this.state.currentOpenOrderClientNumber} isEditing={this.state.isEditing} inventoryItemNamesWithCodes={this.state.inventoryItemNamesWithCodes} updateTotalSalesCallback={this.updateTotalSales}/>
+      return <OrderComponent
+                key={x.phoneNumber}
+                {...x} 
+                setCurrentOpenOrder={this.setCurrentOpenOrder}
+                movilObjs={this.state.movilObjs} 
+                orderNumber ={i} 
+                currentOpenOrder={this.state.currentOpenOrderClientNumber} 
+                isEditing={this.state.isEditing} 
+                inventoryItemNamesWithCodes={this.state.inventoryItemNamesWithCodes} 
+                updateTotalSalesCallback={this.updateTotalSales}
+                showPopup={this.props.showPopup}
+              />
     });
 
     let totalSales = 0

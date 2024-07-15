@@ -19,10 +19,12 @@ class OrderComponent extends React.Component {
   componentDidMount() {
     M.AutoInit(); 
 
+    const selectedMovil = this.props.movilObjs.find(x => x.van == this.props.movil)
+
     this.setState({
       checked: this.props.checkedBySalesPerson,
       order: this.props.order,
-      selectedMovil: this?.props?.movil
+      selectedMovil: selectedMovil
     })
   }
 
@@ -58,9 +60,10 @@ class OrderComponent extends React.Component {
 
   handleEditMovil = (e) => {
     const wantedMovil = this.props.movilObjs.find(x => x.van == e.target.value)
+    console.log("handleEditMovil", wantedMovil)
 
     this.setState({
-      movil: wantedMovil
+      selectedMovil: wantedMovil
     })
   }
 
@@ -85,6 +88,9 @@ class OrderComponent extends React.Component {
   }
 
   handleSave = async () => {
+    if(this?.state?.selectedMovil?.van == undefined) {this.props.showPopup(new Error(`Seleccione un movil de entrega para el pedido`)); return;}
+    if(this?.state?.order.find(x => x.botState == "SURE")) {this.props.showPopup(new Error(`Hay algunos items que no se confirmaron`)); return;}
+
     try {
         let orderItems = []
         console.log("handleSave")
@@ -105,9 +111,7 @@ class OrderComponent extends React.Component {
           order: orderItems
         })
 
-        console.log("this.state.movil.van", this?.state?.movil?.van)
-
-        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, {phoneNumber: this.props.phoneNumber, order: orderItems, movil: this?.state?.movil?.van});
+        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, {phoneNumber: this.props.phoneNumber, order: orderItems, movil: this?.state?.selectedMovil?.van});
         this.props.updateTotalSalesCallback()
         return null
       } catch (error) {
@@ -119,14 +123,13 @@ class OrderComponent extends React.Component {
   render() {
     const { orderNumber ,name, phoneNumber, order, movil,inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
 
-    console.log("MOVILLL", movil)
-
     const onlyVendorConfirmed = "CONFIRMADO SOLO POR VENDEDOR"
     const noLongerWantedItem = "CLIENTE NO QUIERE"
     const confirmedState = "CONFIRMED"
     const canceldState = "CANCELED"
     const NOT_IN_INVENTORY = "NOT_IN_INVENTORY"
     const SURE = "SURE"
+    const SIN_MOVIL = "Sin movil"
 
     let orderItemCount = 0
 
@@ -196,6 +199,7 @@ class OrderComponent extends React.Component {
             {
               isEditing == true ?
               <select style={{display: 'block' }} name='botState' value={orderItem.botState} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
+                <option value={SURE}>Falta confirmar</option>
                 <option value={confirmedState}>Confirmado</option>
                 <option value={canceldState}>Cancelado</option>
               </select>
@@ -213,42 +217,70 @@ class OrderComponent extends React.Component {
     )
     
     return (
-        <li className="collection-item">
-          <div className="collapsible-header" onClick={this.handleHeaderClick}>
-            <span class="client-name" style={{ width: '40%'  }}>{orderNumber}</span>
-            <span class="client-name" style={{ width: '60%'  }}>{name}</span>
-            <span class="client-name" style={{ width: '60%'  }}>
-              <a href={"https://wa.me/" + phoneNumber} target="_blank" rel="noopener noreferrer" className="underlined-link">{phoneNumber}</a>
-            </span>
-            <span class="client-name" style={{ width: '60%'  }}>{orderItemsOrdered.length}</span>
-            <span class="client-name" style={{ width: '100%'  }}>{unsureItemHtml}</span>
-            <a href=""><i style={{ color: alertIconColor }} className={`material-icons flicker`}>brightness_1</i></a>
-            <span class="client-name" style={{ width: '100%'  }}>
-              {
-                isEditing == true ?
-                <select style={{display: 'block' }} name='movil' value={this?.state?.selectedMovil} onChange={this.handleEditMovil}>
-                  {movilOptions}
-                </select>
-                :
-                <span style={{ width: '100%'  }}>{this?.state?.selectedMovil}</span>
-              }
-            </span>
-            {
-              isEditing && currentOpenOrder == phoneNumber ?
-              <button onClick={this.handleEditMode} style={{"background-color": "transparent", "border": "none"}}>
-                <i className={`${isEditing && currentOpenOrder == phoneNumber ? "orange-text" : "grey-text"} material-icons`}>{isEditing && currentOpenOrder == phoneNumber ? "save" : "edit"}</i>
-              </button>
-              :
-              <div></div>
-            }
-            <a><i className='material-icons' style={{ width: '100%'  }}>keyboard_arrow_downs</i></a>
-          </div>
-          <div class="collapsible-body">
-            {orderList} 
-          </div>
-        </li>
+      <li className="collection-item">
+      <div className="collapsible-header" onClick={this.handleHeaderClick} style={styles.collapsibleHeader}>
+        <span className="client-name" style={styles.clientName}>{orderNumber}</span>
+        <span className="client-name" style={styles.clientName}>{name}</span>
+        <span className="client-name" style={styles.clientName}>
+          <a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>{phoneNumber}</a>
+        </span>
+        <span className="client-name" style={styles.clientName}>{orderItemsOrdered.length}</span>
+        <span className="client-name" style={styles.clientName}>{unsureItemHtml}</span>
+        <a href="#"><i style={{ color: alertIconColor }} className="material-icons flicker">brightness_1</i></a>
+        <span className="client-name" style={styles.clientName}>
+          {
+            isEditing ? 
+            <select style={styles.select} name='movil' value={this?.state?.selectedMovil?.van ?? SIN_MOVIL} onChange={this.handleEditMovil}>
+              <option value={SIN_MOVIL}>{SIN_MOVIL}</option>
+              {movilOptions}
+            </select> :
+            <span>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</span>
+          }
+        </span>
+        {
+          isEditing && currentOpenOrder === phoneNumber ?
+          <button onClick={this.handleEditMode} style={styles.button}>
+            <i className={`${isEditing && currentOpenOrder === phoneNumber ? "orange-text" : "grey-text"} material-icons`}>{isEditing && currentOpenOrder === phoneNumber ? "save" : "edit"}</i>
+          </button> :
+          <div></div>
+        }
+        <a><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></a>
+      </div>
+      <div className="collapsible-body">
+        {orderList}
+      </div>
+    </li>
     );
   }
 }
+
+const styles = {
+  collapsibleHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '10px',
+    width: '100%',
+    boxSizing: 'border-box'
+  },
+  clientName: {
+    flex: '1 1 20%',
+    minWidth: '100px'
+  },
+  underlinedLink: {
+    textDecoration: 'underline'
+  },
+  select: {
+    display: 'block',
+    width: 'auto',
+    maxWidth: '150px'
+  },
+  button: {
+    backgroundColor: 'transparent',
+    border: 'none'
+  },
+  arrowDown: {
+    width: '100%'
+  }
+};
 
 export default OrderComponent;
