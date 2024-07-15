@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Color } from '../Colors';
 import OrderComponent from './OrderComponent';
 import ExcelFileOutput from '../Excel/ExcelFileOutput';
+import M from 'materialize-css/dist/js/materialize.min.js';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -19,6 +20,7 @@ class OrderScreen extends Component {
         currentOpenOrderClientNumber: '',
         currentSaveCallback: undefined
       };
+      this.orderRefs = [];
   }
 
   componentDidMount() {
@@ -26,6 +28,34 @@ class OrderScreen extends Component {
     this.fetchMovilData();
     this.fetchInventoryItemNames();
   }
+
+  addCollapsibleListeners(filteredOrders) {
+    console.log("addCollapsibleListeners")
+    const collapsibleElem = document.querySelectorAll('.collapsible');
+    const instances = M.Collapsible.init(collapsibleElem, {
+      // Override the default behavior
+      onOpenEnd: function(el) {
+          el.classList.add('active');
+      },
+      onCloseEnd: function(el) {
+          el.classList.remove('active');
+      }
+  });
+
+    const headers = document.querySelectorAll(`.collapsible-header`);
+    headers.forEach((header, index) => {
+      header.addEventListener('click', (e) => this.openCollapsible(e, index, filteredOrders[index].phoneNumber));
+    });
+  }
+
+  openCollapsible = (event, index, phonNumber) => {
+    event.stopImmediatePropagation();
+    event.preventDefault();
+    const collapsibleElem = document.querySelector('.collapsible');
+    const collapsibleInstance = M.Collapsible.getInstance(collapsibleElem);
+    collapsibleInstance.open(index); // Opens the specific collapsible item
+    this.handleHeaderClick(phonNumber, index)
+  };
 
   fetchMovilData = async () => {
     this.props.setIsLoading(true)
@@ -45,10 +75,11 @@ class OrderScreen extends Component {
 
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
+      this.addCollapsibleListeners(response.data)
       this.setState({
         orders: response.data,
         filteredOrders: response.data,
-      });
+      })
     } catch (error) {
 
     }
@@ -80,10 +111,7 @@ class OrderScreen extends Component {
       isEditing: isEditing
     })
 
-    console.log("handleEditMode")
-
     if(isEditing == false) {
-      console.log("handleEditMode", isEditing)
       if(this.state.currentSaveCallback != undefined) {
         console.log("SAVE")
         this.state.currentSaveCallback()
@@ -91,17 +119,13 @@ class OrderScreen extends Component {
     }
   }
 
-  setCurrentOpenOrder = (clientNumber, saveCallback) => {
-    if(this.state.currentOpenOrderClientNumber == clientNumber) {
-      this.setState({
-        currentOpenOrderClientNumber: '',
-        currentSaveCallback: undefined
-      })
-    }
+  handleHeaderClick = async (clientNumber, index) => {
+    console.log("this.orderRefs[index]", this.orderRefs[index], index)
+    if(this.state.currentOpenOrderClientNumber == clientNumber) {}
     else {
       this.setState({
         currentOpenOrderClientNumber: clientNumber,
-        currentSaveCallback: saveCallback
+        currentSaveCallback: () => {this.orderRefs[index].handleSave()}
       })
     }
   }
@@ -139,17 +163,21 @@ class OrderScreen extends Component {
         order.order.find(x => x.name.toLowerCase().includes(searchInput.toLowerCase()) == true)
     );
 
-    this.setState({ filteredOrders });
+    this.setState({ filteredOrders: filteredOrders });
   };
 
   render() {
     const { filteredOrders } = this.state;
 
     let i = 0
-    const orderBlocks = filteredOrders?.map(x => {
+
+    this.orderRefs = [];
+
+    const orderBlocks = filteredOrders?.map((x, index) => {
       i += 1
       return <OrderComponent
                 key={x.phoneNumber}
+                ref={(instance) => { this.orderRefs[index] = instance; }}
                 {...x} 
                 setCurrentOpenOrder={this.setCurrentOpenOrder}
                 movilObjs={this.state.movilObjs} 

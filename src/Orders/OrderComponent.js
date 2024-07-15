@@ -12,18 +12,19 @@ class OrderComponent extends React.Component {
     this.state = {
       checked: false,
       order: [],
+      confirmedOrder: [],
       selectedMovil: ""
     };
 }
 
   componentDidMount() {
-    M.AutoInit(); 
-
     const selectedMovil = this.props.movilObjs.find(x => x.van == this.props.movil)
+    console.log("PROPS", this.props.order)
 
     this.setState({
       checked: this.props.checkedBySalesPerson,
-      order: this.props.order,
+      order: [...this.props.order],
+      confirmedOrder: [...this.props.order],
       selectedMovil: selectedMovil
     })
   }
@@ -45,22 +46,8 @@ class OrderComponent extends React.Component {
       return `${formattedNumber}`;
   };
 
-  handleHeaderClick = async (e) => {
-    this.props.setCurrentOpenOrder(this.props.phoneNumber, this.handleSave)
-
-    try {
-      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/updateCheckedBySalesPerson`, {number: this.props.phoneNumber});
-      this.setState({
-        checked: true
-      });
-    } catch (error) {
-      return error
-    }
-  }
-
   handleEditMovil = (e) => {
     const wantedMovil = this.props.movilObjs.find(x => x.van == e.target.value)
-    console.log("handleEditMovil", wantedMovil)
 
     this.setState({
       selectedMovil: wantedMovil
@@ -69,8 +56,8 @@ class OrderComponent extends React.Component {
 
   handleEditOrderItem = (e, orderItemCode, orderItemAskedProductName) => {
     let editedOrder = [...this.state.order]
-    let wantedItem = editedOrder.find(x => x.code == orderItemCode && x.askedProductName == orderItemAskedProductName)
-    editedOrder = editedOrder.filter(x => x != wantedItem)
+    let wantedItem = {...editedOrder.find(x => x.code == orderItemCode && x.askedProductName == orderItemAskedProductName)}
+    editedOrder = editedOrder.filter(x => x.code != wantedItem.code)
 
     wantedItem[e.target.name] = e.target.value
 
@@ -82,12 +69,15 @@ class OrderComponent extends React.Component {
 
     editedOrder.push(wantedItem)
 
+    console.log("editedOrder", editedOrder)
+
     this.setState({
       order: editedOrder
     })
   }
 
   handleSave = async () => {
+    console.log("handleSave")
     if(this?.state?.selectedMovil?.van == undefined) {this.props.showPopup(new Error(`Seleccione un movil de entrega para el pedido`)); return;}
     if(this?.state?.order.find(x => x.botState == "SURE")) {this.props.showPopup(new Error(`Hay algunos items que no se confirmaron`)); return;}
 
@@ -108,7 +98,8 @@ class OrderComponent extends React.Component {
         }
 
         this.setState({
-          order: orderItems
+          order: orderItems,
+          confirmedOrder: orderItems
         })
 
         const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, {phoneNumber: this.props.phoneNumber, order: orderItems, movil: this?.state?.selectedMovil?.van});
@@ -135,8 +126,9 @@ class OrderComponent extends React.Component {
 
     let unsureItemHtml = <p className='green-text'>Pedido confirmado</p>
 
-    let orderItems = [...this.state.order]
-    let hasConfirmedItems = orderItems.find(x => x.botState == confirmedState)
+    let orderItems = [...this?.state?.order]
+    console.log("confirmedOrder", this?.state?.confirmedOrder)
+    let hasConfirmedItems = this?.state?.confirmedOrder?.find(x => x.botState == confirmedState)
     orderItems = orderItems.filter(x => x.botState != "UNSURE")
     //If agent confirmed order, don't show not confirmed items
     if(hasConfirmedItems) { orderItems = orderItems.filter(x => x.botState != SURE)}
@@ -218,7 +210,7 @@ class OrderComponent extends React.Component {
     
     return (
       <li className="collection-item">
-      <div className="collapsible-header" onClick={this.handleHeaderClick} style={styles.collapsibleHeader}>
+      <div className={`collapsible-header N${phoneNumber}`} style={styles.collapsibleHeader}>
         <span className="client-name" style={styles.clientName}>{orderNumber}</span>
         <span className="client-name" style={styles.clientName}>{name}</span>
         <span className="client-name" style={styles.clientName}>
