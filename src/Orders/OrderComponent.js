@@ -19,13 +19,13 @@ class OrderComponent extends React.Component {
 
   componentDidMount() {
     const selectedMovil = this.props.movilObjs.find(x => x.van == this.props.movil)
-    console.log("PROPS", this.props.order)
 
     this.setState({
       checked: this.props.checkedBySalesPerson,
       order: [...this.props.order],
       confirmedOrder: [...this.props.order],
-      selectedMovil: selectedMovil
+      selectedMovil: selectedMovil,
+      pointsUsed: this.props.pointsUsed
     })
   }
 
@@ -54,6 +54,12 @@ class OrderComponent extends React.Component {
     })
   }
 
+  handleEditPoints = (e) => {
+    this.setState({
+      pointsUsed: e.target.value
+    })
+  }
+
   handleEditOrderItem = (e, orderItemCode, orderItemAskedProductName) => {
     let editedOrder = [...this.state.order]
     let wantedItem = {...editedOrder.find(x => x.code == orderItemCode && x.askedProductName == orderItemAskedProductName)}
@@ -69,8 +75,6 @@ class OrderComponent extends React.Component {
 
     editedOrder.push(wantedItem)
 
-    console.log("editedOrder", editedOrder)
-
     this.setState({
       order: editedOrder
     })
@@ -83,7 +87,6 @@ class OrderComponent extends React.Component {
 
     try {
         let orderItems = []
-        console.log("handleSave")
         for(const orderItem of this.state.order) {
           if(orderItem.botState == "UNSURE") { continue; }
 
@@ -102,7 +105,14 @@ class OrderComponent extends React.Component {
           confirmedOrder: orderItems
         })
 
-        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, {phoneNumber: this.props.phoneNumber, order: orderItems, movil: this?.state?.selectedMovil?.van});
+        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, 
+          {
+            phoneNumber: this.props.phoneNumber,
+            order: orderItems, 
+            movil: this?.state?.selectedMovil?.van, 
+            pointsUsed: this.state.pointsUsed
+          }
+        );
         this.props.updateTotalSalesCallback()
         return null
       } catch (error) {
@@ -112,7 +122,7 @@ class OrderComponent extends React.Component {
   }
 
   render() {
-    const { orderNumber ,name, phoneNumber, order, movil,inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
+    const { orderNumber , name, pointsUsed, phoneNumber, order, movil,inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
 
     const onlyVendorConfirmed = "CONFIRMADO SOLO POR VENDEDOR"
     const noLongerWantedItem = "CLIENTE NO QUIERE"
@@ -127,7 +137,6 @@ class OrderComponent extends React.Component {
     let unsureItemHtml = <p className='green-text'>Pedido confirmado</p>
 
     let orderItems = [...this?.state?.order]
-    console.log("confirmedOrder", this?.state?.confirmedOrder)
     let hasConfirmedItems = this?.state?.confirmedOrder?.find(x => x.botState == confirmedState)
     orderItems = orderItems.filter(x => x.botState != "UNSURE")
     //If agent confirmed order, don't show not confirmed items
@@ -218,7 +227,18 @@ class OrderComponent extends React.Component {
         </span>
         <span className="client-name" style={styles.clientName}>{orderItemsOrdered.length}</span>
         <span className="client-name" style={styles.clientName}>{unsureItemHtml}</span>
-        <a href="#"><i style={{ color: alertIconColor }} className="material-icons flicker">brightness_1</i></a>
+        {/* <a href="#"><i style={{ color: alertIconColor }} className="material-icons flicker">brightness_1</i></a> */}
+        <span className="client-name" style={styles.clientName}>
+          {
+            isEditing && currentOpenOrder === phoneNumber ?
+            <div class="input-field">
+              <input id="pointsUsed" name='pointsUsed' type="number" class="validate" style={{display: 'block' }} onChange={this.handleEditPoints}/>
+              <label for="first_name">Puntos usados</label>
+            </div> 
+            :
+            this?.state?.pointsUsed == 0 ? <div></div> : <span>{this?.state?.pointsUsed}</span>
+          }
+        </span>
         <span className="client-name" style={styles.clientName}>
           {
             isEditing ? 

@@ -34,7 +34,6 @@ class OrderScreen extends Component {
   }
 
   addCollapsibleListeners(filteredOrders) {
-    console.log("addCollapsibleListeners")
     const collapsibleElem = document.querySelectorAll('.collapsible');
     const instances = M.Collapsible.init(collapsibleElem, {
       // Override the default behavior
@@ -124,7 +123,6 @@ class OrderScreen extends Component {
   }
 
   handleHeaderClick = async (clientNumber, index) => {
-    console.log("this.orderRefs[index]", this.orderRefs[index], index)
     if(this.state.currentOpenOrderClientNumber == clientNumber) {}
     else {
       this.setState({
