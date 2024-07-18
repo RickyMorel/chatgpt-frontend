@@ -32,9 +32,13 @@ class AddOrderModal extends Component {
         this.props.closeCallback()
 
         try {
-            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/inventory/updateItem`, itemToEdit);
-            this.props.updateProductsCallback(itemToEdit)
-            return null
+            const orderDto = {
+                clientNumber: this.state.clientNumber,
+                movil: this.state.movil,
+                items: this.state.items,
+                pointsUsed: this.state.pointsUsed
+            }
+            const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/order/createOrderFromInterface`, orderDto);
           } catch (error) {
             this.props.showPopup(error);
           }
@@ -42,7 +46,7 @@ class AddOrderModal extends Component {
 
     handleClientChange = (value) => {
         this.setState({
-            clientNumber: value
+            clientNumber: value.value
         })
     }
 
@@ -54,7 +58,7 @@ class AddOrderModal extends Component {
 
     handleMovilChange = (value) => {
         this.setState({
-            movil: value
+            movil: value.value
         })
     }
 
@@ -140,6 +144,14 @@ class AddOrderModal extends Component {
                 <a className={`right waves-effect waves-light btn ${Color.Second}`} onClick={closeCallback}>
                     <i className="material-icons">close</i>
                 </a>
+                {
+                    this.state.items.length > 0 ? 
+                    <a className={`right waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleSave}>
+                        <i className="material-icons">save</i>
+                    </a>
+                    :
+                    <div></div>
+                }
                 <div className="card-content">
                     <span className="card-title">{`Nuevo Pedido`}</span>
                     <div className="row">
@@ -148,14 +160,14 @@ class AddOrderModal extends Component {
                             <Select
                                 options={clientNumbersSelect}
                                 onChange={this.handleClientChange}
-                                value={this?.state?.clientNumber}
+                                value={clientNumbersSelect?.find(x => x.value == this?.state?.clientNumber)}
                                 isSearchable={true}
                             />
                             <span>{`Movil:`}</span>
                             <Select
                                 options={movilNames}
                                 onChange={this.handleMovilChange}
-                                value={this?.state?.movil}
+                                value={movilNames?.find(x => x.value == this?.state?.movil)}
                                 isSearchable={true}
                             />
                             <div class="input-field">
@@ -175,10 +187,6 @@ class AddOrderModal extends Component {
                             <div className="row">
                                 {itemsHtml}
                             </div>
-                            {/* <a className={`waves-effect waves-light btn ${Color.First}`} onClick={this.handleSave} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <i className="material-icons">save</i>
-                                Guardar
-                            </a> */}
                         </div>
                     </div>
                 </div>
