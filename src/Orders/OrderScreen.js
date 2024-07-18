@@ -4,6 +4,7 @@ import { Color } from '../Colors';
 import OrderComponent from './OrderComponent';
 import ExcelFileOutput from '../Excel/ExcelFileOutput';
 import M from 'materialize-css/dist/js/materialize.min.js';
+import AddOrderModal from './AddOrderModal';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -11,6 +12,7 @@ class OrderScreen extends Component {
   
       this.state = {
         orders: null,
+        clientNumbers: [],
         movilObjs: null,
         filteredOrders: null,
         searchInput: '',
@@ -18,7 +20,8 @@ class OrderScreen extends Component {
         updateTotalSalesFlag: false,
         isEditing: false,
         currentOpenOrderClientNumber: '',
-        currentSaveCallback: undefined
+        currentSaveCallback: undefined,
+        addOrderModelOpen: false,
       };
       this.orderRefs = [];
   }
@@ -26,6 +29,7 @@ class OrderScreen extends Component {
   componentDidMount() {
     this.fetchOrderData();
     this.fetchMovilData();
+    this.fetchClientData();
     this.fetchInventoryItemNames();
   }
 
@@ -82,6 +86,21 @@ class OrderScreen extends Component {
       this.setState({
         orders: response.data,
         filteredOrders: response.data,
+      })
+    } catch (error) {
+
+    }
+
+    this.props.setIsLoading(false)
+  };
+
+  fetchClientData = async () => {
+    this.props.setIsLoading(true)
+
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getTommorrowsClientsNumbers`);
+      this.setState({
+        clientNumbers: response.data,
       })
     } catch (error) {
 
@@ -156,6 +175,12 @@ class OrderScreen extends Component {
     });
   };
 
+  handleOpenModal = (item) => {
+    this.setState({
+      addOrderModelOpen: item != undefined
+    })
+  }
+
   filterOrders = () => {
     const { orders, searchInput } = this.state;
 
@@ -202,14 +227,28 @@ class OrderScreen extends Component {
       }
     });
 
+    const addOrderModal = 
+    <AddOrderModal 
+        isOpen={this.state.addOrderModelOpen} 
+        closeCallback={() => this.handleOpenModal(undefined)}
+        showPopup={this.props.showPopup}
+        movilObjs={this.state.movilObjs}
+        inventoryItemCodes={this.state.inventoryItemNamesWithCodes}
+        clientNumbers={this.state.clientNumbers}
+    />  
+
     return (
       <div className={`card bordered ${Color.Background}`}>
+        {addOrderModal}
         <div className="card-content">
           <div style={{"display": "flex", "justify-content": "space-between", "width": "100%"}}>
-            <span className="card-title" style={{ width: '85%'  }}>Pedidos Recibidos</span>
+            <span className="card-title" style={{ width: '75%'  }}>Pedidos Recibidos</span>
             <h6 className='green-text'>Total Vendido: ₲{totalSales.toLocaleString()}</h6>
-            <button onClick={this.handleEditMode} style={{"background-color": "transparent", "border": "none"}}>
-              <i className={`${this.state.isEditing ? "orange-text" : "grey-text"} material-icons`}>{this.state.isEditing ? "save" : "edit"}</i>
+            <button onClick={this.handleEditMode}  className={`waves-effect waves-light btn ${Color.Fifth}`}>
+              <i className={`${this.state.isEditing ? "orange-text" : "white-text"} material-icons`}>{this.state.isEditing ? "save" : "edit"}</i>
+            </button>
+            <button onClick={this.handleOpenModal} className={`waves-effect waves-light btn ${Color.Fifth}`}>
+              <i className={`material-icons`}>add_circle_outline</i>
             </button>
           </div>
           <input
