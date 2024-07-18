@@ -94,6 +94,26 @@ class OrderScreen extends Component {
     this.props.setIsLoading(false)
   };
 
+  addNewOrder = (order) => {
+    let orders = [...this.state.orders]
+    let filteredOrders = [...this.state.filteredOrders]
+
+    console.log("orders", orders)
+    console.log("order", order)
+
+    orders = orders.filter(x => x.phoneNumber != order.phoneNumber)
+    filteredOrders = filteredOrders.filter(x => x.phoneNumber != order.phoneNumber)
+    orders.push(order)
+    filteredOrders.push(order)
+
+    console.log("orders after filter", orders)
+
+    this.setState({
+      orders: orders,
+      filteredOrders: filteredOrders,
+    })
+  }
+
   fetchClientData = async () => {
     this.props.setIsLoading(true)
 
@@ -235,6 +255,7 @@ class OrderScreen extends Component {
         movilObjs={this.state.movilObjs}
         inventoryItemCodes={this.state.inventoryItemNamesWithCodes}
         clientNumbers={this.state.clientNumbers}
+        addNewOrderCallback={this.addNewOrder}
     />  
 
     return (

@@ -39,6 +39,13 @@ class AddOrderModal extends Component {
                 pointsUsed: this.state.pointsUsed
             }
             const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/order/createOrderFromInterface`, orderDto);
+            let orderResponse = {...response.data}
+            delete orderResponse._id
+            delete orderResponse.chat
+            delete orderResponse.clientStats
+            delete orderResponse.editedOrder
+            delete orderResponse.__v
+            this.props.addNewOrderCallback(orderResponse)
           } catch (error) {
             this.props.showPopup(error);
           }
