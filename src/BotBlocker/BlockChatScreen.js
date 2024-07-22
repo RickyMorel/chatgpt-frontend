@@ -18,7 +18,8 @@ class BlockChatScreen extends Component {
       dayLocations: [],
       clientLocations: [],
       pageNumber: 1,
-      pageSize: 15
+      pageSize: 15,
+      clientsToMessageTommorrow: 0
     };
   }
 
@@ -29,11 +30,23 @@ class BlockChatScreen extends Component {
   GetAllData = async () => {
     this.props.setIsLoading(true)
 
+    await this.fetchClientsToMessageTommorrowAmount();
     await this.fetchClientData();
     await this.fetchGlobalData()
     await this.fetchAllClientLocations()
 
     this.props.setIsLoading(false)
+  }
+
+  fetchClientsToMessageTommorrowAmount = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/countClientsToDeliverTommorrow`);
+      this.setState({
+        clientsToMessageTommorrow: response.data
+      });
+    } catch (error) {
+      this.setState({ error: error });
+    }
   }
 
   fetchClientData = async () => {
@@ -89,11 +102,31 @@ class BlockChatScreen extends Component {
     }
   };
 
+  tryFetchSearchedClients = async () => {
+    //Don't call search endpoint if the searcher still brings a few clients
+    if(this.state.filteredClients.length > 5) {return;}
+
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/searchClientByNumber?searchNumber=${this.state.searchInput}&limit=${5}`);
+      console.log("tryFetchSearchedClients response", response.data)
+      let clients = [...this.state.clients, ...response.data]
+      let filteredClients = [...this.state.filteredClients, ...response.data]
+
+      this.setState({
+        clients: clients,
+        filteredClients: filteredClients
+      })
+    } catch (error) {
+      console.log("error", error)
+      return error
+    }
+  };
+
   handleSearchInputChange = (event) => {
     const searchInput = event.target.value;
     this.setState({ searchInput }, () => {
       this.filterClients();
-    });
+    })
   };
 
   handleGlobalBlock = async (event) => {
@@ -151,7 +184,9 @@ class BlockChatScreen extends Component {
       client.phoneNumber.toLowerCase().includes(searchInput.toLowerCase()) ||
       client.address.toLowerCase().includes(searchInput.toLowerCase())
     );
-    this.setState({ filteredClients });
+    this.setState({ filteredClients }, () => {
+      this.tryFetchSearchedClients()
+    })
   };
 
   render() {
@@ -179,12 +214,9 @@ class BlockChatScreen extends Component {
 
     let orderedLocations = this.state.clientLocations.sort()
 
-    var clientsToMessage = 0
-    console.log("this.state.clientIsBlockedStateList", this.state.clientIsBlockedStateList)
     const clientBlocks = orderedClients?.map(x => {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked
       const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == x.address)
-      if(chatIsBlocked == false && willMessageTommorrow != undefined) {clientsToMessage = clientsToMessage + 1}
 
       return <ClientBlockComponent key={x.id} {...x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {orderedLocations}
         showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
@@ -200,7 +232,7 @@ class BlockChatScreen extends Component {
             <div className="col s3">
               <span className="">Clientes a mensajear: </span>
               {
-              <span className="bold green-text">{clientsToMessage}</span>
+              <span className="bold green-text">{this.state.clientsToMessageTommorrow}</span>
               }
             </div>
             <div className="col s4">
