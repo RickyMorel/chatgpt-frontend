@@ -109,12 +109,23 @@ class BlockChatScreen extends Component {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/searchClientByNumber?searchNumber=${this.state.searchInput}&limit=${5}`);
       console.log("tryFetchSearchedClients response", response.data)
-      let clients = [...this.state.clients, ...response.data]
-      let filteredClients = [...this.state.filteredClients, ...response.data]
+      let clients = [...this.state.clients]
+      let filteredClients = [...this.state.filteredClients]
+      let blockedStateList = [...this.state.clientIsBlockedStateList]
+      for(const client of response.data) {
+        if(clients.find(x => x.phoneNumber == client.phoneNumber) == undefined) { clients.push(client); }
+        if(filteredClients.find(x => x.phoneNumber == client.phoneNumber) == undefined) { filteredClients.push(client); }
+        if(blockedStateList.find(x => x.client.phoneNumber == client.phoneNumber) == undefined) 
+        {         
+          const newClientState = {client: client, isBlocked: client.chatIsBlocked}
+          blockedStateList.push(newClientState)
+        }
+      }
 
       this.setState({
         clients: clients,
-        filteredClients: filteredClients
+        filteredClients: filteredClients,
+        clientIsBlockedStateList: blockedStateList
       })
     } catch (error) {
       console.log("error", error)
