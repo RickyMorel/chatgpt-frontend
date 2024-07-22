@@ -18,7 +18,7 @@ class OrderComponent extends React.Component {
 }
 
   componentDidMount() {
-    const selectedMovil = this.props.movilObjs.find(x => x.van == this.props.movil)
+    const selectedMovil = this?.props?.movilObjs?.find(x => x.van == this.props.movil) ?? ""
 
     this.setState({
       checked: this.props.checkedBySalesPerson,

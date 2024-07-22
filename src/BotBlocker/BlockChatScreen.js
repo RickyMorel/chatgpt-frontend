@@ -2,20 +2,23 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import ClientBlockComponent from './ClientBlockComponent';
 import { Color } from '../Colors';
+import PaginatedScrollView from './PaginatedScrollView';
 
 class BlockChatScreen extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      clients: null,
+      clients: [],
       searchInput: '',
-      filteredClients: null,
+      filteredClients: [],
       isGloballyBlocked: false,
       clientIsBlockedStateList: [],
       nextDayIndex: -1,
       dayLocations: [],
-      clientLocations: []
+      clientLocations: [],
+      pageNumber: 1,
+      pageSize: 15
     };
   }
 
@@ -35,19 +38,26 @@ class BlockChatScreen extends Component {
 
   fetchClientData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/blockChat`);
-      let newList = []
-      response.data.forEach(client => {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/blockChat?pageNumber=${this.state.pageNumber}&pageSize=${this.state.pageSize}`);
+      let newList = [...this?.state?.clientIsBlockedStateList]
+      let newClientList = [...this?.state?.clients]
+      for(const client of response.data) {
         const newClientState = {client: client, isBlocked: client.chatIsBlocked}
-        newList.push(newClientState)
-      });
+
+        if(!newList.find(x => x.client.phoneNumber == client.phoneNumber)) { newList.push(newClientState); }
+        if(!newClientList.find(x => x.phoneNumber == client.phoneNumber)) { newClientList.push(client); }
+      } 
+
+      let newPage = this.state.pageNumber + 1
       this.setState({
-        clients: response.data,
-        filteredClients: response.data,
-        clientIsBlockedStateList: newList
+        clients: newClientList,
+        filteredClients: newClientList,
+        clientIsBlockedStateList: newList,
+        pageNumber: newPage
       });
+      return response.data
     } catch (error) {
-      this.setState({ error: error });
+      console.log("error", error)
     } finally {
       this.setState({ loading: false });
     }
@@ -170,6 +180,7 @@ class BlockChatScreen extends Component {
     let orderedLocations = this.state.clientLocations.sort()
 
     var clientsToMessage = 0
+    console.log("this.state.clientIsBlockedStateList", this.state.clientIsBlockedStateList)
     const clientBlocks = orderedClients?.map(x => {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked
       const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == x.address)
@@ -216,9 +227,7 @@ class BlockChatScreen extends Component {
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
-            {clientBlocks}
-          </div>
+          <PaginatedScrollView clientBlocks={clientBlocks} fetchMoreData={this.fetchClientData} pageSize={this.state.pageSize}/>
         </div>
       </div>
     );
