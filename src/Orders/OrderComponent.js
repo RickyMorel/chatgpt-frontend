@@ -80,15 +80,29 @@ class OrderComponent extends React.Component {
     })
   }
 
+  handleAddProduct = () => {
+    let editedOrder = [...this.state.order]
+    console.log("editedOrder", editedOrder)
+    const itemNameWithCode = this.props.inventoryItemNamesWithCodes.find(x => editedOrder.find(y => y.code == x.code) == undefined)
+    let newItem = {name: itemNameWithCode.name, code: itemNameWithCode.code, amount: 1, botState: "CONFIRMED", askedProductName: "Agregado", price: 0}
+
+    editedOrder.push(newItem)
+
+    this.setState({
+      order: editedOrder
+    })
+  }
+
   handleSave = async () => {
-    console.log("handleSave")
+    console.log("handleSave", this?.state?.order)
     if(this?.state?.selectedMovil?.van == undefined) {this.props.showPopup(new Error(`Seleccione un movil de entrega para el pedido`)); return;}
-    if(this?.state?.order.find(x => x.botState == "SURE")) {this.props.showPopup(new Error(`Hay algunos items que no se confirmaron`)); return;}
+    if(this?.state?.order.find(x => x.botState == "CONFIRMED") == undefined && this?.state?.order.find(x => x.botState == "SURE")) {this.props.showPopup(new Error(`Hay algunos items que no se confirmaron`)); return;}
 
     try {
         let orderItems = []
         for(const orderItem of this.state.order) {
           if(orderItem.botState == "UNSURE") { continue; }
+          if(orderItem.botState == "SURE") { continue; }
 
           let newOrderItem = {...orderItem}
           let newName = newOrderItem.name.replaceAll('_BAD_FORMAT', '')
@@ -139,7 +153,7 @@ class OrderComponent extends React.Component {
     let orderItems = [...this?.state?.order]
     let hasConfirmedItems = this?.state?.confirmedOrder?.find(x => x.botState == confirmedState)
     orderItems = orderItems.filter(x => x.botState != "UNSURE")
-    //If agent confirmed order, don't show not confirmed items
+    //If agent confirmed order, don't show not sure items
     if(hasConfirmedItems) { orderItems = orderItems.filter(x => x.botState != SURE)}
 
     for(const item of orderItems) {
@@ -170,7 +184,7 @@ class OrderComponent extends React.Component {
 
       return(
         <div className='row'>
-          <div className='col s3'>
+          <div className='col s2'>
             <span style={{ width: '100%'  }}>{i}</span>
           </div>
           <div className='col s3'>
@@ -196,14 +210,24 @@ class OrderComponent extends React.Component {
               <span style={{ width: '100%'  }}>{x.amount}</span>
             }
           </div>
-          <div className='col s2'>
+          <div className='col s3'>
             {
               isEditing == true ?
-              <select style={{display: 'block' }} name='botState' value={orderItem.botState} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
-                <option value={SURE}>Falta confirmar</option>
-                <option value={confirmedState}>Confirmado</option>
-                <option value={canceldState}>Cancelado</option>
-              </select>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <select style={{display: 'block' }} name='botState' value={orderItem.botState} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
+                  <option value={SURE}>Falta confirmar</option>
+                  <option value={confirmedState}>Confirmado</option>
+                  <option value={canceldState}>Cancelado</option>
+                </select>
+                {
+                  orderItemsOrdered.indexOf(x) == orderItemsOrdered.length - 1 ?
+                  <button onClick={() => this.handleAddProduct()} className={`waves-effect waves-light btn ${Color.Fifth}`}>
+                    <i className={`material-icons`}>add_circle_outline</i>
+                  </button>
+                  :
+                  <div></div>
+                }
+              </div>
               :
               <span style={{ width: '100%'  }}>{botStateHtml}</span>
             }

@@ -118,7 +118,7 @@ class OrderScreen extends Component {
     this.props.setIsLoading(true)
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getTommorrowsClientsNumbers`);
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/phoneNumbers`);
       this.setState({
         clientNumbers: response.data,
       })

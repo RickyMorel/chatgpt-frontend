@@ -23,7 +23,8 @@ class InventoryScreen extends Component {
           editItemModelOpen: false,
           itemToEdit: null,
           addedTags: [],
-          productReccomendations: []
+          productReccomendations: [],
+          autoPromo: true
         };
     }
 
@@ -182,8 +183,14 @@ class InventoryScreen extends Component {
         })
     }
 
+    handleAutoPromoChange = (e) => {
+        this.setState({
+            autoPromo: e.target.checked
+        })
+    }
+
     handleSelectPromoItem = (item) => {
-        let newPromoItems = this.state.promoItemCodes
+        let newPromoItems = [...this.state.promoItemCodes]
 
         if(newPromoItems.includes(item.code) == false) {newPromoItems.unshift(item.code)}
         else 
@@ -192,10 +199,19 @@ class InventoryScreen extends Component {
             newPromoItems.splice(removeIndex, 1);
         }
 
+        if(this.state.autoPromo == true) {
+            let reccomendedItems = this.state.productReccomendations.find(x => x.itemCode == item.code)?.reccomendedItemCodes
+
+            newPromoItems = []
+            newPromoItems = [item.code, ...reccomendedItems]
+        }
+
         if(newPromoItems.length > 3) {newPromoItems.pop()}
 
+        console.log("newPromoItems", newPromoItems)
+
         this.setState({
-            promoItems: newPromoItems,
+            promoItemCodes: newPromoItems,
             needsToSave: true
         })
     }
@@ -272,6 +288,7 @@ class InventoryScreen extends Component {
         const orderedSelectedDayProducts = filteredSelectedDayInventory?.items?.sort((a, b) => this.sortByName(a, b, "name"))
         const selectedDayProductsList = orderedSelectedDayProducts?.map(listedItem => {
             const isPromoItem = this.state?.promoItemCodes?.find(y => y == listedItem.code) != undefined
+            console.log(isPromoItem, this.state?.promoItemCodes)
             //Only give reccomendations for promo items
             let reccomendedItems = isPromoItem ? this.state.productReccomendations.find(x => x.itemCode == listedItem.code)?.reccomendedItemCodes.slice(0, 2) : []
             reccomendedItems = reccomendedItems?.filter(x => this?.state?.promoItemCodes?.includes(x) == false)
@@ -313,7 +330,6 @@ class InventoryScreen extends Component {
             showPopup={this.props.showPopup}
         />      
             
-
         const navbarStyle = {
             display: 'flex',
             justifyContent: 'center',
@@ -325,12 +341,17 @@ class InventoryScreen extends Component {
                 <div className="card-content">
                     <nav className="transparent z-depth-0">
                         <div class="nav-wrapper">
-                            {
-                                this.state?.needsToSave == true ?
-                                <div className={`waves-effect waves-light btn right ${Color.First}`} onClick={this.saveDailyInventories}>Guardar</div>
-                                :
-                                <div></div>
-                            }
+                            <div style={{ display: 'flex', alignItems: 'center' }} className='right'>
+                                <div class="switch" style={{ paddingRight: '20px' }}>
+                                    <label><input type="checkbox" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange}/><span class="lever"></span>Auto Promo</label>
+                                </div>
+                                {
+                                    this.state?.needsToSave == true ?
+                                    <div className={`waves-effect waves-light btn ${Color.First}`} onClick={this.saveDailyInventories}>Guardar</div>
+                                    :
+                                    <div></div>
+                                }
+                            </div>
                             <ul style={navbarStyle}>
                                 <li onClick={() => this.handleDayTabClick(0)} className={`${0 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}>
                                     <a className={`grey-text text-darken-2`}>{0 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Lunes</a></li>
