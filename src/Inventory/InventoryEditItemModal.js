@@ -26,8 +26,6 @@ class InventoryEditItemModal extends Component {
         //Don't update if user didnt swap items
         if(this.props?.itemToEdit?.name == prevProps?.itemToEdit?.name) {return;}
 
-        console.log("componentDidUpdate", this.props)
-
         this.setState({
             itemToEdit: this.props.itemToEdit
         })
@@ -53,12 +51,25 @@ class InventoryEditItemModal extends Component {
         this.props.closeCallback()
 
         try {
-            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/inventory/updateItem`, itemToEdit);
+            if(this.props.isCreateItem) {
+                let newItem = {...itemToEdit}
+                newItem.code = itemToEdit.name
+                newItem.amount = 20
+
+                if(!newItem.name || newItem.name.length < 1) { this.props.showPopup(new Error("Falta ponerle un nombre al item!")); return;}
+                if(!newItem.imageLink || newItem.imageLink.length < 1) { this.props.showPopup(new Error("Falta ponerle una imagen al item!")); return;}
+                if(!newItem.description || newItem.description.length < 1) { this.props.showPopup(new Error("Falta ponerle una descripcion al item!")); return;}
+                if(!newItem.tags || newItem.tags.length < 1) { this.props.showPopup(new Error("Falta ponerle etiquetas al item!")); return;}
+                
+                const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/inventory/addItems`, [newItem]);
+            } else {
+                const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/inventory/updateItem`, itemToEdit);
+            }
             this.props.updateProductsCallback(itemToEdit)
             return null
           } catch (error) {
-            console.log("handleSave showPopup", error)
-            this.props.showPopup(error);
+            console.log("ERROR", error)
+            this.props.showPopup(new Error("Ya existe un item con este nombre!"));
           }
     }
 
@@ -83,7 +94,6 @@ class InventoryEditItemModal extends Component {
 
     handleTagChange = (e) => {
         const selectedOptions = Array.isArray(e.target.value) ? e.target.value : [e.target.value];
-        console.log("selectedOptions", selectedOptions, "e.target.value", e.target.value)
         this.setState(prevState => ({
             itemToEdit: {
                 ...prevState.itemToEdit,
@@ -93,7 +103,7 @@ class InventoryEditItemModal extends Component {
     }
 
     render() {
-        const {isOpen, itemToEdit, closeCallback, allTags} = this.props
+        const {isOpen, itemToEdit, closeCallback, allTags, isCreateItem} = this.props
 
         const editItemModal =             
         <Modal
@@ -107,7 +117,7 @@ class InventoryEditItemModal extends Component {
                     <i className="material-icons">close</i>
                 </a>
                 <div className="card-content">
-                    <span className="card-title">{`Editar ${itemToEdit?.name}`}</span>
+                    <span className="card-title">{isCreateItem ? `Crear Item` : `Editar ${itemToEdit?.name}`}</span>
                     <div className="row">
                         <div className="col s8">
                             <span>{`Nombre:`}</span>

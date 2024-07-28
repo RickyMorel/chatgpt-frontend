@@ -104,6 +104,13 @@ class InventoryScreen extends Component {
         })
     }
 
+    handleOpenCreateItem = () => {
+        this.setState({
+            editItemModelOpen: true,
+            itemToEdit: null
+        })
+    }
+
     addToDailyInventory(movedItem) {
         var currentSelectedItems = [...this.state.selectedDayInventory.items];
 
@@ -208,8 +215,6 @@ class InventoryScreen extends Component {
 
         if(newPromoItems.length > 3) {newPromoItems.pop()}
 
-        console.log("newPromoItems", newPromoItems)
-
         this.setState({
             promoItemCodes: newPromoItems,
             needsToSave: true
@@ -288,7 +293,6 @@ class InventoryScreen extends Component {
         const orderedSelectedDayProducts = filteredSelectedDayInventory?.items?.sort((a, b) => this.sortByName(a, b, "name"))
         const selectedDayProductsList = orderedSelectedDayProducts?.map(listedItem => {
             const isPromoItem = this.state?.promoItemCodes?.find(y => y == listedItem.code) != undefined
-            console.log(isPromoItem, this.state?.promoItemCodes)
             //Only give reccomendations for promo items
             let reccomendedItems = isPromoItem ? this.state.productReccomendations.find(x => x.itemCode == listedItem.code)?.reccomendedItemCodes.slice(0, 2) : []
             reccomendedItems = reccomendedItems?.filter(x => this?.state?.promoItemCodes?.includes(x) == false)
@@ -328,6 +332,7 @@ class InventoryScreen extends Component {
             addNewTagCallback={this.handleAddNewTag}
             updateProductsCallback={this.updateProductLists}
             showPopup={this.props.showPopup}
+            isCreateItem={this.state.itemToEdit == null}
         />      
             
         const navbarStyle = {
@@ -341,33 +346,47 @@ class InventoryScreen extends Component {
                 <div className="card-content">
                     <nav className="transparent z-depth-0">
                         <div class="nav-wrapper">
-                            <div style={{ display: 'flex', alignItems: 'center' }} className='right'>
-                                <div class="switch" style={{ paddingRight: '20px' }}>
-                                    <label><input type="checkbox" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange}/><span class="lever"></span>Auto Promo</label>
+                        <div className="nav-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+                            <div style={{ position: 'absolute', left: 0, display: 'flex', alignItems: 'center' }}>
+                                <div className="switch" style={{ paddingRight: '20px' }}>
+                                    <label><input type="checkbox" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange} /><span className="lever"></span>Auto Promo</label>
                                 </div>
+                            </div>
+                            <ul style={{ ...navbarStyle, margin: 0 }}>
+                                <li onClick={() => this.handleDayTabClick(0)} className={`${0 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{0 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Lunes</a>
+                                </li>
+                                <li onClick={() => this.handleDayTabClick(1)} className={`${1 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 1 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{1 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Martes</a>
+                                </li>
+                                <li onClick={() => this.handleDayTabClick(2)} className={`${2 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 2 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{2 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Miercoles</a>
+                                </li>
+                                <li onClick={() => this.handleDayTabClick(3)} className={`${3 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 3 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{3 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Jueves</a>
+                                </li>
+                                <li onClick={() => this.handleDayTabClick(4)} className={`${4 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 4 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{4 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Viernes</a>
+                                </li>
+                                <li onClick={() => this.handleDayTabClick(5)} className={`${5 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 5 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{5 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Sabado</a>
+                                </li>
+                                <li onClick={() => this.handleDayTabClick(6)} className={`${6 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 6 ? "1" : "0"}`}>
+                                    <a className={`grey-text text-darken-2`}>{6 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Domingo</a>
+                                </li>
+                            </ul>
+                            <div style={{ position: 'absolute', right: 0, display: 'flex', alignItems: 'center' }}>
+                                <button onClick={this.handleOpenCreateItem} className={`waves-effect waves-light btn-small right ${Color.Fifth}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
+                                    <i className="material-icons" style={{ fontSize: '18px' }}>add_circle_outline</i>
+                                </button>
                                 {
                                     this.state?.needsToSave == true ?
-                                    <div className={`waves-effect waves-light btn ${Color.First}`} onClick={this.saveDailyInventories}>Guardar</div>
+                                    <div style={{ marginLeft: '20px' }} className={`waves-effect waves-light btn ${Color.First}`} onClick={this.saveDailyInventories}>Guardar</div>
                                     :
                                     <div></div>
                                 }
                             </div>
-                            <ul style={navbarStyle}>
-                                <li onClick={() => this.handleDayTabClick(0)} className={`${0 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{0 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Lunes</a></li>
-                                <li onClick={() => this.handleDayTabClick(1)} className={`${1 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 1 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{1 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Martes</a></li>
-                                <li onClick={() => this.handleDayTabClick(2)} className={`${2 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 2 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{2 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Miercoles</a></li>
-                                <li onClick={() => this.handleDayTabClick(3)} className={`${3 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 3 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{3 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Jueves</a></li>
-                                <li onClick={() => this.handleDayTabClick(4)} className={`${4 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 4 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{4 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Viernes</a></li>
-                                <li onClick={() => this.handleDayTabClick(5)} className={`${5 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 5 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{5 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Sabado</a></li>
-                                <li onClick={() => this.handleDayTabClick(6)} className={`${6 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 6 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{6 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Domingo</a></li>
-                            </ul>
+                        </div>
                         </div>
                     </nav>
                     <div className='row'>
