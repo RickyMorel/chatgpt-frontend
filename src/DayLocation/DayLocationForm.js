@@ -1,9 +1,10 @@
 import React, { Component, createRef } from 'react';
 import axios from 'axios';
-import { Color } from '../Colors';
 import 'materialize-css/dist/css/materialize.min.css';
 import '../MultiSelect.css';
 import TimeBlock from './TimeBlock';
+import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material';
+import { Color, ColorHex } from '../Colors';
 
 class DayLocationForm extends Component {
   constructor(props) {
@@ -88,17 +89,14 @@ class DayLocationForm extends Component {
     }
   };
 
-  handleLocationChange = (day, newLocations, newTime) => {
+  handleLocationChange = (e, day, newTime) => {
+    const selectedOptions = Array.isArray(e.target.value) ? e.target.value : [e.target.value];
     const dayIndex = this.state.days.findIndex(x => x == day)
-    const location = !newLocations ? this.state.locations[dayIndex].location : Array.from(newLocations, (option) => option.value)
     const time = newTime == undefined || newTime == null ? this.state.locations[dayIndex].time : newTime
-
-    console.log("handleLocationChange location", location, dayIndex, this.state.locations)
-    console.log("handleLocationChange newTime", newTime)
-
+    
     const dayLocationObj = {
       day: dayIndex,
-      locations: location,
+      locations: selectedOptions,
       time: time
     }
       
@@ -289,6 +287,7 @@ class DayLocationForm extends Component {
 
     let orderedLocations = this.state.clientLocations.sort()
     orderedLocations = orderedLocations.filter(x => x.toString().toLowerCase() != "NO MENSAJEAR".toLowerCase())
+    orderedLocations = orderedLocations.filter(x => x.toString().includes(",") == false)
 
     const dayLocationsHtml = this.state.days.map(x => {
       const dayIndex = this.state.days.indexOf(x)
@@ -313,6 +312,8 @@ class DayLocationForm extends Component {
         display: 'block' 
       };
 
+      const selectedLocations = this.state.locations.find(x => x.day === dayIndex)?.locations ?? []
+
       return(
         <div className={dayIndex == this.state.nextDayIndex ? `row ${Color.Third}` : `row`}>
             <div class="col s3"><p class='text-bold'>{dayIndex == this.state.nextDayIndex ? `Hoy Mensajea => ${x}` : x}</p></div>
@@ -327,13 +328,29 @@ class DayLocationForm extends Component {
             <div class="col s4">
               {
                 this.state.isEditingLocations == true ?
-                <select style={selectStyle} multiple={true} value={locations} onChange={(e) => this.handleLocationChange(x, e.target.selectedOptions, null)}>
-                  {
-                    orderedLocations && orderedLocations?.map(x => (
-                      <option value={x}>{x}</option>
-                    ))
-                  }
-                </select>
+                <FormControl style={{ width: '100%' }}>
+                    <Select
+                        labelId="locations-label"
+                        multiple
+                        value={selectedLocations}
+                        onChange={(e) => this.handleLocationChange(e, x, null)}
+                        renderValue={(selected) => selected.join(', ')}
+                    >
+                        {orderedLocations.map((location) => (
+                            <MenuItem 
+                                key={location} 
+                                value={location} 
+                                style={{ 
+                                    fontWeight: selectedLocations?.includes(location) ? 'bold' : 'normal', 
+                                    color: selectedLocations?.includes(location) ? 'blue' : 'black',
+                                    backgroundColor: selectedLocations?.includes(location) ? ColorHex.Third : 'white'
+                                }}
+                            >
+                                {location}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 :
                 <p>{finalLocationsString == "" ? "-" : finalLocationsString}</p>
               }

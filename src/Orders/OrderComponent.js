@@ -1,8 +1,8 @@
-import React from 'react';
-import 'materialize-css/dist/css/materialize.min.css';
-import M from 'materialize-css/dist/js/materialize.min.js';
-import { Color, ColorHex } from '../Colors';
 import axios from 'axios';
+import 'materialize-css/dist/css/materialize.min.css';
+import React from 'react';
+import Select from 'react-select';
+import { Color } from '../Colors';
 const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
@@ -60,17 +60,20 @@ class OrderComponent extends React.Component {
     })
   }
 
-  handleEditOrderItem = (e, orderItemCode, orderItemAskedProductName) => {
+  handleEditOrderItem = (propertyName, value, orderItemCode, orderItemAskedProductName) => {
+    console.log("orderItemCode", orderItemCode)
     let editedOrder = [...this.state.order]
+    console.log("editedOrder", editedOrder)
     let wantedItem = {...editedOrder.find(x => x.code == orderItemCode && x.askedProductName == orderItemAskedProductName)}
+    console.log("wantedItem", wantedItem)
     editedOrder = editedOrder.filter(x => x.code != wantedItem.code)
 
-    wantedItem[e.target.name] = e.target.value
+    wantedItem[propertyName] = value
 
-    if(e.target.name == "name") 
+    if(propertyName == "name") 
     {
-      wantedItem.code = e.target.value
-      wantedItem.name = this.props.inventoryItemNamesWithCodes.find(x => x.code == e.target.value).name
+      wantedItem.code = value
+      wantedItem.name = this.props.inventoryItemNamesWithCodes.find(x => x.code == value).name
     }
 
     editedOrder.push(wantedItem)
@@ -180,7 +183,11 @@ class OrderComponent extends React.Component {
       const askedProductNameColor = x.askedProductName.includes(onlyVendorConfirmed) || x.askedProductName.includes(noLongerWantedItem) ? "red" : "black"
       const displayedName = x.name.replace(badFormatString, "")
 
+      const orderItemCodesSelect = inventoryItemNamesWithCodes?.map(x => ({value: x.code, label: x.name}))
       const orderItem = this.state.order.find(y => y.code == x.code && y.askedProductName == x.askedProductName)
+      const orderItemSelect = {value: orderItem.code, label: orderItem.name}
+
+      console.log("x", x)
 
       return(
         <div className='row'>
@@ -193,11 +200,17 @@ class OrderComponent extends React.Component {
           <div className='col s3'>
           {
               isEditing == true ?
-              <select style={{display: 'block' }} name='name' value={orderItem.code} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
-                {
-                  inventoryItemNamesWithCodes.map(x => <option value={x.code}>{x.name}</option>)
-                }
-              </select>
+              <Select
+                  options={orderItemCodesSelect}
+                  onChange={(value) => this.handleEditOrderItem("name", value.value, x.code, x.askedProductName)}
+                  value={orderItemSelect}
+                  isSearchable={true}
+              />
+              // <select style={{display: 'block' }} name='name' value={orderItem.code} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
+              //   {
+              //     inventoryItemNamesWithCodes.map(x => <option value={x.code}>{x.name}</option>)
+              //   }
+              // </select>
               :
               <span style={{ width: '100%'  }}>{displayedName}</span>
             }
@@ -205,7 +218,7 @@ class OrderComponent extends React.Component {
           <div className='col s1'>
             {
               isEditing == true ?
-              <input style={{display: 'block' }} name='amount' value={orderItem.amount} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}/>
+              <input style={{display: 'block' }} name='amount' value={orderItem.amount} onChange={(e) => this.handleEditOrderItem("amount", e.target.value, x.code, x.askedProductName)}/>
               :
               <span style={{ width: '100%'  }}>{x.amount}</span>
             }
@@ -214,7 +227,7 @@ class OrderComponent extends React.Component {
             {
               isEditing == true ?
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <select style={{display: 'block' }} name='botState' value={orderItem.botState} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
+                <select style={{display: 'block' }} name='botState' value={orderItem.botState} onChange={(e) => this.handleEditOrderItem("botState", e.target.value, x.code, x.askedProductName)}>
                   <option value={SURE}>Falta confirmar</option>
                   <option value={confirmedState}>Confirmado</option>
                   <option value={canceldState}>Cancelado</option>
