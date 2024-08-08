@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import Select from 'react-select';
-import { PopupStyle } from '../Popups/PopupManager';
-import { MenuItem, InputLabel, FormControl, Button } from '@mui/material';
-import Modal from 'react-modal';
-import { Color, ColorHex } from '../Colors';
 import axios from 'axios';
-import Utils from '../Utils';
+import { es } from 'date-fns/locale';
+import React, { Component } from 'react';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import Modal from 'react-modal';
+import Select from 'react-select';
+import { Color } from '../Colors';
+import { PopupStyle } from '../Popups/PopupManager';
 
 class AddOrderModal extends Component {
     constructor(props) {
@@ -16,7 +17,7 @@ class AddOrderModal extends Component {
             pointsUsed: 0,
             movil: "",
             items: [],
-            deliveryDate: undefined
+            deliveryDate: new Date()
         };
     }
 
@@ -72,9 +73,9 @@ class AddOrderModal extends Component {
         })
     }
 
-    handleEditDate = (e) => {
+    handleEditDate = (date) => {
         this.setState({
-          deliveryDate: e.target.value
+          deliveryDate: date
         })
       }
 
@@ -196,8 +197,17 @@ class AddOrderModal extends Component {
                                 <input id="pointsUsed" name='pointsUsed' type="number" value={this.state.pointsUsed} class="validate" style={{display: 'block' }} onChange={(e) => this.handlePointsChange(e.target.value)}/>
                                 <label for="first_name" className='active'>Puntos usados</label>
                             </div> 
-                            <label for="first_name" className='active'>Fecha de Entrega</label>
-                            <input type="date" id="date" value={Utils.formatDate(this.state.deliveryDate)} style={{display: 'block' }} onChange={this.handleEditDate}/>
+                            <div class="input-field">
+                                <label htmlFor="datepicker" className='active'>Fecha de Entrega</label>
+                                <DatePicker
+                                    id="datepicker"
+                                    dateFormat="dd/MM/yy"
+                                    selected={this.state.deliveryDate}
+                                    onChange={(date) => this.handleEditDate(date)}
+                                    locale={es}
+                                />                                           
+                            </div>
+                            {/* <input type="date" id="date" value={Utils.formatDate(this.state.deliveryDate)} style={{display: 'block' }} onChange={this.handleEditDate}/> */}
                             <div className="row">
                                 <div className="col s11">
                                     <span>{`Pedido:`}</span>

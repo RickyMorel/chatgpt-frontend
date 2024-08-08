@@ -1,10 +1,12 @@
 import axios from 'axios';
+import { es } from 'date-fns/locale';
 import 'materialize-css/dist/css/materialize.min.css';
 import React from 'react';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
 import { Color } from '../Colors';
 import Utils from '../Utils';
-import { parse, format } from 'date-fns';
 const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
@@ -89,9 +91,9 @@ class OrderComponent extends React.Component {
     })
   }
 
-  handleEditDate = (e) => {
+  handleEditDate = (date) => {
     this.setState({
-      deliveryDate: e.target.value
+      deliveryDate: date
     })
   }
 
@@ -134,16 +136,13 @@ class OrderComponent extends React.Component {
           confirmedOrder: orderItems
         })
 
-        const newDate = parse(this.state.deliveryDate, 'yyyy-MM-dd', new Date());
-        newDate.setHours(1)
-
         const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, 
           {
             phoneNumber: this.props.phoneNumber,
             order: orderItems, 
             movil: this?.state?.selectedMovil?.van, 
             pointsUsed: this.state.pointsUsed,
-            deliveryDate: newDate
+            deliveryDate: this.state.deliveryDate
           }
         );
         this.props.updateTotalSalesCallback()
@@ -222,11 +221,6 @@ class OrderComponent extends React.Component {
                   value={orderItemSelect}
                   isSearchable={true}
               />
-              // <select style={{display: 'block' }} name='name' value={orderItem.code} onChange={(e) => this.handleEditOrderItem(e, x.code, x.askedProductName)}>
-              //   {
-              //     inventoryItemNamesWithCodes.map(x => <option value={x.code}>{x.name}</option>)
-              //   }
-              // </select>
               :
               <span style={{ width: '100%'  }}>{displayedName}</span>
             }
@@ -303,7 +297,14 @@ class OrderComponent extends React.Component {
         <span className="client-name" style={styles.clientName}>
           {
             isEditing && currentOpenOrder === phoneNumber ?
-            <input type="date" id="date" value={Utils.formatDate(this.state.deliveryDate)} style={{display: 'block' }} onChange={this.handleEditDate}/>
+            <DatePicker
+              style={{display: 'block' }}
+              dateFormat="dd/MM/yy"
+              id="datepicker"
+              selected={this.state.deliveryDate}
+              onChange={(date) => this.handleEditDate(date)}
+              locale={es}
+            />
             :
             <div>{Utils.formatDate(this.state.deliveryDate)}</div>
           }

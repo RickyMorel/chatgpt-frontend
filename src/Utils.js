@@ -5,7 +5,7 @@ class Utils {
         const month = String(newDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
         const day = String(newDate.getDate()).padStart(2, '0');
 
-        const formattedDate = `${year}-${month}-${day}`;
+        const formattedDate = `${day}-${month}-${year}`;
         console.log("formattedDate", formattedDate)
         return formattedDate
     }
