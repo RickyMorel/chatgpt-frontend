@@ -21,29 +21,41 @@ class InventoryItemComponent extends React.Component {
     };
 
     render() {
-        const { item, isInDailyInventory, isPromoItem, handleClickCallback, handleSelectPromoItemCallback } = this.props;
+        const { item, isInDailyInventory, isPromoItem, handleClickCallback, handleSelectPromoItemCallback, handleEditItemCallback, reccomendations } = this.props;
 
         return (
         <div className="row list-item z-depth-2 border">
-            <div className="col s5">
+            <div className="col s4">
                 <span className="client-name">{item.name}</span>
             </div>
-            <div className="col s2">
-                <span className="client-name red-text">{item.imageLink == " " ? "Sin imagen" : ""}</span>
-            </div>
             <div className="col s3">
-                <span className="client-name">{this.formatPrice(item.price)}</span>
-            </div>
-            <div className="col s1">
                 {
-                    isInDailyInventory ? 
-                    <a className={`btn btn-small right ${isPromoItem == true ? Color.First : Color.Third}`} onClick={() => handleSelectPromoItemCallback(item, isPromoItem)}>
-                        <i className="material-icons">star_border</i>
-                    </a>
+                    reccomendations?.length > 0 ?
+                    <span className="client-name orange-text">{`Rec: ${reccomendations.join(", ")}`}</span>
                     :
                     <div></div>
                 }
             </div>
+            <div className="col s1">
+                <span className="client-name red-text">{item.imageLink == " " ? "Sin imagen" : ""}</span>
+            </div>
+            <div className="col s2">
+                <span className="client-name">{this.formatPrice(item.price)}</span>
+            </div>
+            {
+                isInDailyInventory == false ? 
+                <div className="col s1">
+                    <a className={`waves-effect waves-light btn btn-small right ${Color.Second}`} onClick={() => handleEditItemCallback(item)}>
+                    <i className="material-icons">edit</i>
+                    </a>
+                </div> 
+                :
+                <div className="col s1">
+                    <a className={`btn btn-small right ${isPromoItem == true ? Color.First : Color.Third}`} onClick={() => handleSelectPromoItemCallback(item, isPromoItem)}>
+                        <i className="material-icons">star_border</i>
+                    </a>
+                </div>
+            }
             <div className="col s1">
                 <a className={`waves-effect waves-light btn btn-small right ${isInDailyInventory == true ? Color.Second : Color.Fifth}`} onClick={() => handleClickCallback(item, isInDailyInventory)}>
                 <i className="material-icons">{isInDailyInventory == true ? "arrow_back" : "arrow_forward"}</i>

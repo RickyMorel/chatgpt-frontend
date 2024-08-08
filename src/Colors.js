@@ -14,4 +14,7 @@ export class ColorHex {
     static Third = "#b2dfdb"
     static Fifth = "#00796b"
     static Background = "#E9EBE3"
+    static Green = "#4c967d"
+    static Red = "#b0001b"
+    static Orange = "#b0001b"
 }

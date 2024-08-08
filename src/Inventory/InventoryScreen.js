@@ -1,10 +1,10 @@
 
 import axios from 'axios';
 import React, { Component } from 'react';
-import SearchBar from '../Searchbar/Searchbar';
-import InventoryItemComponent from './InventoryItemComponent';
-import { Link } from 'react-router-dom';
 import { Color } from '../Colors';
+import SearchBar from '../Searchbar/Searchbar';
+import InventoryEditItemModal from './InventoryEditItemModal';
+import InventoryItemComponent from './InventoryItemComponent';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -20,6 +20,11 @@ class InventoryScreen extends Component {
           promoItemCodes: [],
           needsToSave: false,
           nextDayIndex: -1,
+          editItemModelOpen: false,
+          itemToEdit: null,
+          addedTags: [],
+          productReccomendations: [],
+          autoPromo: true
         };
     }
 
@@ -29,13 +34,18 @@ class InventoryScreen extends Component {
 
     GetAllData = async () => {
         this.props.setIsLoading(true)
-    
-        await this.fetchGlobalConfig();
-        await this.fetchProductData();
-    
-        console.log("Force select day!", this.state.nextDayIndex); this.handleDayTabClick(this.state.nextDayIndex) 
 
-        this.props.setIsLoading(false)
+        const promise2 = await this.fetchProductData() 
+        const promise1 = this.fetchGlobalConfig()
+        const promise3 = this.fetchProductReccomendations()
+          
+        Promise.all([promise1, promise3, promise2])
+        .then((results) => {
+            this.props.setIsLoading(false)
+        })
+        .catch((error) => {
+            console.error('One of the promises rejected:', error);
+        });
     }
     
     fetchProductData = async () => {
@@ -48,17 +58,30 @@ class InventoryScreen extends Component {
         } catch (error) {}
     };
 
+    fetchProductReccomendations = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/product-correlation/getAllItemReccomendationsList`);
+            this.setState({
+                productReccomendations: response.data,
+            });
+        } catch (error) {}
+    };
+
     fetchGlobalConfig = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getDayInventories`);
-            console.log("response", response)
+            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+            let selectedInventoryItems = {day: response.data.dayInventories[0].day , items: this.state.products.filter(x => response.data.dayInventories[0].itemIds.includes(x.code))}
+
             this.setState({
                 dayInventories: response.data.dayInventories,
-                selectedDayInventory: response.data.dayInventories[0],
-                filteredSelectedDayInventory: response.data.dayInventories[0],
+                selectedDayInventory: selectedInventoryItems,
+                filteredSelectedDayInventory: selectedInventoryItems,
                 promoItemCodes: response.data.dayInventories[0].promoItemCodes,
-                nextDayIndex: response.data.nextDayIndex
+                nextDayIndex: response.data.nextMessageDayIndex
+            }).then(x => {
+                this.handleDayTabClick(this.state.nextDayIndex) 
             });
+
         } catch (error) {}
     }
 
@@ -71,6 +94,20 @@ class InventoryScreen extends Component {
 
         this.setState({
             needsToSave: true
+        })
+    }
+
+    handleEditItem = (item) => {
+        this.setState({
+            editItemModelOpen: item != undefined,
+            itemToEdit: item
+        })
+    }
+
+    handleOpenCreateItem = () => {
+        this.setState({
+            editItemModelOpen: true,
+            itemToEdit: null
         })
     }
 
@@ -110,13 +147,36 @@ class InventoryScreen extends Component {
 
     handleDayTabClick = async (selectedDayNumber) => {
         const allInventories = this.state.dayInventories
+        let selectedInventoryItems = {day: allInventories[selectedDayNumber].day , items: this.state.products.filter(x => allInventories[selectedDayNumber].itemIds.includes(x.code))}
 
         this.setState({
-            selectedDayInventory: allInventories[selectedDayNumber],
-            filteredSelectedDayInventory: allInventories[selectedDayNumber],
+            selectedDayInventory: selectedInventoryItems,
+            filteredSelectedDayInventory: selectedInventoryItems,
             promoItemCodes: allInventories[selectedDayNumber].promoItemCodes
         })
     }   
+
+    handleAddNewTag = (tag) => {
+        const newTag = tag.trim();
+        if (newTag && !this.state?.addedTags.includes(newTag)) {
+            this.setState(prevState => ({
+                addedTags: [...prevState.addedTags, newTag]
+            }));
+        }
+    }
+
+    updateProductLists = (updatedItem) => {
+        let updatedProductList = this.state.products?.filter(x => x.code != updatedItem.code)
+        updatedProductList.push(updatedItem)
+
+        let updatedFilteredProductList = this.state.filteredProducts.filter(x => x.code != updatedItem.code)
+        updatedFilteredProductList.push(updatedItem)
+
+        this.setState({
+            products: updatedProductList,
+            filteredProducts: updatedFilteredProductList,
+        })
+    }
 
     handleSearch = (filteredList) => {
         this.setState({
@@ -130,8 +190,14 @@ class InventoryScreen extends Component {
         })
     }
 
+    handleAutoPromoChange = (e) => {
+        this.setState({
+            autoPromo: e.target.checked
+        })
+    }
+
     handleSelectPromoItem = (item) => {
-        let newPromoItems = this.state.promoItemCodes
+        let newPromoItems = [...this.state.promoItemCodes]
 
         if(newPromoItems.includes(item.code) == false) {newPromoItems.unshift(item.code)}
         else 
@@ -140,73 +206,135 @@ class InventoryScreen extends Component {
             newPromoItems.splice(removeIndex, 1);
         }
 
+        if(this.state.autoPromo == true) {
+            let reccomendedItems = this.state.productReccomendations.find(x => x.itemCode == item.code)?.reccomendedItemCodes
+
+            newPromoItems = []
+            newPromoItems = [item.code, ...reccomendedItems]
+        }
+
         if(newPromoItems.length > 3) {newPromoItems.pop()}
 
         this.setState({
-            promoItems: newPromoItems,
+            promoItemCodes: newPromoItems,
             needsToSave: true
         })
     }
 
     saveDailyInventories = async () => {
+        if(this.state.selectedDayInventory?.items?.length < 5) {this.props.showPopup(new Error("Cargar al menos 5 productos!")); return;}
+        if(this.state.promoItemCodes.length < 3) {this.props.showPopup(new Error("Hace falta marcar 3 productos especiales!")); return;}
+
         this.setState({
             needsToSave: false
         })
         var newDayInventories = this.state.dayInventories
         const selectedDayInventory = this.state.selectedDayInventory
 
-        console.log("newDayInventories", newDayInventories)
-
         //Remove old day inventory
         newDayInventories = newDayInventories?.filter(x => x.day != selectedDayInventory.day)
         //add new one
-        newDayInventories.push(selectedDayInventory)
+        newDayInventories.push({day: selectedDayInventory.day, itemIds: selectedDayInventory.items.map(x => x.code), promoItemCodes: this.state.promoItemCodes})
         
         var newDayInventoriesDto = []
-
-        console.log("saveDailyInventories state promo codes", this.state.promoItemCodes)
 
         newDayInventories.forEach(dayInv => {
             const dayInvDto = 
             {
-                day: dayInv.day, itemIds: dayInv.items.map(x => x.code),
+                day: dayInv.day, itemIds: dayInv.itemIds,
                 promoItemCodes: this.state.selectedDayInventory.day == dayInv.day ? this.state.promoItemCodes : dayInv.promoItemCodes
             }
             newDayInventoriesDto.push(dayInvDto)
         });
 
         try {
-            console.log("saveDailyInventories newDayInventoriesDto", newDayInventoriesDto)
             const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayInventory`, {inventories: newDayInventoriesDto});
             this.setState({
-                dayInventories: response.data.dayInventories,
+                dayInventories: response.data,
             });
         } catch (error) {
             this.props.showPopup(error);
         }
     }
 
+    sortByName = (a, b, property) => {
+
+        if(!property) {
+            if (a < b) return -1;
+            if (a > itemB) return 1;
+            return 0;
+        }
+
+        const itemA = a[property].toLowerCase();
+        const itemB = b[property].toLowerCase();
+        if (itemA < itemB) return -1;
+        if (itemA > itemB) return 1;
+        return 0;
+    }
+
     render() {
         const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory} = this.state
 
-        const allProductsList = filteredProducts?.map(x => {
+        const orderedFilteredProducts = filteredProducts?.sort((a, b) => this.sortByName(a, b, "name"))
+        const allProductsList = orderedFilteredProducts?.map(x => {
             if(selectedDayInventory?.items?.find(y => y.code == x.code)) {return null;}
 
             return(
-                <InventoryItemComponent key={x.id} item={x} isInDailyInventory={false} handleClickCallback={this.handleItemClick} />
+                <InventoryItemComponent 
+                    key={x.id}
+                    item={x}
+                    isInDailyInventory={false}
+                    handleClickCallback={this.handleItemClick} 
+                    handleEditItemCallback={this.handleEditItem}
+                />
             )
         });
-        const selectedDayProductsList = filteredSelectedDayInventory?.items?.map(x => {
-            const isPromoItem = this.state?.promoItemCodes?.find(y => y == x.code) != undefined
+
+        const orderedSelectedDayProducts = filteredSelectedDayInventory?.items?.sort((a, b) => this.sortByName(a, b, "name"))
+        const selectedDayProductsList = orderedSelectedDayProducts?.map(listedItem => {
+            const isPromoItem = this.state?.promoItemCodes?.find(y => y == listedItem.code) != undefined
+            //Only give reccomendations for promo items
+            let reccomendedItems = isPromoItem ? this.state.productReccomendations.find(x => x.itemCode == listedItem.code)?.reccomendedItemCodes.slice(0, 2) : []
+            reccomendedItems = reccomendedItems?.filter(x => this?.state?.promoItemCodes?.includes(x) == false)
 
             return(
-            <InventoryItemComponent key={x.id} item={x} isInDailyInventory={true} isPromoItem={isPromoItem} handleClickCallback={this.handleItemClick} handleSelectPromoItemCallback={this.handleSelectPromoItem} />
+            <InventoryItemComponent 
+                key={listedItem.id} item={listedItem}
+                isInDailyInventory={true} 
+                isPromoItem={isPromoItem} 
+                handleClickCallback={this.handleItemClick}
+                handleSelectPromoItemCallback={this.handleSelectPromoItem} 
+                handleEditItemCallback={this.handleEditItem}
+                reccomendations={reccomendedItems}
+            />
             )
         });
 
-        console.log("filteredSelectedDayInventory?.items", filteredSelectedDayInventory?.items)
-            
+        let allTags = []
 
+        this.state?.products?.forEach(item => {
+            item.tags.forEach(tag => {
+                if(allTags.includes(tag) == false) { allTags.push(tag) }
+            });
+            this.state?.addedTags.forEach(addedTag => {
+                if(allTags.includes(addedTag) == false) { allTags.push(addedTag) }
+            });
+        });
+
+        allTags = allTags?.sort()
+
+        const editItemModal = 
+        <InventoryEditItemModal 
+            isOpen={this.state.editItemModelOpen} 
+            itemToEdit={this.state.itemToEdit} 
+            closeCallback={() => this.handleEditItem(undefined)}
+            allTags={allTags}
+            addNewTagCallback={this.handleAddNewTag}
+            updateProductsCallback={this.updateProductLists}
+            showPopup={this.props.showPopup}
+            isCreateItem={this.state.itemToEdit == null}
+        />      
+            
         const navbarStyle = {
             display: 'flex',
             justifyContent: 'center',
@@ -214,42 +342,63 @@ class InventoryScreen extends Component {
 
         return (
             <div className={`card bordered ${Color.Background}`}>
+                {editItemModal}
                 <div className="card-content">
                     <nav className="transparent z-depth-0">
                         <div class="nav-wrapper">
-                            {
-                                this.state?.needsToSave == true ?
-                                <div className={`waves-effect waves-light btn right ${Color.First}`} onClick={this.saveDailyInventories}>Guardar</div>
-                                :
-                                <div></div>
-                            }
-                            {/* <Link className={`waves-light ${Color.Button_1}`} to="/" onClick={() => this.saveDailyInventories()}><i className="material-icons left teal-text">arrow_back</i></Link> */}
-                            <ul style={navbarStyle}>
+                        <div className="nav-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
+                            <div style={{ position: 'absolute', left: 0, display: 'flex', alignItems: 'center' }}>
+                                <div className="switch" style={{ paddingRight: '20px' }}>
+                                    <label><input type="checkbox" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange} /><span className="lever"></span>Auto Promo</label>
+                                </div>
+                            </div>
+                            <ul style={{ ...navbarStyle, margin: 0 }}>
                                 <li onClick={() => this.handleDayTabClick(0)} className={`${0 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{0 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Lunes</a></li>
+                                    <a className={`grey-text text-darken-2`}>{0 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Lunes</a>
+                                </li>
                                 <li onClick={() => this.handleDayTabClick(1)} className={`${1 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 1 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{1 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Martes</a></li>
+                                    <a className={`grey-text text-darken-2`}>{1 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Martes</a>
+                                </li>
                                 <li onClick={() => this.handleDayTabClick(2)} className={`${2 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 2 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{2 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Miercoles</a></li>
+                                    <a className={`grey-text text-darken-2`}>{2 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Miercoles</a>
+                                </li>
                                 <li onClick={() => this.handleDayTabClick(3)} className={`${3 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 3 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{3 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Jueves</a></li>
+                                    <a className={`grey-text text-darken-2`}>{3 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Jueves</a>
+                                </li>
                                 <li onClick={() => this.handleDayTabClick(4)} className={`${4 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 4 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{4 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Viernes</a></li>
+                                    <a className={`grey-text text-darken-2`}>{4 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Viernes</a>
+                                </li>
                                 <li onClick={() => this.handleDayTabClick(5)} className={`${5 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 5 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{5 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Sabado</a></li>
+                                    <a className={`grey-text text-darken-2`}>{5 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Sabado</a>
+                                </li>
                                 <li onClick={() => this.handleDayTabClick(6)} className={`${6 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 6 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{6 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Domingo</a></li>
+                                    <a className={`grey-text text-darken-2`}>{6 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Domingo</a>
+                                </li>
                             </ul>
+                            <div style={{ position: 'absolute', right: 0, display: 'flex', alignItems: 'center' }}>
+                                <button onClick={this.handleOpenCreateItem} className={`waves-effect waves-light btn-small right ${Color.Fifth}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
+                                    <i className="material-icons" style={{ fontSize: '18px' }}>add_circle_outline</i>
+                                </button>
+                                {
+                                    this.state?.needsToSave == true ?
+                                    <div style={{ marginLeft: '20px' }} className={`waves-effect waves-light btn ${Color.First}`} onClick={this.saveDailyInventories}>Guardar</div>
+                                    :
+                                    <div></div>
+                                }
+                            </div>
+                        </div>
                         </div>
                     </nav>
                     <div className='row'>
                         <div className='col s6'>
+                            <h6 className='center'>Todos los Artículos</h6>
                             <SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>
                             <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
                                 {allProductsList}
                             </div>
                         </div>
                         <div className='col s6'>
+                            <h6 className='center'>Artículos Cargados</h6>
                             {this.state.products && (<SearchBar itemList={selectedDayInventory?.items} searchText="Buscar Productos..." OnSearchCallback={this.handleDailyInventorySearch}/>)}
                             <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
                                 {selectedDayProductsList}

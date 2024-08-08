@@ -20,6 +20,7 @@ class App extends Component {
     this.state = {
       modalIsOpen: 0,
       isLoading: false,
+      loaderMessge: "",
       botNumber: ""
     };
   }
@@ -31,7 +32,6 @@ class App extends Component {
   GetBotNumber = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config/botNumber`);
-      console.log("response", response.data)
       this.setState({
         botNumber: response.data,
       })
@@ -40,22 +40,23 @@ class App extends Component {
     }
   };
 
-  setIsLoading = (loading) => {
+  setIsLoading = (loading, specialMessage = "") => {
     this.setState({
-      isLoading: loading
+      isLoading: loading,
+      loaderMessge: specialMessage
     })
   }
 
   render() {
     return (
       <Router>
-        <LoadSpinner isLoading={this.state.isLoading}/>
-        <Navbar/>
+        <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge}/>
+        <Navbar botNumber={this.state.botNumber}/>
         <div class="row">
-          <div class={`col s12 m4 l3 ${Color.SideNav}`} style={{  height: '93vh'}}>
+          <div class={`col s2 ${Color.SideNav}`} style={{  height: '93vh'}}>
             <SideNav botNumber={this.state.botNumber}/>
           </div>
-          <div class="col s12 m8 l9"> 
+          <div class="col s10"> 
               <Helmet>
                 <style>{`body { background-color: ${ColorHex.Background}; }`}</style>
               </Helmet>

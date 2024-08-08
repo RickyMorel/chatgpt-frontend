@@ -2,20 +2,24 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import ClientBlockComponent from './ClientBlockComponent';
 import { Color } from '../Colors';
+import PaginatedScrollView from './PaginatedScrollView';
 
 class BlockChatScreen extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      clients: null,
+      clients: [],
       searchInput: '',
-      filteredClients: null,
+      filteredClients: [],
       isGloballyBlocked: false,
       clientIsBlockedStateList: [],
       nextDayIndex: -1,
       dayLocations: [],
-      clientLocations: []
+      clientLocations: [],
+      pageNumber: 1,
+      pageSize: 15,
+      clientsToMessageTommorrow: 0
     };
   }
 
@@ -26,6 +30,7 @@ class BlockChatScreen extends Component {
   GetAllData = async () => {
     this.props.setIsLoading(true)
 
+    await this.fetchClientsToMessageTommorrowAmount();
     await this.fetchClientData();
     await this.fetchGlobalData()
     await this.fetchAllClientLocations()
@@ -33,21 +38,39 @@ class BlockChatScreen extends Component {
     this.props.setIsLoading(false)
   }
 
-  fetchClientData = async () => {
+  fetchClientsToMessageTommorrowAmount = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/blockChat`);
-      let newList = []
-      response.data.forEach(client => {
-        const newClientState = {client: client, isBlocked: client.chatIsBlocked}
-        newList.push(newClientState)
-      });
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/countClientsToDeliverTommorrow`);
       this.setState({
-        clients: response.data,
-        filteredClients: response.data,
-        clientIsBlockedStateList: newList
+        clientsToMessageTommorrow: response.data
       });
     } catch (error) {
       this.setState({ error: error });
+    }
+  }
+
+  fetchClientData = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/blockChat?pageNumber=${this.state.pageNumber}&pageSize=${this.state.pageSize}`);
+      let newList = [...this?.state?.clientIsBlockedStateList]
+      let newClientList = [...this?.state?.clients]
+      for(const client of response.data) {
+        const newClientState = {client: client, isBlocked: client.chatIsBlocked}
+
+        if(!newList.find(x => x.client.phoneNumber == client.phoneNumber)) { newList.push(newClientState); }
+        if(!newClientList.find(x => x.phoneNumber == client.phoneNumber)) { newClientList.push(client); }
+      } 
+
+      let newPage = this.state.pageNumber + 1
+      this.setState({
+        clients: newClientList,
+        filteredClients: newClientList,
+        clientIsBlockedStateList: newList,
+        pageNumber: newPage
+      });
+      return response.data
+    } catch (error) {
+      console.log("error", error)
     } finally {
       this.setState({ loading: false });
     }
@@ -79,11 +102,42 @@ class BlockChatScreen extends Component {
     }
   };
 
+  tryFetchSearchedClients = async () => {
+    //Don't call search endpoint if the searcher still brings a few clients
+    if(this.state.filteredClients.length > 5) {return;}
+
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/searchClientByNumber?searchNumber=${this.state.searchInput}&limit=${5}`);
+      console.log("tryFetchSearchedClients response", response.data)
+      let clients = [...this.state.clients]
+      let filteredClients = [...this.state.filteredClients]
+      let blockedStateList = [...this.state.clientIsBlockedStateList]
+      for(const client of response.data) {
+        if(clients.find(x => x.phoneNumber == client.phoneNumber) == undefined) { clients.push(client); }
+        if(filteredClients.find(x => x.phoneNumber == client.phoneNumber) == undefined) { filteredClients.push(client); }
+        if(blockedStateList.find(x => x.client.phoneNumber == client.phoneNumber) == undefined) 
+        {         
+          const newClientState = {client: client, isBlocked: client.chatIsBlocked}
+          blockedStateList.push(newClientState)
+        }
+      }
+
+      this.setState({
+        clients: clients,
+        filteredClients: filteredClients,
+        clientIsBlockedStateList: blockedStateList
+      })
+    } catch (error) {
+      console.log("error", error)
+      return error
+    }
+  };
+
   handleSearchInputChange = (event) => {
     const searchInput = event.target.value;
     this.setState({ searchInput }, () => {
       this.filterClients();
-    });
+    })
   };
 
   handleGlobalBlock = async (event) => {
@@ -141,7 +195,9 @@ class BlockChatScreen extends Component {
       client.phoneNumber.toLowerCase().includes(searchInput.toLowerCase()) ||
       client.address.toLowerCase().includes(searchInput.toLowerCase())
     );
-    this.setState({ filteredClients });
+    this.setState({ filteredClients }, () => {
+      this.tryFetchSearchedClients()
+    })
   };
 
   render() {
@@ -169,11 +225,9 @@ class BlockChatScreen extends Component {
 
     let orderedLocations = this.state.clientLocations.sort()
 
-    var clientsToMessage = 0
     const clientBlocks = orderedClients?.map(x => {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked
       const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == x.address)
-      if(chatIsBlocked == false && willMessageTommorrow != undefined) {clientsToMessage = clientsToMessage + 1}
 
       return <ClientBlockComponent key={x.id} {...x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {orderedLocations}
         showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
@@ -189,7 +243,7 @@ class BlockChatScreen extends Component {
             <div className="col s3">
               <span className="">Clientes a mensajear: </span>
               {
-              <span className="bold green-text">{clientsToMessage}</span>
+              <span className="bold green-text">{this.state.clientsToMessageTommorrow}</span>
               }
             </div>
             <div className="col s4">
@@ -216,9 +270,7 @@ class BlockChatScreen extends Component {
             value={this.state.searchInput}
             onChange={this.handleSearchInputChange}
           />
-          <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
-            {clientBlocks}
-          </div>
+          <PaginatedScrollView clientBlocks={clientBlocks} fetchMoreData={this.fetchClientData} pageSize={this.state.pageSize}/>
         </div>
       </div>
     );

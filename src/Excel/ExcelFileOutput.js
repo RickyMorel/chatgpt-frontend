@@ -62,7 +62,7 @@ class ExcelFileOutput extends Component {
   render() {
     return (
       <div>
-        <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleDownload}>
+        <button className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleDownload}>
           <i className="material-icons left">cloud_download</i>
           Descargar pedidos
         </button>
