@@ -5,6 +5,7 @@ import { MenuItem, InputLabel, FormControl, Button } from '@mui/material';
 import Modal from 'react-modal';
 import { Color, ColorHex } from '../Colors';
 import axios from 'axios';
+import Utils from '../Utils';
 
 class AddOrderModal extends Component {
     constructor(props) {
@@ -14,7 +15,8 @@ class AddOrderModal extends Component {
             clientNumber: "",
             pointsUsed: 0,
             movil: "",
-            items: []
+            items: [],
+            deliveryDate: undefined
         };
     }
 
@@ -36,8 +38,15 @@ class AddOrderModal extends Component {
                 clientNumber: this.state.clientNumber,
                 movil: this.state.movil,
                 items: this.state.items,
-                pointsUsed: this.state.pointsUsed
+                pointsUsed: this.state.pointsUsed,
+                deliveryDate: this.state.deliveryDate
             }
+            
+            if(!orderDto.clientNumber || orderDto.clientNumber.length < 12) { this.props.showPopup(new Error("No se cargo un cliente!")); return;}
+            if(!orderDto.movil || orderDto.movil.length < 1) { this.props.showPopup(new Error("No se cargo un movil!")); return;}
+            if(!orderDto.items || orderDto.items.length < 1) { this.props.showPopup(new Error("No se cargo productos!")); return;}
+            if(!orderDto.deliveryDate || orderDto.deliveryDate.length < 1) { this.props.showPopup(new Error("No se cargo una fecha de entrega!")); return;}
+
             const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/order/createOrderFromInterface`, orderDto);
             let orderResponse = {...response.data}
             delete orderResponse._id
@@ -62,6 +71,12 @@ class AddOrderModal extends Component {
             pointsUsed: value
         })
     }
+
+    handleEditDate = (e) => {
+        this.setState({
+          deliveryDate: e.target.value
+        })
+      }
 
     handleMovilChange = (value) => {
         this.setState({
@@ -181,6 +196,8 @@ class AddOrderModal extends Component {
                                 <input id="pointsUsed" name='pointsUsed' type="number" value={this.state.pointsUsed} class="validate" style={{display: 'block' }} onChange={(e) => this.handlePointsChange(e.target.value)}/>
                                 <label for="first_name" className='active'>Puntos usados</label>
                             </div> 
+                            <label for="first_name" className='active'>Fecha de Entrega</label>
+                            <input type="date" id="date" value={Utils.formatDate(this.state.deliveryDate)} style={{display: 'block' }} onChange={this.handleEditDate}/>
                             <div className="row">
                                 <div className="col s11">
                                     <span>{`Pedido:`}</span>

@@ -3,6 +3,8 @@ import 'materialize-css/dist/css/materialize.min.css';
 import React from 'react';
 import Select from 'react-select';
 import { Color } from '../Colors';
+import Utils from '../Utils';
+import { parse, format } from 'date-fns';
 const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
@@ -13,19 +15,23 @@ class OrderComponent extends React.Component {
       checked: false,
       order: [],
       confirmedOrder: [],
-      selectedMovil: ""
+      selectedMovil: "",
+      deliveryDate: undefined
     };
 }
 
   componentDidMount() {
     const selectedMovil = this?.props?.movilObjs?.find(x => x.van == this.props.movil) ?? ""
 
+    console.log("order props", this.props)
+
     this.setState({
       checked: this.props.checkedBySalesPerson,
       order: [...this.props.order],
       confirmedOrder: [...this.props.order],
       selectedMovil: selectedMovil,
-      pointsUsed: this.props.pointsUsed
+      pointsUsed: this.props.pointsUsed,
+      deliveryDate: new Date(this.props.deliveryDate)
     })
   }
 
@@ -83,6 +89,12 @@ class OrderComponent extends React.Component {
     })
   }
 
+  handleEditDate = (e) => {
+    this.setState({
+      deliveryDate: e.target.value
+    })
+  }
+
   handleAddProduct = () => {
     let editedOrder = [...this.state.order]
     console.log("editedOrder", editedOrder)
@@ -122,12 +134,16 @@ class OrderComponent extends React.Component {
           confirmedOrder: orderItems
         })
 
+        const newDate = parse(this.state.deliveryDate, 'yyyy-MM-dd', new Date());
+        newDate.setHours(1)
+
         const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, 
           {
             phoneNumber: this.props.phoneNumber,
             order: orderItems, 
             movil: this?.state?.selectedMovil?.van, 
-            pointsUsed: this.state.pointsUsed
+            pointsUsed: this.state.pointsUsed,
+            deliveryDate: newDate
           }
         );
         this.props.updateTotalSalesCallback()
@@ -139,7 +155,7 @@ class OrderComponent extends React.Component {
   }
 
   render() {
-    const { orderNumber , name, pointsUsed, phoneNumber, order, movil,inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
+    const { orderNumber , name, phoneNumber, inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
 
     const onlyVendorConfirmed = "CONFIRMADO SOLO POR VENDEDOR"
     const noLongerWantedItem = "CLIENTE NO QUIERE"
@@ -249,7 +265,6 @@ class OrderComponent extends React.Component {
       )
     });
 
-    const alertIconColor = (this.state.checked == false && orderItemsOrdered.find(x => x.askedProductName == onlyVendorConfirmed || x.askedProductName == noLongerWantedItem)) ? "#bd3020" : "#ffffff"
     const movilOptions = this?.props?.movilObjs?.map(x => 
       <option value={x.van}>{x.van}</option>
     )
@@ -257,14 +272,13 @@ class OrderComponent extends React.Component {
     return (
       <li className="collection-item">
       <div className={`collapsible-header N${phoneNumber}`} style={styles.collapsibleHeader}>
-        <span className="client-name" style={styles.clientName}>{orderNumber}</span>
+        <span className="client-name" style={styles.smallerText}>{orderNumber}</span>
         <span className="client-name" style={styles.clientName}>{name}</span>
         <span className="client-name" style={styles.clientName}>
           <a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>{phoneNumber}</a>
         </span>
-        <span className="client-name" style={styles.clientName}>{orderItemsOrdered.length}</span>
+        <span className="client-name" style={styles.smallerText}>{orderItemsOrdered.length}</span>
         <span className="client-name" style={styles.clientName}>{unsureItemHtml}</span>
-        {/* <a href="#"><i style={{ color: alertIconColor }} className="material-icons flicker">brightness_1</i></a> */}
         <span className="client-name" style={styles.clientName}>
           {
             isEditing && currentOpenOrder === phoneNumber ?
@@ -284,6 +298,14 @@ class OrderComponent extends React.Component {
               {movilOptions}
             </select> :
             <span>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</span>
+          }
+        </span>
+        <span className="client-name" style={styles.clientName}>
+          {
+            isEditing && currentOpenOrder === phoneNumber ?
+            <input type="date" id="date" value={Utils.formatDate(this.state.deliveryDate)} style={{display: 'block' }} onChange={this.handleEditDate}/>
+            :
+            <div>{Utils.formatDate(this.state.deliveryDate)}</div>
           }
         </span>
         {
@@ -310,6 +332,10 @@ const styles = {
     padding: '10px',
     width: '100%',
     boxSizing: 'border-box'
+  },
+  smallerText: {
+    flex: '1 1 10%',
+    minWidth: '50px'
   },
   clientName: {
     flex: '1 1 20%',

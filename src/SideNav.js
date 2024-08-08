@@ -22,20 +22,20 @@ function SideNav(props)  {
   }, [playSound]);
 
   const fetchChatData = async () => {
-      if (!props.botNumber) {
-          return;
-      }
+      // if (!props.botNumber) {
+      //     return;
+      // }
 
-      const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate')
-      ref.onSnapshot(query => {
-        let chats = []
-        query.forEach(doc => {
-            chats.push(doc.data())
-        }) 
+      // const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate')
+      // ref.onSnapshot(query => {
+      //   let chats = []
+      //   query.forEach(doc => {
+      //       chats.push(doc.data())
+      //   }) 
 
-        handleSoundPlay(chats)
-        //PLAY AUDIO HERE
-      })
+      //   handleSoundPlay(chats)
+      //   //PLAY AUDIO HERE
+      // })
   };
 
   const handleSoundPlay = (chats) => {
