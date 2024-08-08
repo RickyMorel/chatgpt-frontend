@@ -33,7 +33,7 @@ class OrderComponent extends React.Component {
       confirmedOrder: [...this.props.order],
       selectedMovil: selectedMovil,
       pointsUsed: this.props.pointsUsed,
-      deliveryDate: new Date(this.props.deliveryDate)
+      deliveryDate: this.props.deliveryDate ? new Date(this.props.deliveryDate) : new Date(this.props.creationDate)
     })
   }
 
