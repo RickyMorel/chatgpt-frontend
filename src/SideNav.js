@@ -6,6 +6,7 @@ import { useLocation } from 'react-router-dom'
 import useSound from 'use-sound';
 import firebase from "./firebaseConfig";
 import CssProperties from './CssProperties';
+import './SideNav.css';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
@@ -73,7 +74,7 @@ function SideNav(props)  {
     <Nav.Item style={navBarButtonStyle} className={GetNavItemColor(x.link)} active={true}>
       <i className="material-icons me-2">{x.icon}</i>
       <Link to={x.link} className="d-flex align-items-center justify-content-center">
-        <p style={{ fontSize: CssProperties.BodyTextSize, color: ColorHex.textBody, paddingLeft: '15px' }}>{x.nameText}</p>
+        <p style={{ fontSize: CssProperties.BodyTextSize, paddingLeft: '15px' }}>{x.nameText}</p>
       </Link>
     </Nav.Item>
   )
@@ -107,7 +108,7 @@ function SideNav(props)  {
 function GetNavItemColor(navPath) {
   const currentPath = useLocation().pathname;
 
-  return navPath == currentPath ? "shadow-lg" : ""
+  return navPath == currentPath ? "shadow-lg nav-item" : "nav-item"
 }
 
 const navBarButtonStyle = {
@@ -115,8 +116,7 @@ const navBarButtonStyle = {
   width: '100%',
   height: '45px',
   marginTop: '10px',
-  hover: { color: 'red' }
-  // padding: '10px',
+  borderRadius: '8%'
 }
 
 export default SideNav;
