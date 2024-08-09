@@ -202,8 +202,6 @@ class OrderComponent extends React.Component {
       const orderItem = this.state.order.find(y => y.code == x.code && y.askedProductName == x.askedProductName)
       const orderItemSelect = {value: orderItem.code, label: orderItem.name}
 
-      console.log("x", x)
-
       return(
         <div className='row'>
           <div className='col s2'>

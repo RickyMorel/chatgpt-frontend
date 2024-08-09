@@ -5,6 +5,7 @@ import { Color, ColorHex } from './Colors';
 import { useLocation } from 'react-router-dom'
 import useSound from 'use-sound';
 import firebase from "./firebaseConfig";
+import CssProperties from './CssProperties';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
@@ -59,56 +60,45 @@ function SideNav(props)  {
     if(currentPath == "/problematicChats") { setHasNewProblematicChat(false); }
   };
 
+  const navBarButton = [
+    {icon: "cloud", nameText: "Cargar Datos", link: "/"},
+    {icon: "contacts", nameText: "Clientes", link: "/blockChats"},
+    {icon: "local_mall", nameText: "Inventario", link: "/inventory"},
+    {icon: "shopping_cart", nameText: "Pedidos", link: "/orders"},
+    {icon: "access_time", nameText: "Tiempos y Lugares", link: "/dayLocation"},
+    {icon: "call", nameText: "Atención Especial", link: "/problematicChats"},
+  ]
+
+  const navBarButtonHtmls = navBarButton.map(x =>
+    <Nav.Item style={navBarButtonStyle} className={GetNavItemColor(x.link)} active={true}>
+      <Link to="/">
+        <i className="material-icons left">{x.icon}</i>
+        <p style={{fontSize: CssProperties.BodyTextSize, color: ColorHex.textBody}}>{x.nameText}</p>
+      </Link>
+    </Nav.Item>
+  )
+
+  console.log("navBarButtonHtmls", navBarButtonHtmls)
+
   return (
-    <Sidenav >
-      <Sidenav.Body>
-        <Nav>
-          <Nav.Item className={GetNavItemColor('/')} active={true}>
-            <Link to="/">
-              <i className="material-icons left">cloud</i>
-              Cargar Datos
-            </Link>
-          </Nav.Item>
-          <Nav.Item className={GetNavItemColor('/blockChats')}>
-            <Link to="/blockChats">
-              <i className="material-icons left">contacts</i>
-              Clientes
-            </Link>
-          </Nav.Item>
-          <Nav.Item className={GetNavItemColor('/inventory')}>
-            <Link to="/inventory">
-                <i className="material-icons left">local_mall</i>
-                Inventario
-            </Link>
-          </Nav.Item>
-          <Nav.Item className={GetNavItemColor('/orders')}>
-            <Link to="/orders">
-              <i className="material-icons left">shopping_cart</i>
-              Ver Pedidos
-            </Link>
-          </Nav.Item>
-          <Nav.Item className={GetNavItemColor('/dayLocation')}>
-            <Link to="/dayLocation">
-              <i className="material-icons left">access_time</i>
-              Ver Tiempos y Lugares
-            </Link>
-          </Nav.Item>     
-          <Nav.Item className={GetNavItemColor('/problematicChats')} onClick={() => handleNavItemClick('/problematicChats')}>
-            <Link to="/problematicChats">
-              <div className="row">
-                <div className="col s1">
-                  <i className="material-icons left">call</i>
-                </div>
-                <div className="col s9">
-                  Atención Especial
-                </div>
-                <div className="col s2">
-                  {hasNewProblematicChat == true ? <i style={{ color: ColorHex.First }} className={`material-icons flicker`}>brightness_1</i> : <div></div>}
+    <Sidenav>
+      <Sidenav.Body style={{ backgroundColor: ColorHex.SideNav}}>
+        <div className="p-3">
+          <div className="text-center p-3">
+            <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '10%' }} />
+          </div>
+          <hr  className='border border-dark'/>
+          <Nav>
+              {navBarButtonHtmls}
+              <div class="card" style={{height: '72px', width: '100%', display: 'flex'}}>
+                <div class="card-body text-center">
+                  <p style={{fontSize: CssProperties.BodyTextSize, color: ColorHex.textBody}}>Mensajes Enviados</p>
+                  <p style={{fontSize: CssProperties.SmallHeaderTextSize, color: ColorHex.textBody}}>711/711</p>
                 </div>
               </div>
-            </Link>
-          </Nav.Item>      
-        </Nav>
+            <p style={{fontSize: CssProperties.BodyTextSize, color: ColorHex.textBody}} className='text-center'>Chat bot AI</p>
+          </Nav>
+        </div>
       </Sidenav.Body>
     </Sidenav>
   );
@@ -117,7 +107,16 @@ function SideNav(props)  {
 function GetNavItemColor(navPath) {
   const currentPath = useLocation().pathname;
 
-  return navPath == currentPath ? Color.Fifth : Color.SideNav
+  return navPath == currentPath ? "shadow" : ""
+}
+
+const navBarButtonStyle = {
+  display: 'flex',
+  width: '100%',
+  height: '45px',
+  marginTop: '10px',
+  hover: { color: 'red' }
+  // padding: '10px',
 }
 
 export default SideNav;

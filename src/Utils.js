@@ -6,7 +6,6 @@ class Utils {
         const day = String(newDate.getDate()).padStart(2, '0');
 
         const formattedDate = `${day}-${month}-${year}`;
-        console.log("formattedDate", formattedDate)
         return formattedDate
     }
 }

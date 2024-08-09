@@ -12,6 +12,7 @@ import DayLocationForm from './DayLocation/DayLocationForm';
 import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
 import LoadSpinner from './LoadSpinner';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class App extends Component {
   constructor(props) {
@@ -49,30 +50,46 @@ class App extends Component {
 
   render() {
     return (
-      <Router>
-        <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge}/>
-        <Navbar botNumber={this.state.botNumber}/>
-        <div class="row">
-          <div class={`col s2 ${Color.SideNav}`} style={{  height: '93vh'}}>
-            <SideNav botNumber={this.state.botNumber}/>
+    <Router>
+      <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
+      {/* <Navbar botNumber={this.state.botNumber}/> */}
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-auto" style={{ height: '100vh', width: '236px'}}>
+            <SideNav botNumber={this.state.botNumber} />
           </div>
-          <div class="col s10"> 
-              <Helmet>
-                <style>{`body { background-color: ${ColorHex.Background}; }`}</style>
-              </Helmet>
-              <Switch>
-                <Route exact path="/"><MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
-                <Route exact path="/inventory"><InventoryScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
-                <Route exact path="/dayLocation"><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
-                <Route exact path="/blockChats"><BlockChatScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
-                <Route exact path="/orders"><OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading}/></Route>
-                <Route exact path="/problematicChats">
-                  <ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/>
-                </Route>
-              </Switch>        
+          <div className="col">
+            <Helmet>
+              <style>{`body { background-color: ${ColorHex.Background}; }`}</style>
+            </Helmet>
+            <Switch>
+              <Route exact path="/">
+                <MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              </Route>
+              <Route exact path="/inventory">
+                <InventoryScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              </Route>
+              <Route exact path="/dayLocation">
+                <DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              </Route>
+              <Route exact path="/blockChats">
+                <BlockChatScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              </Route>
+              <Route exact path="/orders">
+                <OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              </Route>
+              <Route exact path="/problematicChats">
+                <ProblematicChatsScreen 
+                  showPopup={this.props.showPopup} 
+                  setIsLoading={this.setIsLoading} 
+                  botNumber={this.state.botNumber} 
+                />
+              </Route>
+            </Switch>
           </div>
         </div>
-      </Router>
+      </div>
+    </Router>
     );
   }
 }
