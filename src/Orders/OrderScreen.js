@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { Color } from '../Colors';
 import OrderComponent from './OrderComponent';
 import ExcelFileOutput from '../Excel/ExcelFileOutput';
-import M from 'materialize-css/dist/js/materialize.min.js';
 import AddOrderModal from './AddOrderModal';
 
 class OrderScreen extends Component {
@@ -38,30 +37,30 @@ class OrderScreen extends Component {
   }
 
   addCollapsibleListeners(filteredOrders) {
-    const collapsibleElem = document.querySelectorAll('.collapsible');
-    const instances = M.Collapsible.init(collapsibleElem, {
-      // Override the default behavior
-      onOpenEnd: function(el) {
-          el.classList.add('active');
-      },
-      onCloseEnd: function(el) {
-          el.classList.remove('active');
-      }
-  });
+  //   const collapsibleElem = document.querySelectorAll('.collapsible');
+  //   const instances = M.Collapsible.init(collapsibleElem, {
+  //     // Override the default behavior
+  //     onOpenEnd: function(el) {
+  //         el.classList.add('active');
+  //     },
+  //     onCloseEnd: function(el) {
+  //         el.classList.remove('active');
+  //     }
+  // });
 
-    const headers = document.querySelectorAll(`.collapsible-header`);
-    headers.forEach((header, index) => {
-      header.addEventListener('click', (e) => this.openCollapsible(e, index, filteredOrders[index].phoneNumber));
-    });
+  //   const headers = document.querySelectorAll(`.collapsible-header`);
+  //   headers.forEach((header, index) => {
+  //     header.addEventListener('click', (e) => this.openCollapsible(e, index, filteredOrders[index].phoneNumber));
+  //   });
   }
 
   openCollapsible = (event, index, phonNumber) => {
     event.stopImmediatePropagation();
     event.preventDefault();
-    const collapsibleElem = document.querySelector('.collapsible');
-    const collapsibleInstance = M.Collapsible.getInstance(collapsibleElem);
-    collapsibleInstance.open(index); // Opens the specific collapsible item
-    this.handleHeaderClick(phonNumber, index)
+    // const collapsibleElem = document.querySelector('.collapsible');
+    // const collapsibleInstance = M.Collapsible.getInstance(collapsibleElem);
+    // collapsibleInstance.open(index); // Opens the specific collapsible item
+    // this.handleHeaderClick(phonNumber, index)
   };
 
   fetchMovilData = async () => {

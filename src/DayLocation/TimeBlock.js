@@ -1,7 +1,4 @@
 import React, { Component, createRef } from 'react';
-import axios from 'axios';
-import { Color } from '../Colors';
-import 'materialize-css/dist/css/materialize.min.css';
 import '../MultiSelect.css';
 
 class TimeBlock extends Component {

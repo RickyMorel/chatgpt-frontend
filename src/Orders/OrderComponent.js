@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { es } from 'date-fns/locale';
-import 'materialize-css/dist/css/materialize.min.css';
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";

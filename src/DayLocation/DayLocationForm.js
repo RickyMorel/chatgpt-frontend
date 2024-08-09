@@ -1,6 +1,5 @@
 import React, { Component, createRef } from 'react';
 import axios from 'axios';
-import 'materialize-css/dist/css/materialize.min.css';
 import '../MultiSelect.css';
 import TimeBlock from './TimeBlock';
 import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material';

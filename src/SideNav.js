@@ -61,19 +61,19 @@ function SideNav(props)  {
   };
 
   const navBarButton = [
-    {icon: "cloud", nameText: "Cargar Datos", link: "/"},
+    {icon: "shopping_cart", nameText: "Pedidos", link: "/orders"},
     {icon: "contacts", nameText: "Clientes", link: "/blockChats"},
     {icon: "local_mall", nameText: "Inventario", link: "/inventory"},
-    {icon: "shopping_cart", nameText: "Pedidos", link: "/orders"},
-    {icon: "access_time", nameText: "Tiempos y Lugares", link: "/dayLocation"},
     {icon: "call", nameText: "Atención Especial", link: "/problematicChats"},
+    {icon: "access_time", nameText: "Tiempos y Lugares", link: "/dayLocation"},
+    {icon: "cloud", nameText: "Cargar Datos", link: "/"},
   ]
 
   const navBarButtonHtmls = navBarButton.map(x =>
     <Nav.Item style={navBarButtonStyle} className={GetNavItemColor(x.link)} active={true}>
-      <Link to="/">
-        <i className="material-icons left">{x.icon}</i>
-        <p style={{fontSize: CssProperties.BodyTextSize, color: ColorHex.textBody}}>{x.nameText}</p>
+      <i className="material-icons me-2">{x.icon}</i>
+      <Link to={x.link} className="d-flex align-items-center justify-content-center">
+        <p style={{ fontSize: CssProperties.BodyTextSize, color: ColorHex.textBody, paddingLeft: '15px' }}>{x.nameText}</p>
       </Link>
     </Nav.Item>
   )
@@ -83,13 +83,14 @@ function SideNav(props)  {
   return (
     <Sidenav>
       <Sidenav.Body style={{ backgroundColor: ColorHex.SideNav}}>
-        <div className="p-3">
-          <div className="text-center p-3">
-            <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '10%' }} />
-          </div>
-          <hr  className='border border-dark'/>
           <Nav>
-              {navBarButtonHtmls}
+          <div className="p-3">
+            <div className="text-center p-3">
+              <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '10%' }} />
+            </div>
+            <hr  className='border border-dark'/>
+            {navBarButtonHtmls}
+          </div>
               <div class="card" style={{height: '72px', width: '100%', display: 'flex'}}>
                 <div class="card-body text-center">
                   <p style={{fontSize: CssProperties.BodyTextSize, color: ColorHex.textBody}}>Mensajes Enviados</p>
@@ -98,7 +99,6 @@ function SideNav(props)  {
               </div>
             <p style={{fontSize: CssProperties.BodyTextSize, color: ColorHex.textBody}} className='text-center'>Chat bot AI</p>
           </Nav>
-        </div>
       </Sidenav.Body>
     </Sidenav>
   );
@@ -107,7 +107,7 @@ function SideNav(props)  {
 function GetNavItemColor(navPath) {
   const currentPath = useLocation().pathname;
 
-  return navPath == currentPath ? "shadow" : ""
+  return navPath == currentPath ? "shadow-lg" : ""
 }
 
 const navBarButtonStyle = {

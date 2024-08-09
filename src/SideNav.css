@@ -22,3 +22,7 @@
     color: #f1f1f1;
   }
   
+  .nav-item:hover {
+    color: grey;
+  }
+  
