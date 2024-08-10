@@ -94,12 +94,10 @@ function SideNav(props)  {
     const navBarButtonStyle = GetNavButtonStyle(x.link)
 
     return (
-    <div style={navBarButtonStyle} className={GetNavItemColor(x.link)}>
-      <i className="material-icons me-2">{x.icon}</i>
-      <Link to={x.link} style={{textDecoration: 'none', color: 'inherit', marginTop: '15px'}}>
-        <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px'}}>{x.nameText}</p>
-      </Link>
-    </div>
+    <Link to={x.link} style={navBarButtonStyle} className='nav-item rounded'>
+      <i className="material-icons me-2" style={{color: ColorHex.textBody}}>{x.icon}</i>
+      <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px', marginTop: '15px'}}>{x.nameText}</p>
+    </Link>
     )
   })
 
@@ -127,12 +125,6 @@ function SideNav(props)  {
   );
 };
 
-function GetNavItemColor(navPath) {
-  const currentPath = useLocation().pathname;
-
-  return navPath == currentPath ? "shadow-lg nav-item rounded" : "nav-item rounded"
-}
-
 function GetNavButtonStyle(navPath) {
   const currentPath = useLocation().pathname;
 
@@ -145,6 +137,9 @@ function GetNavButtonStyle(navPath) {
     paddingLeft: '10px',
     paddingRight: '10px',
     textAlign: 'center',
+    textDecoration: 'none', 
+    color: 'inherit',
+    boxShadow: navPath == currentPath ? '0px 5px 5px rgba(0, 0, 0, 0.5)' : '0px 0px 0px rgba(0, 0, 0, 0.5)',
     border: navPath == currentPath ? `1px solid ${ColorHex.borderColor}` : '0px'
   }
 
