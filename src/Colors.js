@@ -20,4 +20,5 @@ export class ColorHex {
     static SideNav = "#F8F8F8"
     static GreyFabri = "#A8A8A8"
     static textBody = "#A8A8A8"
+    static borderColor = "#B3B3B3"
 }
