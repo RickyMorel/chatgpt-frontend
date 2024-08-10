@@ -10,9 +10,9 @@ class CssProperties {
     static SmallHeaderTextFont = "Work Sans"
 
     static BodyTextStyle = {fontSize: this.BodyTextSize, fontFamily: this.BodyTextFont}
-    static LargeHeaderTextStyle = {fontSize: this.LargeHeaderTextSize, fontFamily: this.LargeHeaderTextFont}
-    static MediumHeadetTextStyle = {fontSize: this.MediumHeadetTextSize, fontFamily: this.MediumHeadetTextFont}
-    static SmallHeaderTextStyle = {fontSize: this.SmallHeaderTextSize, fontFamily: this.SmallHeaderTextFont}
+    static LargeHeaderTextStyle = {fontSize: this.LargeHeaderTextSize, fontFamily: this.LargeHeaderTextFont, fontWeight: 500}
+    static MediumHeadetTextStyle = {fontSize: this.MediumHeadetTextSize, fontFamily: this.MediumHeadetTextFont, fontWeight: 500}
+    static SmallHeaderTextStyle = {fontSize: this.SmallHeaderTextSize, fontFamily: this.SmallHeaderTextFont, fontWeight: 500}
 }
 
 export default CssProperties

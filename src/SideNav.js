@@ -87,21 +87,21 @@ function SideNav(props)  {
 
   return (
     <Sidenav>
-      <Sidenav.Body style={{ backgroundColor: ColorHex.SideNav}}>
-          <Nav>
-            <div className="p-3">
-              <div className="text-center p-3">
-                <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '10%' }} />
-              </div>
-              <hr  className='border border-dark'/>
-              {navBarButtonHtmls}
-              <div class="card rounded" style={{height: '72px', width: '216px', display: 'flex'}}>
-                  <p className='text-center' style={{...CssProperties.BodyTextStyle, color: ColorHex.textBody, height: '10px'}}>Mensajes Enviados</p>
-                  <p className='text-center' style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.textBody, height: '23px'}}>711/711</p>
-              </div>
-              <p style={{...CssProperties.BodyTextStyle, color: ColorHex.textBody}} className='text-center'>Chat bot AI</p>
+      <Sidenav.Body style={{ backgroundColor: ColorHex.SideNav, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>
+        <div className="d-flex flex-column p-3" style={{ height: '100vh' }}>
+          <div className="text-center p-3">
+            <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '10%' }} />
+          </div>
+          <hr className='border border-dark'/>
+          {navBarButtonHtmls}
+          <div className="mt-auto">
+            <div className="card rounded" style={{ height: '72px', width: '216px', boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.5)', border:`1px solid ${ColorHex.borderColor}`}}>
+              <p className='text-center' style={{ ...CssProperties.BodyTextStyle, color: ColorHex.textBody, marginTop: '8px' }}>Mensajes Enviados</p>
+              <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.textBody, marginTop: '-16px'}}>711/711</p>
             </div>
-          </Nav>
+            <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.textBody, marginTop: '8px' }} className='text-center'>Chat bot AI</p>
+          </div>
+        </div>
       </Sidenav.Body>
     </Sidenav>
   );
@@ -121,7 +121,6 @@ function GetNavButtonStyle(navPath) {
     width: '100%',
     height: '45px',
     marginTop: '10px',
-    // borderRadius: '8%',
     alignItems: 'center',
     paddingLeft: '10px',
     paddingRight: '10px',
