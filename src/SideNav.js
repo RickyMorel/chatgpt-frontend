@@ -11,6 +11,8 @@ import './SideNav.css';
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
   const [playSound, setPlaySound] = useState(false);
+  const [messageCount, setMessageCount] = useState(0);
+  const [totalClientsToMessage, setTotalClientsToMessage] = useState(0);
   let fetchSoundCount = 0
 
   useEffect(() => {
@@ -24,21 +26,39 @@ function SideNav(props)  {
   }, [playSound]);
 
   const fetchChatData = async () => {
-      // if (!props.botNumber) {
-      //     return;
-      // }
+    if (!props.botNumber) {
+        return;
+    }
 
-      // const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate')
-      // ref.onSnapshot(query => {
-      //   let chats = []
-      //   query.forEach(doc => {
-      //       chats.push(doc.data())
-      //   }) 
+    const ref = firebase.collection('globalConfig').doc(String(props.botNumber));
 
-      //   handleSoundPlay(chats)
-      //   //PLAY AUDIO HERE
-      // })
-  };
+    ref.get()
+      .then((doc) => {
+        const response = doc.data()
+        setMessageCount(response.messageCount)
+        setTotalClientsToMessage(response.totalClientsToMessage)
+      })
+      .catch((error) => {
+        console.error('Error getting document:', error);
+      });
+  }
+
+  // const fetchChatData = async () => {
+  //     // if (!props.botNumber) {
+  //     //     return;
+  //     // }
+
+  //     // const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate')
+  //     // ref.onSnapshot(query => {
+  //     //   let chats = []
+  //     //   query.forEach(doc => {
+  //     //       chats.push(doc.data())
+  //     //   }) 
+
+  //     //   handleSoundPlay(chats)
+  //     //   //PLAY AUDIO HERE
+  //     // })
+  // };
 
   const handleSoundPlay = (chats) => {
     fetchSoundCount = fetchSoundCount + 1
@@ -97,7 +117,7 @@ function SideNav(props)  {
           <div className="mt-auto">
             <div className="card rounded" style={{ height: '72px', width: '216px', boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.5)', border:`1px solid ${ColorHex.borderColor}`}}>
               <p className='text-center' style={{ ...CssProperties.BodyTextStyle, color: ColorHex.textBody, marginTop: '8px' }}>Mensajes Enviados</p>
-              <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.textBody, marginTop: '-16px'}}>711/711</p>
+              <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.textBody, marginTop: '-16px'}}>{`${messageCount}/${totalClientsToMessage}`}</p>
             </div>
             <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.textBody, marginTop: '8px' }} className='text-center'>Chat bot AI</p>
           </div>
