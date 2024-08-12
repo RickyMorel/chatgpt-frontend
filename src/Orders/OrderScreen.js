@@ -1,9 +1,11 @@
 import axios from 'axios';
 import React, { Component } from 'react';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
 import OrderComponent from './OrderComponent';
 import ExcelFileOutput from '../Excel/ExcelFileOutput';
 import AddOrderModal from './AddOrderModal';
+import CssProperties from '../CssProperties';
+import SearchBar from '../Searchbar/Searchbar';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -23,6 +25,9 @@ class OrderScreen extends Component {
         addOrderModelOpen: false,
       };
       this.orderRefs = [];
+      this.CONFIRMED = "CONFIRMED"
+      this.CANCELED = "CANCELED"
+      this.NOT_IN_INVENTORY = "NOT_IN_INVENTORY"
   }
 
   componentDidMount() {
@@ -35,33 +40,6 @@ class OrderScreen extends Component {
   componentDidUpdate() {
     this.addCollapsibleListeners(this.state.filteredOrders)
   }
-
-  addCollapsibleListeners(filteredOrders) {
-  //   const collapsibleElem = document.querySelectorAll('.collapsible');
-  //   const instances = M.Collapsible.init(collapsibleElem, {
-  //     // Override the default behavior
-  //     onOpenEnd: function(el) {
-  //         el.classList.add('active');
-  //     },
-  //     onCloseEnd: function(el) {
-  //         el.classList.remove('active');
-  //     }
-  // });
-
-  //   const headers = document.querySelectorAll(`.collapsible-header`);
-  //   headers.forEach((header, index) => {
-  //     header.addEventListener('click', (e) => this.openCollapsible(e, index, filteredOrders[index].phoneNumber));
-  //   });
-  }
-
-  openCollapsible = (event, index, phonNumber) => {
-    event.stopImmediatePropagation();
-    event.preventDefault();
-    // const collapsibleElem = document.querySelector('.collapsible');
-    // const collapsibleInstance = M.Collapsible.getInstance(collapsibleElem);
-    // collapsibleInstance.open(index); // Opens the specific collapsible item
-    // this.handleHeaderClick(phonNumber, index)
-  };
 
   fetchMovilData = async () => {
     this.props.setIsLoading(true)
@@ -94,6 +72,59 @@ class OrderScreen extends Component {
     this.props.setIsLoading(false)
   };
 
+  fetchClientData = async () => {
+    this.props.setIsLoading(true)
+
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/phoneNumbers`);
+      this.setState({
+        clientNumbers: response.data,
+      })
+    } catch (error) {
+
+    }
+
+    this.props.setIsLoading(false)
+  };
+
+  fetchInventoryItemNames = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
+      this.setState({
+        inventoryItemNamesWithCodes: response.data,
+      });
+    } catch (error) {
+
+    }
+  };
+
+  addCollapsibleListeners(filteredOrders) {
+  //   const collapsibleElem = document.querySelectorAll('.collapsible');
+  //   const instances = M.Collapsible.init(collapsibleElem, {
+  //     // Override the default behavior
+  //     onOpenEnd: function(el) {
+  //         el.classList.add('active');
+  //     },
+  //     onCloseEnd: function(el) {
+  //         el.classList.remove('active');
+  //     }
+  // });
+
+  //   const headers = document.querySelectorAll(`.collapsible-header`);
+  //   headers.forEach((header, index) => {
+  //     header.addEventListener('click', (e) => this.openCollapsible(e, index, filteredOrders[index].phoneNumber));
+  //   });
+  }
+
+  openCollapsible = (event, index, phonNumber) => {
+    event.stopImmediatePropagation();
+    event.preventDefault();
+    // const collapsibleElem = document.querySelector('.collapsible');
+    // const collapsibleInstance = M.Collapsible.getInstance(collapsibleElem);
+    // collapsibleInstance.open(index); // Opens the specific collapsible item
+    // this.handleHeaderClick(phonNumber, index)
+  };
+
   addNewOrder = (order) => {
     let orders = [...this.state.orders]
     let filteredOrders = [...this.state.filteredOrders]
@@ -113,21 +144,6 @@ class OrderScreen extends Component {
       filteredOrders: filteredOrders,
     })
   }
-
-  fetchClientData = async () => {
-    this.props.setIsLoading(true)
-
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/phoneNumbers`);
-      this.setState({
-        clientNumbers: response.data,
-      })
-    } catch (error) {
-
-    }
-
-    this.props.setIsLoading(false)
-  };
 
   handleCheckOrders = async () => {
     this.props.setIsLoading(true, "Creando pedidos, puede tardar hasta unos minutos...")
@@ -171,23 +187,6 @@ class OrderScreen extends Component {
     }
   }
 
-  fetchInventoryItemNames = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
-      this.setState({
-        inventoryItemNamesWithCodes: response.data,
-      });
-    } catch (error) {
-
-    }
-  };
-
-  updateTotalSales = () => {
-    this.setState({
-      updateTotalSalesFlag: !this.state.updateTotalSalesFlag
-    })
-  }
-
   handleSearchInputChange = (event) => {
     const searchInput = event.target.value;
     this.setState({ searchInput }, () => {
@@ -198,6 +197,12 @@ class OrderScreen extends Component {
   handleOpenModal = (item) => {
     this.setState({
       addOrderModelOpen: item != undefined
+    })
+  }
+
+  updateTotalSales = () => {
+    this.setState({
+      updateTotalSalesFlag: !this.state.updateTotalSalesFlag
     })
   }
 
@@ -212,6 +217,29 @@ class OrderScreen extends Component {
 
     this.setState({ filteredOrders: filteredOrders });
   };
+
+  getOrderCountCard = (title, amountColor, amountFunction) => {
+    let orderAmountCardStyling = {
+      width: '215px',
+      height: '72px',
+      marginTop: '10px',
+      alignItems: 'center',
+      padding: '10px',
+      boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+      border: `1px solid ${ColorHex.BorderColor}`,
+      borderRadius: '12px',
+      backgroundColor: ColorHex.White
+    }
+
+    return (
+      <div style={orderAmountCardStyling}>
+          <div class="text-center">
+            <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '1px'}}>{title}</p>
+            <p style={{...CssProperties.SmallHeaderTextStyle, color: amountColor, marginTop: '-16px'}}>{amountFunction()}</p>
+          </div>
+      </div>
+    )
+  } 
 
   render() {
     const { filteredOrders } = this.state;
@@ -241,7 +269,7 @@ class OrderScreen extends Component {
 
     this?.state?.orders?.forEach(order => {
       for(const item of order.order) {
-        if(item.botState != "CONFIRMED") {continue;}
+        if(item.botState != this.CONFIRMED) {continue;}
 
         totalSales += (item.price * item.amount)
       }
@@ -258,38 +286,68 @@ class OrderScreen extends Component {
         addNewOrderCallback={this.addNewOrder}
     />  
 
-    return (
-      <div className={`card bordered ${Color.Background}`}>
-        {addOrderModal}
-        <div className="card-content">
-          <div style={{"display": "flex", "justify-content": "space-between", "width": "100%"}}>
-            <span className="card-title" style={{ width: '75%'  }}>Pedidos Recibidos</span>
-            <h6 className='green-text'>Total Vendido: ₲{totalSales.toLocaleString()}</h6>
-            <button onClick={this.handleEditMode}  className={`waves-effect waves-light btn ${Color.Fifth}`}>
-              <i className={`${this.state.isEditing ? "orange-text" : "white-text"} material-icons`}>{this.state.isEditing ? "save" : "edit"}</i>
-            </button>
-            <button onClick={this.handleOpenModal} className={`waves-effect waves-light btn ${Color.Fifth}`}>
-              <i className={`material-icons`}>add_circle_outline</i>
-            </button>
-          </div>
-          <input
-            type="text"
-            placeholder="Buscar pedidos..."
-            value={this.state.searchInput}
-            onChange={this.handleSearchInputChange}
-          />
-          <ul class="collapsible expandable" style={{ overflowY: 'scroll', height: '60vh', "overflow-x": "hidden" }}>
-            {orderBlocks}
-          </ul>
+    const ordersPanel =         
+    <div className={`card bordered ${Color.Background}`}>
+      {addOrderModal}
+      <div className="card-content">
+        <div style={{"display": "flex", "justify-content": "space-between", "width": "100%"}}>
+          <span className="card-title" style={{ width: '75%'  }}>Pedidos Recibidos</span>
+          <h6 className='green-text'>Total Vendido: ₲{totalSales.toLocaleString()}</h6>
+          <button onClick={this.handleEditMode}  className={`waves-effect waves-light btn ${Color.Fifth}`}>
+            <i className={`${this.state.isEditing ? "orange-text" : "white-text"} material-icons`}>{this.state.isEditing ? "save" : "edit"}</i>
+          </button>
+          <button onClick={this.handleOpenModal} className={`waves-effect waves-light btn ${Color.Fifth}`}>
+            <i className={`material-icons`}>add_circle_outline</i>
+          </button>
         </div>
-        <div className="card-action">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <ExcelFileOutput />
-            <button className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleCheckOrders}>
-              <i className="material-icons left">autorenew</i>
-              Revisar Pedidos
-            </button>
-          </div>
+        <input
+          type="text"
+          placeholder="Buscar pedidos..."
+          value={this.state.searchInput}
+          onChange={this.handleSearchInputChange}
+        />
+        <ul class="collapsible expandable" style={{ overflowY: 'scroll', height: '60vh', "overflow-x": "hidden" }}>
+          {orderBlocks}
+        </ul>
+      </div>
+      <div className="card-action">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <ExcelFileOutput />
+          <button className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleCheckOrders}>
+            <i className="material-icons left">autorenew</i>
+            Revisar Pedidos
+          </button>
+        </div>
+      </div>
+    </div>
+
+    const orderPanelStyling = {
+      width: '100%',
+      height: '80vh',
+      marginTop: '10px',
+      alignItems: 'center',
+      marginTop: '25px',
+      padding: '25px',
+      boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+      border: `1px solid ${ColorHex.BorderColor}`,
+      borderRadius: '10px',
+      backgroundColor: ColorHex.White
+    }
+
+    return (
+      <div>
+        <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Pedidos</p>
+        <div style={{display: 'flex'}}>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Total", ColorHex.TextBody, () => this.state?.orders?.length ?? 0)}</div>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Confirmados", ColorHex.GreenFabri, () => this.state?.orders?.filter(x => x.botState == this.CONFIRMED).count ?? 0)}</div>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Pendientes", ColorHex.OrangeFabri, () => this.state?.orders?.filter(x => x.botState != this.CONFIRMED && x.botState != this.CANCELED && x.order.find(x => x.botState == this.NOT_IN_INVENTORY) == undefined).length ?? 0)}</div>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Con Errores", ColorHex.RedFabri, () => this.state?.orders?.filter(x => x.order.find(x => x.botState == this.NOT_IN_INVENTORY) != undefined).length ?? 0)}</div>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Cancelados", ColorHex.TextBody, () => this.state?.orders?.filter(x => x.botState == this.CANCELED).length ?? 0)}</div>
+            <div class="col-2"></div>
+            <div class="flex-grow-2">{this.getOrderCountCard("Ventas", ColorHex.GreenFabri, () => `₲${totalSales.toLocaleString()}`)}</div>
+        </div>
+        <div style={orderPanelStyling}>
+          <SearchBar searchText="Buscar Nro/Cliente/Pedido..." OnSearchCallback={this.filterOrders}/>
         </div>
       </div>
     );

@@ -62,26 +62,22 @@ class App extends Component {
           </Helmet>
           <Switch>
             <Route exact path="/">
-              <MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              <div style={{margin: '15px'}}><MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/inventory">
-              <InventoryScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              <div style={{margin: '15px'}}><InventoryScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/dayLocation">
-              <DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              <div style={{margin: '15px'}}><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/blockChats">
-              <BlockChatScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              <div style={{margin: '15px'}}><BlockChatScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/orders">
-              <OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} />
+              <div style={{margin: '15px'}}><OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/problematicChats">
-              <ProblematicChatsScreen 
-                showPopup={this.props.showPopup} 
-                setIsLoading={this.setIsLoading} 
-                botNumber={this.state.botNumber} 
-              />
+              <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
           </Switch>
         </div>

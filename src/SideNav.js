@@ -95,7 +95,7 @@ function SideNav(props)  {
 
     return (
     <Link to={x.link} style={navBarButtonStyle} className='nav-item rounded'>
-      <i className="material-icons me-2" style={{color: ColorHex.textBody}}>{x.icon}</i>
+      <i className="material-icons me-2" style={{color: ColorHex.TextBody}}>{x.icon}</i>
       <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px', marginTop: '15px'}}>{x.nameText}</p>
     </Link>
     )
@@ -105,7 +105,7 @@ function SideNav(props)  {
 
   return (
     <Sidenav>
-      <Sidenav.Body style={{ backgroundColor: ColorHex.SideNav, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>
+      <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>
         <div className="d-flex flex-column p-3" style={{ height: '100vh' }}>
           <div className="text-center p-3">
             <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '24px' }} />
@@ -113,11 +113,11 @@ function SideNav(props)  {
           <hr className='border border-dark'/>
           {navBarButtonHtmls}
           <div className="mt-auto">
-            <div className="card rounded" style={{ height: '72px', width: '216px', boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.5)', border:`1px solid ${ColorHex.borderColor}`}}>
-              <p className='text-center' style={{ ...CssProperties.BodyTextStyle, color: ColorHex.textBody, marginTop: '8px' }}>Mensajes Enviados</p>
-              <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.textBody, marginTop: '-16px'}}>{`${messageCount}/${totalClientsToMessage}`}</p>
+            <div className="card rounded" style={{ height: '72px', width: '216px', boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.5)', border:`1px solid ${ColorHex.BorderColor}`}}>
+              <p className='text-center' style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }}>Mensajes Enviados</p>
+              <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-16px'}}>{`${messageCount}/${totalClientsToMessage}`}</p>
             </div>
-            <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.textBody, marginTop: '8px' }} className='text-center'>Chat bot AI</p>
+            <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }} className='text-center'>Chat bot AI</p>
           </div>
         </div>
       </Sidenav.Body>
@@ -140,7 +140,7 @@ function GetNavButtonStyle(navPath) {
     textDecoration: 'none', 
     color: 'inherit',
     boxShadow: navPath == currentPath ? '0px 5px 5px rgba(0, 0, 0, 0.5)' : '0px 0px 0px rgba(0, 0, 0, 0.5)',
-    border: navPath == currentPath ? `1px solid ${ColorHex.borderColor}` : '0px'
+    border: navPath == currentPath ? `1px solid ${ColorHex.BorderColor}` : '0px'
   }
 
   return navBarButtonStyle

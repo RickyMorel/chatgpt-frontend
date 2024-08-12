@@ -17,8 +17,11 @@ export class ColorHex {
     static Orange = "#b0001b"
     
     static Background = "#E6E6E6"
-    static SideNav = "#F8F8F8"
+    static White = "#F8F8F8"
     static GreyFabri = "#A8A8A8"
-    static textBody = "#606060"
-    static borderColor = "#B3B3B3"
+    static GreenFabri = "#00CC14"
+    static OrangeFabri = "#F7BF44"
+    static RedFabri = "#F74444"
+    static TextBody = "#606060"
+    static BorderColor = "#B3B3B3"
 }
