@@ -343,26 +343,37 @@ class OrderScreen extends Component {
       {name: "Pedidos Con Errores", value: this.state?.orders?.filter(x => x.order.find(x => x.botState == this.NOT_IN_INVENTORY) != undefined)},
       {name: "Pedidos Cancelados", value: this.state?.orders?.filter(x => x.botState == this.CANCELED)},
     ]
-  
-    const headerTextStyle = {
-      ...CssProperties.BodyTextStyle,
+
+    const headerStyle = {
       textAlign: 'center',
+      ...CssProperties.BodyTextStyle
+    }
+
+    const scrollStyle = {
+      borderRadius: '10px',
+      backgroundColor: ColorHex.Background,
+      padding: '10px',
+      boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
+      overflowY: 'scroll', 
+      height: '50%',
+      width: '100%',
+      overflowX: 'hidden',
+      alignItems: 'center'
     }
 
     const ordersList = 
-      <div style={{overflowY: 'scroll', width: '100%', display: 'flex', height: '90%', marginTop: '25px', border: '0px'}}>
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th style={headerTextStyle}>Nombre del Cliente</th>
-              <th style={headerTextStyle}>Número del Cliente</th>
-              <th style={headerTextStyle}>Cantidad de Items</th>
-              <th style={headerTextStyle}>Fecha</th>
-              <th style={headerTextStyle}>Estado del Pedido</th>
-              <th style={headerTextStyle}>Movil</th>
-            </tr>
-          </thead>
-          <tbody style={{ borderRadius: '100px', backgroundColor: ColorHex.Background, margin: '25px'}}>
+      <div style={{ alignItems: 'center', width: '100%', marginTop: '25px'}}>
+           <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
+            <div style={headerStyle} className='col-2'>Nombre del Cliente</div>
+            <div style={headerStyle} className='col-2'>Numero del Cliente</div>
+            <div style={headerStyle} className='col-2'>Cantidad de Items</div>
+            <div style={headerStyle} className='col-1'>Fecha</div>
+            <div style={headerStyle} className='col-3'>Estado del Pedido</div>
+            <div style={headerStyle} className='col-1'>Movil</div>
+            <div style={headerStyle} className='col-1'></div>
+           </div>
+
+           <div style={scrollStyle}>
             {orderBlocks}
             {orderBlocks}
             {orderBlocks}
@@ -375,22 +386,7 @@ class OrderScreen extends Component {
             {orderBlocks}
             {orderBlocks}
             {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-          </tbody>
-        </table>
+           </div>
       </div>
 
     return (

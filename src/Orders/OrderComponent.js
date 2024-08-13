@@ -267,24 +267,26 @@ class OrderComponent extends React.Component {
     }
 
     const trStyle = {
-      borderRadius: '100px',
+      borderRadius: '10px',
       backgroundColor: ColorHex.White,
-      boxShadow: '0px 50px 50px rgba(0, 0, 0, 1)',
+      boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
       border: `1px solid ${ColorHex.BorderColor}`,
       height: '75px',
-      width: '1500px',
-      display: 'table-row'
+      width: '100%',
+      alignItems: 'center',
+      marginBottom: '12px',
+      display: 'flex'
     }
     
     return (
       <div style={trStyle}>
-        <td style={textStyle}>{name}</td>
-        <td style={textStyle}><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></td>
-        <td style={textStyle}>{orderItemsOrdered.length}</td>
-        <td style={textStyle}>{Utils.formatDate(this.state.deliveryDate)}</td>
-        <td style={textStyle}>{unsureItemHtml}</td>
-        <td style={textStyle}>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</td>
-        <td><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></td>
+        <div style={textStyle} className='col-2'>{name}</div>
+        <div style={textStyle} className='col-2'><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></div>
+        <div style={textStyle} className='col-2'>{orderItemsOrdered.length}</div>
+        <div style={textStyle} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
+        <div style={textStyle} className='col-3'>{unsureItemHtml}</div>
+        <div style={textStyle} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
+        <div style={textStyle} className='col-1'><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></div>
       </div>
     //   <li className="collection-item">
     //   <div className={`collapsible-header N${phoneNumber}`} style={styles.collapsibleHeader}>
