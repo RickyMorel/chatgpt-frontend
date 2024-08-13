@@ -39,19 +39,25 @@ class SearchBar extends Component {
             width: '292px',
             height: '45px',
             borderRadius: '10px',
-            padding: '10px',
-            border: '0px'
+            border: '0px',
+            position: 'relative',
+            display: 'flex',      // Use flexbox for centering
+            alignItems: 'center', // Vertically center the children
+            justifyContent: 'space-between', // Space between input and icon
+            paddingLeft: '15px',
+            paddingRight: '15px'
         }
 
         return (
-        <div>
+        <div style={searchBarStyling}>
             <input
                 type="text"
                 placeholder={searchText}
                 value={this.state.searchInput}
                 onChange={(e) => this.handleSearchInputChange(e, OnSearchCallback, itemList)}
-                style={searchBarStyling}
+                style={{border: '0px', outline: '0px', backgroundColor: ColorHex.Background, width: '90%', height: '100%', borderRadius: '10px'}}
             />
+            <i className='material-icons' style={{color: ColorHex.TextBody, fontSize: '25px'}}>search</i>
         </div>
         );
     }

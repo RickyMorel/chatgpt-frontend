@@ -6,6 +6,7 @@ import ExcelFileOutput from '../Excel/ExcelFileOutput';
 import AddOrderModal from './AddOrderModal';
 import CssProperties from '../CssProperties';
 import SearchBar from '../Searchbar/Searchbar';
+import Dropdown from '../Searchbar/Dropdown';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -347,7 +348,14 @@ class OrderScreen extends Component {
             <div class="flex-grow-2">{this.getOrderCountCard("Ventas", ColorHex.GreenFabri, () => `₲${totalSales.toLocaleString()}`)}</div>
         </div>
         <div style={orderPanelStyling}>
-          <SearchBar searchText="Buscar Nro/Cliente/Pedido..." OnSearchCallback={this.filterOrders}/>
+          <div style={{display: 'flex'}}>
+            <div class="flex-grow-3">
+              <SearchBar searchText="Buscar Nro/Cliente/Pedido..." OnSearchCallback={this.filterOrders}/>
+            </div>
+            <div class="flex-grow-3" style={{paddingLeft: '25px'}}>
+              <Dropdown/>
+            </div>
+          </div>
         </div>
       </div>
     );
