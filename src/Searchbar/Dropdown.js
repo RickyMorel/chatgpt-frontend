@@ -1,19 +1,30 @@
 import React, { Component } from 'react';
 import { ColorHex } from '../Colors';
+import CssProperties from '../CssProperties';
 
 class Dropdown extends Component {
     constructor(props) {
         super(props);
     
         this.state = {
-
+          selected: undefined
         };
     }
 
-    render() {
-        const { searchText, handleChangeCallback, itemList } = this.props;
+    handleChange = (name) => {
+      const selectedObj = this.props.dropdownItems.find(x => x.name == name)
 
-        const searchBarStyling = {
+      this.setState({
+        selected: selectedObj
+      })
+
+      this.props.handleChangeCallback(selectedObj)
+    }
+
+    render() {
+        const { dropdownItems } = this.props;
+
+        const styling = {
             backgroundColor: ColorHex.White,
             fontColor: ColorHex.TextBody,
             width: '292px',
@@ -22,18 +33,23 @@ class Dropdown extends Component {
             boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
             border: `1px solid ${ColorHex.BorderColor}`,
             position: 'relative',
-            display: 'flex',      // Use flexbox for centering
-            alignItems: 'center', // Vertically center the children
-            justifyContent: 'space-between', // Space between input and icon
+            display: 'flex',   
+            alignItems: 'center', 
+            justifyContent: 'space-between', 
             paddingLeft: '15px',
-            paddingRight: '15px'
+            paddingRight: '15px',
+            color: ColorHex.TextBody,
+            display: 'block',
+            textAlign: 'center',
+            outline: 'none',
+            ...CssProperties.BodyTextStyle
         }
 
         return (
-            <select style={{display: 'block', ...searchBarStyling}} value={"option1"} onChange={(e) => this.handleChangeCallback(e.target.value)}>
+            <select style={styling} value={this.state?.selected?.name} onChange={(e) => this.handleChange(e.target.value)}>
               {
-                itemList && itemList?.map(x => (
-                  <option value={x}>{x}</option>
+                dropdownItems && dropdownItems?.map(x => (
+                  <option value={x.name} style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody}}>{x.name}</option>
                 ))
               }
             </select>

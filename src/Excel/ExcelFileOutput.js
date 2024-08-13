@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import { Color } from '../Colors';
+import CustomButton from '../Searchbar/CustomButton';
 
 class ExcelFileOutput extends Component {
   state = {
@@ -61,12 +62,7 @@ class ExcelFileOutput extends Component {
 
   render() {
     return (
-      <div>
-        <button className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleDownload}>
-          <i className="material-icons left">cloud_download</i>
-          Descargar pedidos
-        </button>
-      </div>
+      <CustomButton text="Descargar Pedidos" icon="cloud_download" onClickCallback={this.handleDownload}/>
     );
   }
 }

@@ -7,6 +7,7 @@ import AddOrderModal from './AddOrderModal';
 import CssProperties from '../CssProperties';
 import SearchBar from '../Searchbar/Searchbar';
 import Dropdown from '../Searchbar/Dropdown';
+import CustomButton from '../Searchbar/CustomButton';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -335,25 +336,43 @@ class OrderScreen extends Component {
       backgroundColor: ColorHex.White
     }
 
+    const dropdownItems = [
+      {name: "Todos Pedidos", value: this.state?.orders},
+      {name: "Pedidos Confirmados", value: this.state?.orders?.filter(x => x.botState == this.CONFIRMED)},
+      {name: "Pedidos Pendientes", value: this.state?.orders?.filter(x => x.botState != this.CONFIRMED && x.botState != this.CANCELED && x.order.find(x => x.botState == this.NOT_IN_INVENTORY) == undefined)},
+      {name: "Pedidos Con Errores", value: this.state?.orders?.filter(x => x.order.find(x => x.botState == this.NOT_IN_INVENTORY) != undefined)},
+      {name: "Pedidos Cancelados", value: this.state?.orders?.filter(x => x.botState == this.CANCELED)},
+    ]
+
     return (
       <div>
         <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Pedidos</p>
+        
         <div style={{display: 'flex'}}>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Total", ColorHex.TextBody, () => this.state?.orders?.length ?? 0)}</div>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Confirmados", ColorHex.GreenFabri, () => this.state?.orders?.filter(x => x.botState == this.CONFIRMED).count ?? 0)}</div>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Pendientes", ColorHex.OrangeFabri, () => this.state?.orders?.filter(x => x.botState != this.CONFIRMED && x.botState != this.CANCELED && x.order.find(x => x.botState == this.NOT_IN_INVENTORY) == undefined).length ?? 0)}</div>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Con Errores", ColorHex.RedFabri, () => this.state?.orders?.filter(x => x.order.find(x => x.botState == this.NOT_IN_INVENTORY) != undefined).length ?? 0)}</div>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Cancelados", ColorHex.TextBody, () => this.state?.orders?.filter(x => x.botState == this.CANCELED).length ?? 0)}</div>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Total", ColorHex.TextBody, () => dropdownItems[0]?.value?.length ?? 0)}</div>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Confirmados", ColorHex.GreenFabri, () => dropdownItems[1]?.value?.length ?? 0)}</div>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Pendientes", ColorHex.OrangeFabri, () => dropdownItems[2]?.value?.length ?? 0)}</div>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Con Errores", ColorHex.RedFabri, () => dropdownItems[3]?.value?.length ?? 0)}</div>
+            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Cancelados", ColorHex.TextBody, () => dropdownItems[4]?.value?.length ?? 0)}</div>
             <div class="col-2"></div>
             <div class="flex-grow-2">{this.getOrderCountCard("Ventas", ColorHex.GreenFabri, () => `₲${totalSales.toLocaleString()}`)}</div>
         </div>
+
+        <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
+          <div class="col-1"><CustomButton text="Editar Pedidos" icon="edit" onClickCallback={this.handleEditMode}/></div>
+          <div class="col-1" style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon="add" onClickCallback={this.handleOpenModal}/></div>
+          <div className="col-6"></div>
+          <div class="col-2"><CustomButton text="Revisar Pedidos" icon="autorenew" onClickCallback={this.handleOpenModal}/></div>
+          <div class="col-2" style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
+        </div>
+
         <div style={orderPanelStyling}>
           <div style={{display: 'flex'}}>
             <div class="flex-grow-3">
               <SearchBar searchText="Buscar Nro/Cliente/Pedido..." OnSearchCallback={this.filterOrders}/>
             </div>
             <div class="flex-grow-3" style={{paddingLeft: '25px'}}>
-              <Dropdown/>
+              <Dropdown dropdownItems={dropdownItems} handleChangeCallback={(selectedObj) => this.setState({filteredOrders: selectedObj.value})}/>
             </div>
           </div>
         </div>
