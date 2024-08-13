@@ -4,8 +4,9 @@ import React from 'react';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import Select from 'react-select';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
 import Utils from '../Utils';
+import CssProperties from '../CssProperties';
 const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
@@ -165,7 +166,7 @@ class OrderComponent extends React.Component {
 
     let orderItemCount = 0
 
-    let unsureItemHtml = <p className='green-text'>Pedido confirmado</p>
+    let unsureItemHtml = <div className='green-text'>Pedido confirmado</div>
 
     let orderItems = [...this?.state?.order]
     let hasConfirmedItems = this?.state?.confirmedOrder?.find(x => x.botState == confirmedState)
@@ -174,25 +175,25 @@ class OrderComponent extends React.Component {
     if(hasConfirmedItems) { orderItems = orderItems.filter(x => x.botState != SURE)}
 
     for(const item of orderItems) {
-      if(item.name.includes(badFormatString) == true) { unsureItemHtml = <p className='red-text'>Confirmado con formato incorrecto</p> }
-      else if(item.botState == SURE && !hasConfirmedItems) {unsureItemHtml = <p className='orange-text'>Items no estan confirmados por el vendedor</p>}
-      else if(item.botState == "UNSURE") {unsureItemHtml = <p className='orange-text'>Inseguro de pedido</p>}
-      else if(item.botState == NOT_IN_INVENTORY) {unsureItemHtml = <p className='red-text'>No encontro producto pedido</p>; break;}
+      if(item.name.includes(badFormatString) == true) { unsureItemHtml = <div className='red-text'>Confirmado con formato incorrecto</div> }
+      else if(item.botState == SURE && !hasConfirmedItems) {unsureItemHtml = <div className='orange-text'>Items no estan confirmados por el vendedor</div>}
+      else if(item.botState == "UNSURE") {unsureItemHtml = <div className='orange-text'>Inseguro de pedido</div>}
+      else if(item.botState == NOT_IN_INVENTORY) {unsureItemHtml = <div className='red-text'>No encontro producto pedido</div>; break;}
     }
 
-    if(orderItems.every(x => x.botState == canceldState)) {unsureItemHtml = <p className='red-text'>Pedido cancelado</p>}
+    if(orderItems.every(x => x.botState == canceldState)) {unsureItemHtml = <div className='red-text'>Pedido cancelado</div>}
 
     let orderItemsOrdered = orderItems.sort((a, b) => a.name.localeCompare(b.name));
 
     const orderList = orderItemsOrdered?.map(x => {
       orderItemCount = orderItemCount + 1
       const i = orderItemCount
-      let botStateHtml = <p className='green-text'>Confirmado</p>
-      if(x.name.includes(badFormatString) == true) { botStateHtml = <p className='red-text'>Confirmado con formato incorrecto</p> }
-      else if(x.botState == canceldState) { botStateHtml = <p className='red-text'>Cancelado</p> }
-      else if(x.botState == SURE) {botStateHtml = <p className='orange-text'>No confirmado por vendedor</p>}
-      else if(x.botState == "UNSURE") {botStateHtml = <p className='orange-text'>Inseguro</p>}
-      else if(x.botState == NOT_IN_INVENTORY) {botStateHtml = <p className='red-text'>No encontro en inventario</p>;}
+      let botStateHtml = <div className='green-text'>Confirmado</div>
+      if(x.name.includes(badFormatString) == true) { botStateHtml = <div className='red-text'>Confirmado con formato incorrecto</div> }
+      else if(x.botState == canceldState) { botStateHtml = <div className='red-text'>Cancelado</div> }
+      else if(x.botState == SURE) {botStateHtml = <div className='orange-text'>No confirmado por vendedor</div>}
+      else if(x.botState == "UNSURE") {botStateHtml = <div className='orange-text'>Inseguro</div>}
+      else if(x.botState == NOT_IN_INVENTORY) {botStateHtml = <div className='red-text'>No encontro en inventario</div>;}
 
       const askedProductNameColor = x.askedProductName.includes(onlyVendorConfirmed) || x.askedProductName.includes(noLongerWantedItem) ? "red" : "black"
       const displayedName = x.name.replace(badFormatString, "")
@@ -259,66 +260,90 @@ class OrderComponent extends React.Component {
     const movilOptions = this?.props?.movilObjs?.map(x => 
       <option value={x.van}>{x.van}</option>
     )
+
+    const textStyle = {
+      textAlign: 'center',
+      ...CssProperties.BodyTextStyle
+    }
+
+    const trStyle = {
+      borderRadius: '100px',
+      backgroundColor: ColorHex.White,
+      boxShadow: '0px 50px 50px rgba(0, 0, 0, 1)',
+      border: `1px solid ${ColorHex.BorderColor}`,
+      height: '75px',
+      width: '1500px',
+      display: 'table-row'
+    }
     
     return (
-      <li className="collection-item">
-      <div className={`collapsible-header N${phoneNumber}`} style={styles.collapsibleHeader}>
-        <span className="client-name" style={styles.smallerText}>{orderNumber}</span>
-        <span className="client-name" style={styles.clientName}>{name}</span>
-        <span className="client-name" style={styles.clientName}>
-          <a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>{phoneNumber}</a>
-        </span>
-        <span className="client-name" style={styles.smallerText}>{orderItemsOrdered.length}</span>
-        <span className="client-name" style={styles.clientName}>{unsureItemHtml}</span>
-        <span className="client-name" style={styles.clientName}>
-          {
-            isEditing && currentOpenOrder === phoneNumber ?
-            <div class="input-field">
-              <input id="pointsUsed" name='pointsUsed' type="number" class="validate" style={{display: 'block' }} onChange={this.handleEditPoints}/>
-              <label for="first_name">Puntos usados</label>
-            </div> 
-            :
-            this?.state?.pointsUsed == 0 ? <div></div> : <span>{this?.state?.pointsUsed}</span>
-          }
-        </span>
-        <span className="client-name" style={styles.clientName}>
-          {
-            isEditing ? 
-            <select style={styles.select} name='movil' value={this?.state?.selectedMovil?.van ?? SIN_MOVIL} onChange={this.handleEditMovil}>
-              <option value={SIN_MOVIL}>{SIN_MOVIL}</option>
-              {movilOptions}
-            </select> :
-            <span>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</span>
-          }
-        </span>
-        <span className="client-name" style={styles.clientName}>
-          {
-            isEditing && currentOpenOrder === phoneNumber ?
-            <DatePicker
-              style={{display: 'block' }}
-              dateFormat="dd/MM/yy"
-              id="datepicker"
-              selected={this.state.deliveryDate}
-              onChange={(date) => this.handleEditDate(date)}
-              locale={es}
-            />
-            :
-            <div>{Utils.formatDate(this.state.deliveryDate)}</div>
-          }
-        </span>
-        {
-          isEditing && currentOpenOrder === phoneNumber ?
-          <button onClick={this.handleEditMode} style={styles.button}>
-            <i className={`${isEditing && currentOpenOrder === phoneNumber ? "orange-text" : "grey-text"} material-icons`}>{isEditing && currentOpenOrder === phoneNumber ? "save" : "edit"}</i>
-          </button> :
-          <div></div>
-        }
-        <a><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></a>
+      <div style={trStyle}>
+        <td style={textStyle}>{name}</td>
+        <td style={textStyle}><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></td>
+        <td style={textStyle}>{orderItemsOrdered.length}</td>
+        <td style={textStyle}>{Utils.formatDate(this.state.deliveryDate)}</td>
+        <td style={textStyle}>{unsureItemHtml}</td>
+        <td style={textStyle}>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</td>
+        <td><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></td>
       </div>
-      <div className="collapsible-body">
-        {orderList}
-      </div>
-    </li>
+    //   <li className="collection-item">
+    //   <div className={`collapsible-header N${phoneNumber}`} style={styles.collapsibleHeader}>
+    //     <span className="client-name" style={styles.smallerText}>{orderNumber}</span>
+    //     <span className="client-name" style={styles.clientName}>{name}</span>
+    //     <span className="client-name" style={styles.clientName}>
+    //       <a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>{phoneNumber}</a>
+    //     </span>
+    //     <span className="client-name" style={styles.smallerText}>{orderItemsOrdered.length}</span>
+    //     <span className="client-name" style={styles.clientName}>{unsureItemHtml}</span>
+    //     <span className="client-name" style={styles.clientName}>
+    //       {
+    //         isEditing && currentOpenOrder === phoneNumber ?
+    //         <div class="input-field">
+    //           <input id="pointsUsed" name='pointsUsed' type="number" class="validate" style={{display: 'block' }} onChange={this.handleEditPoints}/>
+    //           <label for="first_name">Puntos usados</label>
+    //         </div> 
+    //         :
+    //         this?.state?.pointsUsed == 0 ? <div></div> : <span>{this?.state?.pointsUsed}</span>
+    //       }
+    //     </span>
+    //     <span className="client-name" style={styles.clientName}>
+    //       {
+    //         isEditing ? 
+    //         <select style={styles.select} name='movil' value={this?.state?.selectedMovil?.van ?? SIN_MOVIL} onChange={this.handleEditMovil}>
+    //           <option value={SIN_MOVIL}>{SIN_MOVIL}</option>
+    //           {movilOptions}
+    //         </select> :
+    //         <span>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</span>
+    //       }
+    //     </span>
+    //     <span className="client-name" style={styles.clientName}>
+    //       {
+    //         isEditing && currentOpenOrder === phoneNumber ?
+    //         <DatePicker
+    //           style={{display: 'block' }}
+    //           dateFormat="dd/MM/yy"
+    //           id="datepicker"
+    //           selected={this.state.deliveryDate}
+    //           onChange={(date) => this.handleEditDate(date)}
+    //           locale={es}
+    //         />
+    //         :
+    //         <div>{Utils.formatDate(this.state.deliveryDate)}</div>
+    //       }
+    //     </span>
+    //     {
+    //       isEditing && currentOpenOrder === phoneNumber ?
+    //       <button onClick={this.handleEditMode} style={styles.button}>
+    //         <i className={`${isEditing && currentOpenOrder === phoneNumber ? "orange-text" : "grey-text"} material-icons`}>{isEditing && currentOpenOrder === phoneNumber ? "save" : "edit"}</i>
+    //       </button> :
+    //       <div></div>
+    //     }
+    //     <a><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></a>
+    //   </div>
+    //   <div className="collapsible-body">
+    //     {orderList}
+    //   </div>
+    // </li>
     );
   }
 }

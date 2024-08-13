@@ -8,6 +8,7 @@ import CssProperties from '../CssProperties';
 import SearchBar from '../Searchbar/Searchbar';
 import Dropdown from '../Searchbar/Dropdown';
 import CustomButton from '../Searchbar/CustomButton';
+import './ScrollView.css'
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -325,9 +326,8 @@ class OrderScreen extends Component {
 
     const orderPanelStyling = {
       width: '100%',
-      height: '80vh',
+      height: '70vh',
       marginTop: '10px',
-      alignItems: 'center',
       marginTop: '25px',
       padding: '25px',
       boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
@@ -343,9 +343,59 @@ class OrderScreen extends Component {
       {name: "Pedidos Con Errores", value: this.state?.orders?.filter(x => x.order.find(x => x.botState == this.NOT_IN_INVENTORY) != undefined)},
       {name: "Pedidos Cancelados", value: this.state?.orders?.filter(x => x.botState == this.CANCELED)},
     ]
+  
+    const headerTextStyle = {
+      ...CssProperties.BodyTextStyle,
+      textAlign: 'center',
+    }
+
+    const ordersList = 
+      <div style={{overflowY: 'scroll', width: '100%', display: 'flex', height: '90%', marginTop: '25px', border: '0px'}}>
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th style={headerTextStyle}>Nombre del Cliente</th>
+              <th style={headerTextStyle}>Número del Cliente</th>
+              <th style={headerTextStyle}>Cantidad de Items</th>
+              <th style={headerTextStyle}>Fecha</th>
+              <th style={headerTextStyle}>Estado del Pedido</th>
+              <th style={headerTextStyle}>Movil</th>
+            </tr>
+          </thead>
+          <tbody style={{ borderRadius: '100px', backgroundColor: ColorHex.Background, margin: '25px'}}>
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+            {orderBlocks}
+          </tbody>
+        </table>
+      </div>
 
     return (
       <div>
+        {addOrderModal}
         <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Pedidos</p>
         
         <div style={{display: 'flex'}}>
@@ -362,7 +412,7 @@ class OrderScreen extends Component {
           <div class="col-1"><CustomButton text="Editar Pedidos" icon="edit" onClickCallback={this.handleEditMode}/></div>
           <div class="col-1" style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon="add" onClickCallback={this.handleOpenModal}/></div>
           <div className="col-6"></div>
-          <div class="col-2"><CustomButton text="Revisar Pedidos" icon="autorenew" onClickCallback={this.handleOpenModal}/></div>
+          <div class="col-2"><CustomButton text="Revisar Pedidos" icon="autorenew" onClickCallback={this.handleCheckOrders}/></div>
           <div class="col-2" style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
         </div>
 
@@ -375,6 +425,8 @@ class OrderScreen extends Component {
               <Dropdown dropdownItems={dropdownItems} handleChangeCallback={(selectedObj) => this.setState({filteredOrders: selectedObj.value})}/>
             </div>
           </div>
+
+          {ordersList}
         </div>
       </div>
     );
