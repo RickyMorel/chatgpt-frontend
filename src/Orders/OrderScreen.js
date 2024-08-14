@@ -329,14 +329,12 @@ class OrderScreen extends Component {
       backgroundColor: ColorHex.White
     }
 
-    console.log("this.state?.orders", this.state?.orders)
-
     const dropdownItems = [
       {name: "Todos Pedidos", value: this.state?.orders},
-      {name: "Pedidos Confirmados", value: this.state?.orders?.filter(x => x.botState == this.CONFIRMED)},
-      {name: "Pedidos Pendientes", value: this.state?.orders?.filter(x => x.botState != this.CONFIRMED && x.botState != this.CANCELED && x.order.find(x => x.botState == this.NOT_IN_INVENTORY) == undefined)},
+      {name: "Pedidos Confirmados", value: this.state?.orders?.filter(x => x.orderState == this.CONFIRMED)},
+      {name: "Pedidos Pendientes", value: this.state?.orders?.filter(x => x.orderState != this.CONFIRMED && x.orderState != this.CANCELED && x.order.find(x => x.botState == this.NOT_IN_INVENTORY) == undefined)},
       {name: "Pedidos Con Errores", value: this.state?.orders?.filter(x => x.order.find(x => x.botState == this.NOT_IN_INVENTORY) != undefined)},
-      {name: "Pedidos Cancelados", value: this.state?.orders?.filter(x => x.botState == this.CANCELED)},
+      {name: "Pedidos Cancelados", value: this.state?.orders?.filter(x => x.orderState == this.CANCELED)},
     ]
 
     const headerStyle = {

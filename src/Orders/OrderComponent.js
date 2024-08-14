@@ -19,8 +19,10 @@ class OrderComponent extends React.Component {
       confirmedOrder: [],
       selectedMovil: "",
       deliveryDate: undefined,
+      isDropdownOpen: false
     }
     this.orderStateColor = ColorHex.GreenFabri
+    this.dropdownBtn = React.createRef();
 }
 
   componentDidMount() {
@@ -105,6 +107,11 @@ class OrderComponent extends React.Component {
     })
   }
 
+  handleDropdown = (e) => {
+    const isOpen = this.state.isDropdownOpen;
+    this.setState({ isDropdownOpen: !isOpen });
+  }
+
   handleSave = async () => {
     if(this?.state?.selectedMovil?.van == undefined) {this.props.showPopup(new Error(`Seleccione un movil de entrega para el pedido`)); return;}
     if(this?.state?.order.find(x => x.botState == "CONFIRMED") == undefined && this?.state?.order.find(x => x.botState == "SURE")) {this.props.showPopup(new Error(`Hay algunos items que no se confirmaron`)); return;}
@@ -183,12 +190,12 @@ class OrderComponent extends React.Component {
     const orderList = orderItemsOrdered?.map(x => {
       orderItemCount = orderItemCount + 1
       const i = orderItemCount
-      let botStateHtml = <div className='green-text'>Confirmado</div>
-      if(x.name.includes(badFormatString) == true) { botStateHtml = <div className='red-text'>Confirmado con formato incorrecto</div> }
-      else if(x.botState == canceldState) { botStateHtml = <div className='red-text'>Cancelado</div> }
-      else if(x.botState == SURE) {botStateHtml = <div className='orange-text'>No confirmado por vendedor</div>}
-      else if(x.botState == "UNSURE") {botStateHtml = <div className='orange-text'>Inseguro</div>}
-      else if(x.botState == NOT_IN_INVENTORY) {botStateHtml = <div className='red-text'>No encontro en inventario</div>;}
+      let botStateHtml = <div style={{color: ColorHex.GreenFabri}}>Confirmado</div>
+      if(x.name.includes(badFormatString) == true) { botStateHtml = <div style={{color: ColorHex.RedFabri}}>Confirmado con formato incorrecto</div>; }
+      else if(x.botState == canceldState) { botStateHtml = <div style={{color: ColorHex.RedFabri}}>Cancelado</div> }
+      else if(x.botState == SURE) {botStateHtml = <div style={{color: ColorHex.OrangeFabri}}>No confirmado por vendedor</div>}
+      else if(x.botState == "UNSURE") {botStateHtml = <div style={{color: ColorHex.OrangeFabri}}>Inseguro</div>}
+      else if(x.botState == NOT_IN_INVENTORY) {botStateHtml = <div style={{color: ColorHex.RedFabri}}>No encontro en inventario</div>;}
 
       const askedProductNameColor = x.askedProductName.includes(onlyVendorConfirmed) || x.askedProductName.includes(noLongerWantedItem) ? "red" : "black"
       const displayedName = x.name.replace(badFormatString, "")
@@ -198,57 +205,69 @@ class OrderComponent extends React.Component {
       const orderItemSelect = {value: orderItem.code, label: orderItem.name}
 
       return(
-        <div className='row'>
-          <div className='col s2'>
-            <span style={{ width: '100%'  }}>{i}</span>
+        <div className="row">
+          <div className="col-3" style={{...styles.textStyle}} >
+            {displayedName}
           </div>
-          <div className='col s3'>
-            <span style={{ width: '100%', color: askedProductNameColor}}>{x.askedProductName}</span>
+          <div className="col-2" style={styles.textStyle} >
+            {x.amount}
           </div>
-          <div className='col s3'>
-          {
-              isEditing == true ?
-              <Select
-                  options={orderItemCodesSelect}
-                  onChange={(value) => this.handleEditOrderItem("name", value.value, x.code, x.askedProductName)}
-                  value={orderItemSelect}
-                  isSearchable={true}
-              />
-              :
-              <span style={{ width: '100%'  }}>{displayedName}</span>
-            }
-          </div>       
-          <div className='col s1'>
-            {
-              isEditing == true ?
-              <input style={{display: 'block' }} name='amount' value={orderItem.amount} onChange={(e) => this.handleEditOrderItem("amount", e.target.value, x.code, x.askedProductName)}/>
-              :
-              <span style={{ width: '100%'  }}>{x.amount}</span>
-            }
-          </div>
-          <div className='col s3'>
-            {
-              isEditing == true ?
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <select style={{display: 'block' }} name='botState' value={orderItem.botState} onChange={(e) => this.handleEditOrderItem("botState", e.target.value, x.code, x.askedProductName)}>
-                  <option value={SURE}>Falta confirmar</option>
-                  <option value={confirmedState}>Confirmado</option>
-                  <option value={canceldState}>Cancelado</option>
-                </select>
-                {
-                  orderItemsOrdered.indexOf(x) == orderItemsOrdered.length - 1 ?
-                  <button onClick={() => this.handleAddProduct()} className={`waves-effect waves-light btn ${Color.Fifth}`}>
-                    <i className={`material-icons`}>add_circle_outline</i>
-                  </button>
-                  :
-                  <div></div>
-                }
-              </div>
-              :
-              <span style={{ width: '100%'  }}>{botStateHtml}</span>
-            }
+          <div className="col-5" style={styles.textStyle} ></div>
+          <div className="col-2" style={styles.textStyle} >
+            {botStateHtml}
           </div>
         </div>
+        // <div className='row'>
+        //   <div className='col s2'>
+        //     <span style={{ width: '100%'  }}>{i}</span>
+        //   </div>
+        //   <div className='col s3'>
+        //     <span style={{ width: '100%', color: askedProductNameColor}}>{x.askedProductName}</span>
+        //   </div>
+        //   <div className='col s3'>
+        //   {
+        //       isEditing == true ?
+        //       <Select
+        //           options={orderItemCodesSelect}
+        //           onChange={(value) => this.handleEditOrderItem("name", value.value, x.code, x.askedProductName)}
+        //           value={orderItemSelect}
+        //           isSearchable={true}
+        //       />
+        //       :
+        //       <span style={{ width: '100%'  }}>{displayedName}</span>
+        //     }
+        //   </div>       
+        //   <div className='col s1'>
+        //     {
+        //       isEditing == true ?
+        //       <input style={{display: 'block' }} name='amount' value={orderItem.amount} onChange={(e) => this.handleEditOrderItem("amount", e.target.value, x.code, x.askedProductName)}/>
+        //       :
+        //       <span style={{ width: '100%'  }}>{x.amount}</span>
+        //     }
+        //   </div>
+        //   <div className='col s3'>
+        //     {
+        //       isEditing == true ?
+        //       <div style={{ display: 'flex', alignItems: 'center' }}>
+        //         <select style={{display: 'block' }} name='botState' value={orderItem.botState} onChange={(e) => this.handleEditOrderItem("botState", e.target.value, x.code, x.askedProductName)}>
+        //           <option value={SURE}>Falta confirmar</option>
+        //           <option value={confirmedState}>Confirmado</option>
+        //           <option value={canceldState}>Cancelado</option>
+        //         </select>
+        //         {
+        //           orderItemsOrdered.indexOf(x) == orderItemsOrdered.length - 1 ?
+        //           <button onClick={() => this.handleAddProduct()} className={`waves-effect waves-light btn ${Color.Fifth}`}>
+        //             <i className={`material-icons`}>add_circle_outline</i>
+        //           </button>
+        //           :
+        //           <div></div>
+        //         }
+        //       </div>
+        //       :
+        //       <span style={{ width: '100%'  }}>{botStateHtml}</span>
+        //     }
+        //   </div>
+        // </div>
       )
     });
 
@@ -256,40 +275,36 @@ class OrderComponent extends React.Component {
       <option value={x.van}>{x.van}</option>
     )
 
-    const textStyle = {
-      textAlign: 'center',
-      ...CssProperties.BodyTextStyle
-    }
-
-    const trStyle = {
-      borderRadius: '10px',
-      backgroundColor: ColorHex.White,
-      boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
-      border: `1px solid ${ColorHex.BorderColor}`,
-      height: '75px',
-      width: '100%',
-      alignItems: 'center',
-      marginBottom: '12px',
-      display: 'flex'
-    }
-
-    console.log(`collapse_${orderNumber}`)
-    
     return (
       <div>
-        <div style={trStyle}>
-          <div style={textStyle} className='col-2'>{name}</div>
-          <div style={textStyle} className='col-2'><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></div>
-          <div style={textStyle} className='col-2'>{orderItemsOrdered.length}</div>
-          <div style={textStyle} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
-          <div style={{...textStyle, color: this.orderStateColor}} className='col-3'>{unsureItemHtml}</div>
-          <div style={textStyle} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
-          <div style={textStyle} className='col-1' data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls={`collapse_${orderNumber}`}><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></div>
+        <div style={styles.trStyle}>
+          <div style={styles.textStyle} className='col-2'>{name}</div>
+          <div style={styles.textStyle} className='col-2'><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></div>
+          <div style={styles.textStyle} className='col-2'>{orderItemsOrdered.length}</div>
+          <div style={styles.textStyle} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
+          <div style={{...styles.textStyle, color: this.orderStateColor}} className='col-3'>{unsureItemHtml}</div>
+          <div style={styles.textStyle} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
+          <button ref={this.dropdownBtn} onClick={this.handleDropdown} style={{border: '0px', backgroundColor: 'transparent'}} className='col-1' data-toggle="collapse" data-target={`#collapse_${orderNumber}`} aria-expanded={this.state.isDropdownOpen} aria-controls={`collapse_${orderNumber}`}><i className="material-icons" style={styles.arrowDown}>{this?.state?.isDropdownOpen == true ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i></button>
         </div>
 
-        <div style={{backgroundColor: 'transparent'}} class="collapse mt-3" id={`collapse_${orderNumber}`}>
-          <div class="card card-body" style={textStyle}>
-              This is some collapsible content. It is hidden by default but will be shown when the user clicks the button.
+        <div style={{}} class="collapse mt-3" id={`collapse_${orderNumber}`}>
+          <div class="card card-body" style={{border: '0px'}}>
+              <div className="row">
+                <div className="col-3" style={styles.textStyle} >
+                  Nombre de Item
+                </div>
+                <div className="col-2" style={styles.textStyle} >
+                  Cantidad
+                </div>
+                <div className="col-5" style={styles.textStyle} ></div>
+                <div className="col-2" style={styles.textStyle} >
+                  Estado de Item
+                </div>
+              </div>
+
+              <hr />
+
+              {orderList}
           </div>
         </div>
 
@@ -388,6 +403,21 @@ const styles = {
     width: '100%',
     fontSize: '40px',
     color: ColorHex.TextBody
+  },
+  textStyle: {
+    textAlign: 'center',
+    ...CssProperties.BodyTextStyle
+  },
+  trStyle: {
+    borderRadius: '10px',
+    backgroundColor: ColorHex.White,
+    boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+    border: `1px solid ${ColorHex.BorderColor}`,
+    height: '75px',
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: '12px',
+    display: 'flex'
   }
 };
 
