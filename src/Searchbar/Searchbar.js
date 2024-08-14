@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ColorHex } from '../Colors';
 import { border, borderRadius, padding } from '@mui/system';
+import CssProperties from '../CssProperties';
 
 class SearchBar extends Component {
     constructor(props) {
@@ -45,7 +46,7 @@ class SearchBar extends Component {
             alignItems: 'center', // Vertically center the children
             justifyContent: 'space-between', // Space between input and icon
             paddingLeft: '15px',
-            paddingRight: '15px'
+            paddingRight: '15px',
         }
 
         return (
@@ -55,7 +56,7 @@ class SearchBar extends Component {
                 placeholder={searchText}
                 value={this.state.searchInput}
                 onChange={(e) => this.handleSearchInputChange(e, OnSearchCallback, itemList)}
-                style={{border: '0px', outline: '0px', backgroundColor: ColorHex.Background, width: '90%', height: '100%', borderRadius: '10px'}}
+                style={{border: '0px', outline: '0px', backgroundColor: ColorHex.Background, width: '90%', height: '100%', borderRadius: '10px', color: ColorHex.TextBody, ...CssProperties.TextBody}}
             />
             <i className='material-icons' style={{color: ColorHex.TextBody, fontSize: '25px'}}>search</i>
         </div>

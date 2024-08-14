@@ -206,14 +206,14 @@ class OrderComponent extends React.Component {
 
       return(
         <div className="row">
-          <div className="col-3" style={{...styles.textStyle}} >
+          <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}}>
             {displayedName}
           </div>
-          <div className="col-2" style={styles.textStyle} >
+          <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
             {x.amount}
           </div>
-          <div className="col-5" style={styles.textStyle} ></div>
-          <div className="col-2" style={styles.textStyle} >
+          <div className="col-5" style={{...styles.textStyle, color: ColorHex.TextBody}}></div>
+          <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
             {botStateHtml}
           </div>
         </div>
@@ -278,31 +278,31 @@ class OrderComponent extends React.Component {
     return (
       <div>
         <div style={styles.trStyle}>
-          <div style={styles.textStyle} className='col-2'>{name}</div>
-          <div style={styles.textStyle} className='col-2'><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></div>
-          <div style={styles.textStyle} className='col-2'>{orderItemsOrdered.length}</div>
-          <div style={styles.textStyle} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
+          <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-2'>{name}</div>
+          <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-2'><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></div>
+          <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-2'>{orderItemsOrdered.length}</div>
+          <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
           <div style={{...styles.textStyle, color: this.orderStateColor}} className='col-3'>{unsureItemHtml}</div>
-          <div style={styles.textStyle} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
+          <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
           <button ref={this.dropdownBtn} onClick={this.handleDropdown} style={{border: '0px', backgroundColor: 'transparent'}} className='col-1' data-toggle="collapse" data-target={`#collapse_${orderNumber}`} aria-expanded={this.state.isDropdownOpen} aria-controls={`collapse_${orderNumber}`}><i className="material-icons" style={styles.arrowDown}>{this?.state?.isDropdownOpen == true ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i></button>
         </div>
 
         <div style={{}} class="collapse mt-3" id={`collapse_${orderNumber}`}>
-          <div class="card card-body" style={{border: '0px'}}>
+          <div class="card card-body" style={{border: '0px', backgroundColor: 'transparent'}}>
               <div className="row">
-                <div className="col-3" style={styles.textStyle} >
+                <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}} >
                   Nombre de Item
                 </div>
-                <div className="col-2" style={styles.textStyle} >
+                <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
                   Cantidad
                 </div>
-                <div className="col-5" style={styles.textStyle} ></div>
-                <div className="col-2" style={styles.textStyle} >
+                <div className="col-5" style={{...styles.textStyle, color: ColorHex.TextBody}}></div>
+                <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
                   Estado de Item
                 </div>
               </div>
 
-              <hr />
+              <hr style={{color: ColorHex.TextBody}}/>
 
               {orderList}
           </div>

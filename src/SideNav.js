@@ -96,7 +96,7 @@ function SideNav(props)  {
     return (
     <Link to={x.link} style={navBarButtonStyle} className='nav-item rounded'>
       <i className="material-icons me-2" style={{color: ColorHex.TextBody}}>{x.icon}</i>
-      <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px', marginTop: '15px'}}>{x.nameText}</p>
+      <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px', marginTop: '15px', color: ColorHex.TextBody}}>{x.nameText}</p>
     </Link>
     )
   })
@@ -113,7 +113,7 @@ function SideNav(props)  {
           <hr className='border border-dark'/>
           {navBarButtonHtmls}
           <div className="mt-auto">
-            <div className="card rounded" style={{ height: '72px', width: '216px', boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.5)', border:`1px solid ${ColorHex.BorderColor}`}}>
+            <div className="card rounded" style={{ height: '72px', width: '216px', boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.5)', border:`1px solid ${ColorHex.BorderColor}`, backgroundColor: ColorHex.White}}>
               <p className='text-center' style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }}>Mensajes Enviados</p>
               <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-16px'}}>{`${messageCount}/${totalClientsToMessage}`}</p>
             </div>

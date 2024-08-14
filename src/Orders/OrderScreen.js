@@ -339,6 +339,7 @@ class OrderScreen extends Component {
 
     const headerStyle = {
       textAlign: 'center',
+      color: ColorHex.TextBody,
       ...CssProperties.BodyTextStyle
     }
 
