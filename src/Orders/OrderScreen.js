@@ -67,7 +67,6 @@ class OrderScreen extends Component {
         orders: response.data,
         filteredOrders: response.data,
       })
-      console.log("response orders", response)
     } catch (error) {
 
     }
@@ -132,15 +131,10 @@ class OrderScreen extends Component {
     let orders = [...this.state.orders]
     let filteredOrders = [...this.state.filteredOrders]
 
-    console.log("orders", orders)
-    console.log("order", order)
-
     orders = orders.filter(x => x.phoneNumber != order.phoneNumber)
     filteredOrders = filteredOrders.filter(x => x.phoneNumber != order.phoneNumber)
     orders.push(order)
     filteredOrders.push(order)
-
-    console.log("orders after filter", orders)
 
     this.setState({
       orders: orders,
@@ -174,7 +168,6 @@ class OrderScreen extends Component {
 
     if(isEditing == false) {
       if(this.state.currentSaveCallback != undefined) {
-        console.log("SAVE")
         this.state.currentSaveCallback()
       }
     }
@@ -336,6 +329,8 @@ class OrderScreen extends Component {
       backgroundColor: ColorHex.White
     }
 
+    console.log("this.state?.orders", this.state?.orders)
+
     const dropdownItems = [
       {name: "Todos Pedidos", value: this.state?.orders},
       {name: "Pedidos Confirmados", value: this.state?.orders?.filter(x => x.botState == this.CONFIRMED)},
@@ -355,9 +350,9 @@ class OrderScreen extends Component {
       padding: '10px',
       boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
       overflowY: 'scroll', 
-      height: '50%',
+      height: '55vh',
       width: '100%',
-      overflowX: 'hidden',
+      // overflowX: 'hidden',
       alignItems: 'center'
     }
 
@@ -374,17 +369,6 @@ class OrderScreen extends Component {
            </div>
 
            <div style={scrollStyle}>
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
-            {orderBlocks}
             {orderBlocks}
            </div>
       </div>

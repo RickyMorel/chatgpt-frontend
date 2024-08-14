@@ -18,14 +18,13 @@ class OrderComponent extends React.Component {
       order: [],
       confirmedOrder: [],
       selectedMovil: "",
-      deliveryDate: undefined
-    };
+      deliveryDate: undefined,
+    }
+    this.orderStateColor = ColorHex.GreenFabri
 }
 
   componentDidMount() {
     const selectedMovil = this?.props?.movilObjs?.find(x => x.van == this.props.movil) ?? ""
-
-    console.log("order props", this.props)
 
     this.setState({
       checked: this.props.checkedBySalesPerson,
@@ -69,11 +68,8 @@ class OrderComponent extends React.Component {
   }
 
   handleEditOrderItem = (propertyName, value, orderItemCode, orderItemAskedProductName) => {
-    console.log("orderItemCode", orderItemCode)
     let editedOrder = [...this.state.order]
-    console.log("editedOrder", editedOrder)
     let wantedItem = {...editedOrder.find(x => x.code == orderItemCode && x.askedProductName == orderItemAskedProductName)}
-    console.log("wantedItem", wantedItem)
     editedOrder = editedOrder.filter(x => x.code != wantedItem.code)
 
     wantedItem[propertyName] = value
@@ -99,7 +95,6 @@ class OrderComponent extends React.Component {
 
   handleAddProduct = () => {
     let editedOrder = [...this.state.order]
-    console.log("editedOrder", editedOrder)
     const itemNameWithCode = this.props.inventoryItemNamesWithCodes.find(x => editedOrder.find(y => y.code == x.code) == undefined)
     let newItem = {name: itemNameWithCode.name, code: itemNameWithCode.code, amount: 1, botState: "CONFIRMED", askedProductName: "Agregado", price: 0}
 
@@ -111,7 +106,6 @@ class OrderComponent extends React.Component {
   }
 
   handleSave = async () => {
-    console.log("handleSave", this?.state?.order)
     if(this?.state?.selectedMovil?.van == undefined) {this.props.showPopup(new Error(`Seleccione un movil de entrega para el pedido`)); return;}
     if(this?.state?.order.find(x => x.botState == "CONFIRMED") == undefined && this?.state?.order.find(x => x.botState == "SURE")) {this.props.showPopup(new Error(`Hay algunos items que no se confirmaron`)); return;}
 
@@ -167,6 +161,7 @@ class OrderComponent extends React.Component {
     let orderItemCount = 0
 
     let unsureItemHtml = <div className='green-text'>Pedido confirmado</div>
+    this.orderStateColor = ColorHex.GreenFabri
 
     let orderItems = [...this?.state?.order]
     let hasConfirmedItems = this?.state?.confirmedOrder?.find(x => x.botState == confirmedState)
@@ -175,13 +170,13 @@ class OrderComponent extends React.Component {
     if(hasConfirmedItems) { orderItems = orderItems.filter(x => x.botState != SURE)}
 
     for(const item of orderItems) {
-      if(item.name.includes(badFormatString) == true) { unsureItemHtml = <div className='red-text'>Confirmado con formato incorrecto</div> }
-      else if(item.botState == SURE && !hasConfirmedItems) {unsureItemHtml = <div className='orange-text'>Items no estan confirmados por el vendedor</div>}
-      else if(item.botState == "UNSURE") {unsureItemHtml = <div className='orange-text'>Inseguro de pedido</div>}
-      else if(item.botState == NOT_IN_INVENTORY) {unsureItemHtml = <div className='red-text'>No encontro producto pedido</div>; break;}
+      if(item.name.includes(badFormatString) == true) { unsureItemHtml = <div className='red-text'>Confirmado con formato incorrecto</div>; this.orderStateColor = ColorHex.RedFabri}
+      else if(item.botState == SURE && !hasConfirmedItems) {unsureItemHtml = <div className='orange-text'>Items no estan confirmados por el vendedor</div>; this.orderStateColor = ColorHex.OrangeFabri}
+      else if(item.botState == "UNSURE") {unsureItemHtml = <div className='orange-text'>Inseguro de pedido</div>; this.orderStateColor = ColorHex.OrangeFabri}
+      else if(item.botState == NOT_IN_INVENTORY) {unsureItemHtml = <div className='red-text'>No encontro producto pedido</div>; this.orderStateColor = ColorHex.RedFabri; break;}
     }
 
-    if(orderItems.every(x => x.botState == canceldState)) {unsureItemHtml = <div className='red-text'>Pedido cancelado</div>}
+    if(orderItems.every(x => x.botState == canceldState)) {unsureItemHtml = <div className='red-text'>Pedido cancelado</div>; this.orderStateColor = ColorHex.GreyFabri}
 
     let orderItemsOrdered = orderItems.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -277,16 +272,27 @@ class OrderComponent extends React.Component {
       marginBottom: '12px',
       display: 'flex'
     }
+
+    console.log(`collapse_${orderNumber}`)
     
     return (
-      <div style={trStyle}>
-        <div style={textStyle} className='col-2'>{name}</div>
-        <div style={textStyle} className='col-2'><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></div>
-        <div style={textStyle} className='col-2'>{orderItemsOrdered.length}</div>
-        <div style={textStyle} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
-        <div style={textStyle} className='col-3'>{unsureItemHtml}</div>
-        <div style={textStyle} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
-        <div style={textStyle} className='col-1'><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></div>
+      <div>
+        <div style={trStyle}>
+          <div style={textStyle} className='col-2'>{name}</div>
+          <div style={textStyle} className='col-2'><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></div>
+          <div style={textStyle} className='col-2'>{orderItemsOrdered.length}</div>
+          <div style={textStyle} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
+          <div style={{...textStyle, color: this.orderStateColor}} className='col-3'>{unsureItemHtml}</div>
+          <div style={textStyle} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
+          <div style={textStyle} className='col-1' data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls={`collapse_${orderNumber}`}><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></div>
+        </div>
+
+        <div style={{backgroundColor: 'transparent'}} class="collapse mt-3" id={`collapse_${orderNumber}`}>
+          <div class="card card-body" style={textStyle}>
+              This is some collapsible content. It is hidden by default but will be shown when the user clicks the button.
+          </div>
+        </div>
+
       </div>
     //   <li className="collection-item">
     //   <div className={`collapsible-header N${phoneNumber}`} style={styles.collapsibleHeader}>
@@ -379,7 +385,9 @@ const styles = {
     border: 'none'
   },
   arrowDown: {
-    width: '100%'
+    width: '100%',
+    fontSize: '40px',
+    color: ColorHex.TextBody
   }
 };
 
