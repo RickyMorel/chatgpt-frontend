@@ -207,12 +207,15 @@ class OrderComponent extends React.Component {
       return(
         <div className="row">
           <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}}>
+            {x.askedProductName}
+          </div>
+          <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}}>
             {displayedName}
           </div>
           <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
             {x.amount}
           </div>
-          <div className="col-5" style={{...styles.textStyle, color: ColorHex.TextBody}}></div>
+          <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}></div>
           <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
             {botStateHtml}
           </div>
@@ -287,24 +290,29 @@ class OrderComponent extends React.Component {
           <button ref={this.dropdownBtn} onClick={this.handleDropdown} style={{border: '0px', backgroundColor: 'transparent'}} className='col-1' data-toggle="collapse" data-target={`#collapse_${orderNumber}`} aria-expanded={this.state.isDropdownOpen} aria-controls={`collapse_${orderNumber}`}><i className="material-icons" style={styles.arrowDown}>{this?.state?.isDropdownOpen == true ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i></button>
         </div>
 
-        <div style={{}} class="collapse mt-3" id={`collapse_${orderNumber}`}>
-          <div class="card card-body" style={{border: '0px', backgroundColor: 'transparent'}}>
+        <div class="collapse mt-3" id={`collapse_${orderNumber}`}>
+          <div class="card card-body" style={{border: '0px', backgroundColor: 'transparent', marginTop: '-20px'}}>
               <div className="row">
+              <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}} >
+                  Item Confirmado por Mensaje
+                </div>
                 <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}} >
                   Nombre de Item
                 </div>
                 <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
                   Cantidad
                 </div>
-                <div className="col-5" style={{...styles.textStyle, color: ColorHex.TextBody}}></div>
+                <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}></div>
                 <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
                   Estado de Item
                 </div>
               </div>
 
-              <hr style={{color: ColorHex.TextBody}}/>
+              <hr style={{color: ColorHex.TextBody, marginTop: '-1px'}}/>
 
-              {orderList}
+              <div style={{marginTop: '-10px'}}>
+                {orderList}
+              </div>
           </div>
         </div>
 

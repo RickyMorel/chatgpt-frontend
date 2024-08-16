@@ -388,11 +388,11 @@ class OrderScreen extends Component {
         </div>
 
         <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
-          <div class="col-1"><CustomButton text="Editar Pedidos" icon="edit" onClickCallback={this.handleEditMode}/></div>
-          <div class="col-1" style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon="add" onClickCallback={this.handleOpenModal}/></div>
-          <div className="col-6"></div>
-          <div class="col-2"><CustomButton text="Revisar Pedidos" icon="autorenew" onClickCallback={this.handleCheckOrders}/></div>
-          <div class="col-2" style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
+          <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon="autorenew" onClickCallback={this.handleCheckOrders}/></div>
+          <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Editar Pedidos" icon="edit" onClickCallback={this.handleEditMode}/></div>
+          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon="add" onClickCallback={this.handleOpenModal}/></div>
+          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
+          <div className="col-8"></div>
         </div>
 
         <div style={orderPanelStyling}>
