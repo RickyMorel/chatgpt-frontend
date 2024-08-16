@@ -379,12 +379,12 @@ class OrderScreen extends Component {
         
         <div style={{display: 'flex'}}>
             <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Total", ColorHex.TextBody, () => dropdownItems[0]?.value?.length ?? 0)}</div>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Confirmados", ColorHex.GreenFabri, () => dropdownItems[1]?.value?.length ?? 0)}</div>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Pendientes", ColorHex.OrangeFabri, () => dropdownItems[2]?.value?.length ?? 0)}</div>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Con Errores", ColorHex.RedFabri, () => dropdownItems[3]?.value?.length ?? 0)}</div>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Cancelados", ColorHex.TextBody, () => dropdownItems[4]?.value?.length ?? 0)}</div>
-            <div class="col-2"></div>
-            <div class="flex-grow-2">{this.getOrderCountCard("Ventas", ColorHex.GreenFabri, () => `₲${totalSales.toLocaleString()}`)}</div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Pedidos Confirmados", ColorHex.GreenFabri, () => dropdownItems[1]?.value?.length ?? 0)}</div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Pedidos Pendientes", ColorHex.OrangeFabri, () => dropdownItems[2]?.value?.length ?? 0)}</div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Pedidos Con Errores", ColorHex.RedFabri, () => dropdownItems[3]?.value?.length ?? 0)}</div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Pedidos Cancelados", ColorHex.TextBody, () => dropdownItems[4]?.value?.length ?? 0)}</div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Ventas", ColorHex.GreenFabri, () => `₲${totalSales.toLocaleString()}`)}</div>
+            <div className="col-5"></div>
         </div>
 
         <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>

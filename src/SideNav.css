@@ -5,4 +5,8 @@
 .nav-item:hover * {
   color: #ffffff;
 }
+
+.nav-item * {
+  color: #606060;
+}
   

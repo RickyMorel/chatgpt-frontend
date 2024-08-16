@@ -95,8 +95,8 @@ function SideNav(props)  {
 
     return (
     <Link to={x.link} style={navBarButtonStyle} className='nav-item rounded'>
-      <i className="material-icons me-2" style={{color: ColorHex.TextBody}}>{x.icon}</i>
-      <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px', marginTop: '15px', color: ColorHex.TextBody}}>{x.nameText}</p>
+      <i className="material-icons me-2">{x.icon}</i>
+      <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px', marginTop: '15px'}}>{x.nameText}</p>
     </Link>
     )
   })

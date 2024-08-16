@@ -421,7 +421,7 @@ const styles = {
     backgroundColor: ColorHex.White,
     boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
     border: `1px solid ${ColorHex.BorderColor}`,
-    height: '75px',
+    height: '50px',
     width: '100%',
     alignItems: 'center',
     marginBottom: '12px',
