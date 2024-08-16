@@ -14,26 +14,26 @@ class SearchBar extends Component {
     }
 
 
-    handleSearchInputChange = (event, OnSearchCallback, itemList) => {
+    handleSearchInputChange = (event, OnSearchCallback) => {
         const searchInput = event.target.value;
         this.setState({ searchInput }, () => {
-            this.filterProducts(OnSearchCallback, itemList);
+            OnSearchCallback(searchInput)
         });
     };
 
-    filterProducts = (OnSearchCallback, itemList) => {
-        const { searchInput } = this.state;
-        console.log("filterProducts", itemList, searchInput)
-        const filteredItems = itemList.filter(item =>
-            item.name.toLowerCase().includes(searchInput.toLowerCase())
-        );
-        this.setState({ filteredItems });
+    // filterProducts = (OnSearchCallback, itemList) => {
+    //     const { searchInput } = this.state;
+    //     console.log("filterProducts", itemList, searchInput)
+    //     const filteredItems = itemList.filter(item =>
+    //         item.name.toLowerCase().includes(searchInput.toLowerCase())
+    //     );
+    //     this.setState({ filteredItems });
 
-        OnSearchCallback(filteredItems)
-    };
+    //     OnSearchCallback(filteredItems)
+    // };
 
     render() {
-        const { searchText, OnSearchCallback, itemList } = this.props;
+        const { searchText, OnSearchCallback } = this.props;
 
         const searchBarStyling = {
             backgroundColor: ColorHex.Background,
@@ -42,9 +42,9 @@ class SearchBar extends Component {
             borderRadius: '10px',
             border: '0px',
             position: 'relative',
-            display: 'flex',      // Use flexbox for centering
-            alignItems: 'center', // Vertically center the children
-            justifyContent: 'space-between', // Space between input and icon
+            display: 'flex', 
+            alignItems: 'center',
+            justifyContent: 'space-between',
             paddingLeft: '15px',
             paddingRight: '15px',
         }
@@ -55,7 +55,7 @@ class SearchBar extends Component {
                 type="text"
                 placeholder={searchText}
                 value={this.state.searchInput}
-                onChange={(e) => this.handleSearchInputChange(e, OnSearchCallback, itemList)}
+                onChange={(e) => this.handleSearchInputChange(e, OnSearchCallback)}
                 style={{border: '0px', outline: '0px', backgroundColor: ColorHex.Background, width: '90%', height: '100%', borderRadius: '10px', color: ColorHex.TextBody, ...CssProperties.TextBody}}
             />
             <i className='material-icons' style={{color: ColorHex.TextBody, fontSize: '25px'}}>search</i>

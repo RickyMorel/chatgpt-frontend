@@ -202,8 +202,8 @@ class OrderScreen extends Component {
     })
   }
 
-  filterOrders = () => {
-    const { orders, searchInput } = this.state;
+  filterOrders = (searchInput) => {
+    const { orders } = this.state;
 
     const filteredOrders = orders.filter(order =>
         order.name.toLowerCase().includes(searchInput.toLowerCase()) ||
