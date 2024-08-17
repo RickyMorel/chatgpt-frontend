@@ -390,7 +390,7 @@ class OrderScreen extends Component {
         <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
           <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon="autorenew" onClickCallback={this.handleCheckOrders}/></div>
           <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Editar Pedidos" icon="edit" onClickCallback={this.handleEditMode}/></div>
-          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon="add" onClickCallback={this.handleOpenModal}/></div>
+          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon="add" link="createOrder"/></div>
           <div class="flex-grow-1"style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
           <div className="col-8"></div>
         </div>

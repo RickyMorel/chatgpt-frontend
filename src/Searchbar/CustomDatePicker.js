@@ -23,22 +23,21 @@ class CustomDatePicker extends Component {
 
         const styling = {
             backgroundColor: ColorHex.White,
-            fontColor: ColorHex.TextBody,
-            width: '292px',
-            height: '45px',
+            color: ColorHex.TextBody,
+            width: '710px',
+            height: '75px',
             borderRadius: '10px',
             boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
             border: `1px solid ${ColorHex.BorderColor}`,
             position: 'relative',
-            display: 'flex',   
-            alignItems: 'center', 
-            justifyContent: 'space-between', 
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
             paddingLeft: '15px',
             paddingRight: '15px',
-            color: ColorHex.TextBody,
-            textAlign: 'center',
+            textAlign: 'left',
             outline: 'none',
-            ...CssProperties.BodyTextStyle
+            ...CssProperties.SmallHeaderTextStyle,
           };
 
           const dateButtonStyle = {
@@ -75,8 +74,8 @@ class CustomDatePicker extends Component {
                     />  
                 </div>
                 <div className="col-2">
-                    <button onClick={this.handleOpenDatePicker} style={{ marginBottom: '10px' }}>
-                        Open DatePicker
+                    <button onClick={this.handleOpenDatePicker} style={dateButtonStyle}>
+                        <i className='material-icons' style={{ fontSize: '40px'}}>date_range</i>
                     </button>
                 </div>
             </div>

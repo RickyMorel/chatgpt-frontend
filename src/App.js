@@ -13,6 +13,7 @@ import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
 import LoadSpinner from './LoadSpinner';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import AddOrderScreen from './Orders/AddOrderScreen';
 
 class App extends Component {
   constructor(props) {
@@ -78,6 +79,9 @@ class App extends Component {
             </Route>
             <Route exact path="/problematicChats">
               <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
+            </Route>
+            <Route exact path="/createOrder">
+              <div style={{margin: '15px'}}><AddOrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
           </Switch>
         </div>

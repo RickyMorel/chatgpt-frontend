@@ -17,7 +17,7 @@ class CustomSelect extends Component {
               ...provided,
               backgroundColor: ColorHex.White,
               color: ColorHex.TextBody,
-              width: '928px',
+              width: '800px',
               height: '75px',
               borderRadius: '10px',
               boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
