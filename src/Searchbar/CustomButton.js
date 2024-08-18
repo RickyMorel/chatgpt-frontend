@@ -10,7 +10,7 @@ class CustomButton extends Component {
     }
 
     render() {
-        const { text, icon, onClickCallback, link, width, height } = this.props;
+        const { text, icon, onClickCallback, link, width, height, classStyle } = this.props;
 
         const styling = {
             width: width ?? 'auto', // Adjust width based on content
@@ -46,12 +46,12 @@ class CustomButton extends Component {
 
         return (
             link ? (
-                <Link to={link} style={styling} className='nav-item'>
+                <Link to={link} style={styling} className={classStyle ?? 'nav-item'}>
                     {iconHtml}
                 </Link>
             ) : (
-                <button onClick={onClickCallback} style={styling} className='nav-item'>
-                    <i className='material-icons' style={{ fontSize: '40px', alignSelf: 'center' }}>{icon}</i>
+                <button onClick={onClickCallback} style={styling} className={classStyle ?? 'nav-item'}>
+                    {iconHtml}
                 </button>
             )
         );

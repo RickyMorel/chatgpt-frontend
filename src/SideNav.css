@@ -2,10 +2,22 @@
   background-color: #A8A8A8;
 }
 
+.btnRed:hover {
+  background-color: #F74444;
+}
+
+.btnGreen:hover {
+  background-color: #00CC14;
+}
+
+.btnRed:hover *,
+.btnGreen:hover *,
 .nav-item:hover * {
   color: #ffffff;
 }
 
+.btnRed *, 
+.btnGreen *, 
 .nav-item * {
   color: #606060;
 }

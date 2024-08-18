@@ -101,8 +101,6 @@ function SideNav(props)  {
     )
   })
 
-  console.log("navBarButtonHtmls", navBarButtonHtmls)
-
   return (
     <Sidenav>
       <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>

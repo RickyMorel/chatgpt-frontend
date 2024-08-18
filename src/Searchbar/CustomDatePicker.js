@@ -24,7 +24,7 @@ class CustomDatePicker extends Component {
         const styling = {
             backgroundColor: ColorHex.White,
             color: ColorHex.TextBody,
-            width: '710px',
+            width: '700px',
             height: '75px',
             borderRadius: '10px',
             boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
@@ -60,8 +60,8 @@ class CustomDatePicker extends Component {
           }
 
         return (
-            <div className="row">
-                <div className="col-10">
+            <div style={{display: 'flex'}}>
+                <div className="flex-grow-2" style={{paddingRight: '25px'}}>
                     <DatePicker
                         id="datepicker"
                         dateFormat="dd/MM/yy"
@@ -73,7 +73,7 @@ class CustomDatePicker extends Component {
                         ref={this.datePickerRef}
                     />  
                 </div>
-                <div className="col-2">
+                <div className="flex-grow-1">
                     <button onClick={this.handleOpenDatePicker} style={dateButtonStyle}>
                         <i className='material-icons' style={{ fontSize: '40px'}}>date_range</i>
                     </button>

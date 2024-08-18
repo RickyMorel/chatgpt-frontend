@@ -1,24 +1,22 @@
 import axios from 'axios';
-import { es } from 'date-fns/locale';
 import React, { Component } from 'react';
-import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import Modal from 'react-modal';
-import Select from 'react-select';
-import { Color, ColorHex } from '../Colors';
-import { PopupStyle } from '../Popups/PopupManager';
+import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
-import CustomSelect from '../Searchbar/CustomSelect';
-import CustomDatePicker from '../Searchbar/CustomDatePicker';
 import CustomButton from '../Searchbar/CustomButton';
+import CustomDatePicker from '../Searchbar/CustomDatePicker';
 import CustomInput from '../Searchbar/CustomInput';
 import CustomScroll from '../Searchbar/CustomScroll';
+import CustomSelect from '../Searchbar/CustomSelect';
 
 class AddOrderScreen extends Component {
     constructor(props) {
         super(props);
     
         this.state = {
+            clientNumbers: [],
+            inventoryItemCodes: [],
+            movilObjs: null,
             clientNumber: "",
             pointsUsed: 0,
             movil: "",
@@ -27,12 +25,65 @@ class AddOrderScreen extends Component {
         };
     }
 
+    componentDidMount = () => {
+        this.fetchInventoryItemNames();
+        this.fetchClientData();
+        this.fetchMovilData();
+    }
+
     componentDidUpdate = (prevProps) => {
         //Don't update if user didnt swap items
         if(this.props?.itemToEdit?.name == prevProps?.itemToEdit?.name) {return;}
 
         this.setState({
             itemToEdit: this.props.itemToEdit
+        })
+    }
+    
+    fetchInventoryItemNames = async () => {
+        try {
+        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
+        this.setState({
+            inventoryItemCodes: response.data,
+        });
+        } catch{}
+    };
+
+    fetchClientData = async () => {
+        this.props.setIsLoading(true)
+    
+        try {
+          const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/phoneNumbers`);
+          this.setState({
+            clientNumbers: response.data,
+          })
+        } catch (error) {
+    
+        }
+    
+        this.props.setIsLoading(false)
+    };
+
+    fetchMovilData = async () => {
+    this.props.setIsLoading(true)
+
+    try {
+        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/extentions/getEmporioMoviles`);
+        this.setState({
+        movilObjs: response.data,
+        });
+    } catch (error) {}
+
+    this.props.setIsLoading(false)
+    };
+
+    resetScreen = () => {
+        this.setState({
+            clientNumber: "",
+            pointsUsed: 0,
+            movil: "",
+            items: [],
+            deliveryDate: new Date()
         })
     }
 
@@ -52,6 +103,10 @@ class AddOrderScreen extends Component {
             if(!orderDto.deliveryDate || orderDto.deliveryDate.length < 1) { this.props.showPopup(new Error("No se cargo una fecha de entrega!")); return;}
 
             const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/order/createOrderFromInterface`, orderDto);
+
+            this.resetScreen()
+
+            this.props.showPopup();
           } catch (error) {
             this.props.showPopup(error);
           }
@@ -82,12 +137,12 @@ class AddOrderScreen extends Component {
     }
 
     handleItemChange = (itemCode, newCode = undefined, newAmount = undefined) => {
+        console.log("handleItemChange", itemCode, newCode, newAmount)
         let allItems = [...this.state.items]
 
         let itemToRemove = allItems.find(x => x.code == itemCode)
 
         if(newCode) {
-            console.log("newCode", newCode)
             itemToRemove.code = newCode.value
         }
         else if(newAmount) {
@@ -106,12 +161,10 @@ class AddOrderScreen extends Component {
             allItems = allItems.filter(x => x.code != itemToRemoveCode)
         } else {
             let i = 0
-            while(allItems.find(x => x.code == this.props.inventoryItemCodes[i].code)) { i++}
+            while(allItems.find(x => x.code == this.state.inventoryItemCodes[i].code)) { i++}
 
-            allItems.push({code: this.props.inventoryItemCodes[i].code, amount: 1})
+            allItems.push({code: this.state.inventoryItemCodes[i].code, amount: 1})
         }
-
-        console.log("allItems", allItems)
 
         this.setState({
             items: allItems
@@ -119,7 +172,7 @@ class AddOrderScreen extends Component {
     }
 
     render() {
-        const {isOpen, itemToEdit, closeCallback, movilObjs, inventoryItemCodes, clientNumbers} = this.props
+        const { inventoryItemCodes, clientNumbers, movilObjs } = this.state
 
         const movilNames = movilObjs?.map(x => ({value: x.van, label: x.van}))
         
@@ -134,9 +187,10 @@ class AddOrderScreen extends Component {
 
         const itemsHtml = this?.state?.items?.map(x => {
             return (
-            <div>
-                <div className='col s8'>
+            <div style={{display: 'flex', paddingBottom: '25px'}}>
+                <div className="flex-grow-1">
                     <CustomSelect
+                        width='1237px'
                         placeHolderText={"Ingresar nombre del item......"}
                         options={inventoryItemCodesSelect}
                         onChange={(value) => this.handleItemChange(x.code, value)}
@@ -144,15 +198,16 @@ class AddOrderScreen extends Component {
                         isSearchable={true}
                     />
                 </div>       
-                <div className='col s3'>
+                <div className="flex-grow-1">
                     <CustomInput
+                        width='228px'
                         placeHolderText="Ingresar cantidad......"
                         dataType="number"
-                        onChange={(e) => this.handleItemChange(x.code, undefined, e.target.value)}
+                        onChange={(value) => this.handleItemChange(x.code, undefined, value)}
                     />
                 </div>
                 <div className="col s1">
-                    <button className={`waves-light btn-small ${Color.Second}`} onClick={() => this.handleAddOrRemoveProduct(x.code)}><i className="material-icons">close</i></button>
+                    <CustomButton width='100%' height="75px" icon="close" onClickCallback={() => this.handleAddOrRemoveProduct(x.code)}/>
                 </div>
             </div>
         )})
@@ -169,9 +224,9 @@ class AddOrderScreen extends Component {
         const addOrderModalNew =             
         <div>
            <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Crear Pedido</p>
-           <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
-                <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Agregar Pedido" icon="save" onClickCallback={this.handleSave}/></div>
-                <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Cancelar Pedido" icon="cancel" link="orders"/></div>
+           <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
+                <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text="Agregar Pedido" classStyle="btnGreen" width="182px" height="45px" icon="save" onClickCallback={this.handleSave}/></div>
+                <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text="Cancelar Pedido" classStyle="btnRed" icon="cancel" link="orders"/></div>
                 <div className="col-10"></div>
             </div>
             <div className="row">
@@ -181,7 +236,7 @@ class AddOrderScreen extends Component {
                         placeHolderText={"Ingresar el número de cliente......"}
                         options={clientNumbersSelect}
                         onChange={this.handleClientChange}
-                        value={clientNumbersSelect?.find(x => x.value == this?.state?.clientNumber)}
+                        value={this?.state?.clientNumber ? clientNumbersSelect?.find(x => x.value == this?.state?.clientNumber) : ""}
                         isSearchable={true}
                     />
                 </div>

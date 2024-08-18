@@ -16,19 +16,20 @@ class CustomInput extends Component {
 
     handleChange = (event, onChange) => {
         const input = event.target.value;
+        console.log("input", input)
         this.setState({ input }, () => {
             onChange(input)
         });
     };
 
     render() {
-        const { placeHolderText, dataType, onChange } = this.props;
+        const { placeHolderText, dataType, onChange, width, height } = this.props;
 
         const styling = {
             backgroundColor: ColorHex.White,
             color: ColorHex.TextBody,
-            width: '800px',
-            height: '75px',
+            width: width ?? '800px',
+            height: height ?? '75px',
             borderRadius: '10px',
             boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
             border: `1px solid ${ColorHex.BorderColor}`,
@@ -44,7 +45,7 @@ class CustomInput extends Component {
           };
 
         return (
-            <input name='pointsUsed' type={dataType} value={this.state.input} placeholder={placeHolderText} class="validate" style={styling} onChange={(e) => this.handleChange(e.target.value, onChange)}/>
+            <input name='pointsUsed' type={dataType} value={this.state.input} placeholder={placeHolderText} class="validate" style={styling} onChange={(e) => this.handleChange(e, onChange)}/>
         );
     }
 }

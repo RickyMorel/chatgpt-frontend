@@ -35,34 +35,13 @@ class OrderScreen extends Component {
 
   componentDidMount() {
     this.fetchOrderData();
-    this.fetchMovilData();
-    this.fetchClientData();
-    this.fetchInventoryItemNames();
   }
-
-  componentDidUpdate() {
-    this.addCollapsibleListeners(this.state.filteredOrders)
-  }
-
-  fetchMovilData = async () => {
-    this.props.setIsLoading(true)
-
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/extentions/getEmporioMoviles`);
-      this.setState({
-        movilObjs: response.data,
-      });
-    } catch (error) {}
-
-    this.props.setIsLoading(false)
-  };
 
   fetchOrderData = async () => {
     this.props.setIsLoading(true)
 
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
-      this.addCollapsibleListeners(response.data)
       this.setState({
         orders: response.data,
         filteredOrders: response.data,
@@ -72,59 +51,6 @@ class OrderScreen extends Component {
     }
 
     this.props.setIsLoading(false)
-  };
-
-  fetchClientData = async () => {
-    this.props.setIsLoading(true)
-
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/phoneNumbers`);
-      this.setState({
-        clientNumbers: response.data,
-      })
-    } catch (error) {
-
-    }
-
-    this.props.setIsLoading(false)
-  };
-
-  fetchInventoryItemNames = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
-      this.setState({
-        inventoryItemNamesWithCodes: response.data,
-      });
-    } catch (error) {
-
-    }
-  };
-
-  addCollapsibleListeners(filteredOrders) {
-  //   const collapsibleElem = document.querySelectorAll('.collapsible');
-  //   const instances = M.Collapsible.init(collapsibleElem, {
-  //     // Override the default behavior
-  //     onOpenEnd: function(el) {
-  //         el.classList.add('active');
-  //     },
-  //     onCloseEnd: function(el) {
-  //         el.classList.remove('active');
-  //     }
-  // });
-
-  //   const headers = document.querySelectorAll(`.collapsible-header`);
-  //   headers.forEach((header, index) => {
-  //     header.addEventListener('click', (e) => this.openCollapsible(e, index, filteredOrders[index].phoneNumber));
-  //   });
-  }
-
-  openCollapsible = (event, index, phonNumber) => {
-    event.stopImmediatePropagation();
-    event.preventDefault();
-    // const collapsibleElem = document.querySelector('.collapsible');
-    // const collapsibleInstance = M.Collapsible.getInstance(collapsibleElem);
-    // collapsibleInstance.open(index); // Opens the specific collapsible item
-    // this.handleHeaderClick(phonNumber, index)
   };
 
   addNewOrder = (order) => {

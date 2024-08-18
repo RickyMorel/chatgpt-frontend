@@ -10,15 +10,15 @@ class CustomSelect extends Component {
     }
 
     render() {
-        const { options, onChange, value, isSearchable, placeHolderText } = this.props;
+        const { options, onChange, value, isSearchable, placeHolderText, width, height } = this.props;
 
         const customStyles = {
             control: (provided) => ({
               ...provided,
               backgroundColor: ColorHex.White,
               color: ColorHex.TextBody,
-              width: '800px',
-              height: '75px',
+              width: width ?? '800px',
+              height: height ?? '75px',
               borderRadius: '10px',
               boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
               border: `1px solid ${ColorHex.BorderColor}`,
@@ -34,7 +34,7 @@ class CustomSelect extends Component {
             }),
             menu: (provided) => ({
               ...provided,
-              width: '292px',
+              width: width ?? '800px',
               borderRadius: '10px',
               boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
               border: `1px solid ${ColorHex.BorderColor}`,
