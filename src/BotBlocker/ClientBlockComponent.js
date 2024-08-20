@@ -91,12 +91,12 @@ class ClientBlockComponent extends React.Component {
   }
 
   render() {
-    const { name, phoneNumber, chatIsBlocked, isGloballyBlocked,
+    const { name, phoneNumber, chatIsBlocked, isGloballyBlocked, hasLocation,
       clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite, allClientLocations, willMessageTommorrow } = this.props;
 
     return (
       <div className={willMessageTommorrow ? `row ${Color.Third} list-item z-depth-2 border` : `row list-item z-depth-2 border`}>
-        <div className="col s12 m4">
+        <div className="col s3">
           {
             this.state.isEditing == true ?
             <input style={{display: 'block' }} value={this.state.name} onChange={(e) => this.handleNameChange(e.target.value)}/>
@@ -104,7 +104,7 @@ class ClientBlockComponent extends React.Component {
             <span className="client-name">{this.state.name}</span>
           }
         </div>
-        <div className="col s12 m3">
+        <div className="col s2">
           {
             this.state.isEditing == true ?
             <select style={{display: 'block' }} value={this.state.address} onChange={(e) => this.handleAddressChange(e.target.value)}>
@@ -118,10 +118,11 @@ class ClientBlockComponent extends React.Component {
             <span>{this.state.address}</span>
           }
         </div>
-        <div className="col s12 m2">
+        <div className="col s2">
           <span>+{phoneNumber}</span>
         </div>
-        <div className="col s12 m1">
+        <div className="col s2">{hasLocation ? "" : <p className='red-text'>No tiene ubicacion de entrega</p>}</div>
+        <div className="col s1">
           {
             isFavorite == true ? 
             <a><i style={{ color: "#ff8c00" }} className={`material-icons`}>star</i></a>
@@ -129,14 +130,14 @@ class ClientBlockComponent extends React.Component {
             <div></div>
           }
         </div>
-        <div className="col s12 m1">
+        <div className="col s1">
           {
             <button className={`waves-effect waves-light btn-small ${this.state.isEditing ? Color.Button_1 : Color.Second}`} onClick={this.handleEditMode}>
               <i className="material-icons">{this.state.isEditing ? "save" : "edit"}</i>
             </button>
           }
         </div>
-        <div className="col s12 m1">
+        <div className="col s1">
           {
             chatIsBlocked == true || isGloballyBlocked == true ?
             <a className={`waves-effect waves-light btn btn-small right ${Color.First
