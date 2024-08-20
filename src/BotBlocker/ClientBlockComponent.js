@@ -91,7 +91,7 @@ class ClientBlockComponent extends React.Component {
   }
 
   render() {
-    const { name, phoneNumber, chatIsBlocked, isGloballyBlocked, hasLocation,
+    const { name, phoneNumber, chatIsBlocked, isGloballyBlocked, hasLocation, openMapModalCallback,
       clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite, allClientLocations, willMessageTommorrow } = this.props;
 
     return (
@@ -132,7 +132,7 @@ class ClientBlockComponent extends React.Component {
         </div>
         <div className="col s1">
           {
-            <button className={`waves-effect waves-light btn-small ${this.state.isEditing ? Color.Button_1 : Color.Second}`} onClick={this.handleEditMode}>
+            <button className={`waves-effect waves-light btn-small ${this.state.isEditing ? Color.Button_1 : Color.Second}`} onClick={() => openMapModalCallback(phoneNumber)}>
               <i className="material-icons">{this.state.isEditing ? "save" : "edit"}</i>
             </button>
           }

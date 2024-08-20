@@ -3,6 +3,7 @@ import axios from 'axios';
 import ClientBlockComponent from './ClientBlockComponent';
 import { Color } from '../Colors';
 import PaginatedScrollView from './PaginatedScrollView';
+import Map from './Map';
 
 class BlockChatScreen extends Component {
   constructor(props) {
@@ -19,7 +20,8 @@ class BlockChatScreen extends Component {
       clientLocations: [],
       pageNumber: 1,
       pageSize: 15,
-      clientsToMessageTommorrow: 0
+      clientsToMessageTommorrow: 0,
+      openClientNumber: undefined
     };
   }
 
@@ -133,6 +135,13 @@ class BlockChatScreen extends Component {
     }
   };
 
+  handleOpenMapModal = (clientNumber) => {
+    console.log("handleOpenMapModal", clientNumber)
+    this.setState({
+      openClientNumber: clientNumber
+    })
+  }
+
   handleSearchInputChange = (event) => {
     const searchInput = event.target.value;
     this.setState({ searchInput }, () => {
@@ -230,11 +239,20 @@ class BlockChatScreen extends Component {
       const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == x.address)
 
       return <ClientBlockComponent key={x.id} {...x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {orderedLocations}
-        showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
-  });
+        showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}
+        openMapModalCallback={this.handleOpenMapModal}/>
+    });
+
+    const mapModal = 
+    <Map 
+        modalIsOpen={this?.state?.openClientNumber != undefined} 
+        closeCallback={() => this.handleOpenMapModal(undefined)}
+        clientNumber={this?.state?.openClientNumber}
+    />  
 
     return (
       <div className={`card bordered ${Color.Background}`}>
+        {mapModal}
         <div className="card-content">
         <div className="row">
             <div className="col s3">
