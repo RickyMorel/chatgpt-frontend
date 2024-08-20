@@ -163,6 +163,12 @@ class OrderScreen extends Component {
     )
   } 
 
+  closeAllDropdowns = (openDropdownId) => {
+    this.orderRefs.forEach(orderElement => {
+        orderElement.closeDropdown(openDropdownId)
+    });
+  }
+
   render() {
     const { filteredOrders } = this.state;
 
@@ -184,6 +190,7 @@ class OrderScreen extends Component {
                 inventoryItemNamesWithCodes={this.state.inventoryItemNamesWithCodes} 
                 updateTotalSalesCallback={this.updateTotalSales}
                 showPopup={this.props.showPopup}
+                closeAllDropdownsCallback={this.closeAllDropdowns}
               />
     });
 

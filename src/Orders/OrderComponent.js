@@ -109,7 +109,15 @@ class OrderComponent extends React.Component {
 
   handleDropdown = (e) => {
     const isOpen = this.state.isDropdownOpen;
-    this.setState({ isDropdownOpen: !isOpen });
+
+    this.setState({ isDropdownOpen: !isOpen }, () => this.props.closeAllDropdownsCallback(this.props.orderNumber));
+
+  }
+
+  closeDropdown = (openDropdownId) => {
+    if(openDropdownId == this.props.orderNumber) {return;}
+
+    //this.setState({ isDropdownOpen: false });
   }
 
   handleSave = async () => {
@@ -287,7 +295,21 @@ class OrderComponent extends React.Component {
           <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
           <div style={{...styles.textStyle, color: this.orderStateColor}} className='col-3'>{unsureItemHtml}</div>
           <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
-          <button ref={this.dropdownBtn} onClick={this.handleDropdown} style={{border: '0px', backgroundColor: 'transparent'}} className='col-1' data-toggle="collapse" data-target={`#collapse_${orderNumber}`} aria-expanded={this.state.isDropdownOpen} aria-controls={`collapse_${orderNumber}`}><i className="material-icons" style={styles.arrowDown}>{this?.state?.isDropdownOpen == true ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i></button>
+          {/* <button ref={this.dropdownBtn} onClick={this.handleDropdown} style={{border: '0px', backgroundColor: 'transparent'}} className='col-1' data-toggle="collapse" data-target={`#collapse_${orderNumber}`} aria-expanded={this?.state?.isDropdownOpen} aria-controls={`collapse_${orderNumber}`}><i className="material-icons" style={styles.arrowDown}>{this?.state?.isDropdownOpen == true ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i></button> */}
+          <button
+            ref={this.dropdownBtn}
+            onClick={this.handleDropdown}
+            style={{ border: '0px', backgroundColor: 'transparent' }}
+            className='col-1'
+            data-toggle="collapse"
+            data-target={`#collapse_${orderNumber}`}
+            aria-expanded={this?.state?.isDropdownOpen}
+            aria-controls={`#collapse_${orderNumber}`}
+          >
+            <i className="material-icons" style={styles.arrowDown}>
+              {this.state?.isDropdownOpen ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+            </i>
+          </button>
         </div>
 
         <div class="collapse mt-3" id={`collapse_${orderNumber}`}>
@@ -297,7 +319,7 @@ class OrderComponent extends React.Component {
                   Item Confirmado por Mensaje
                 </div>
                 <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}} >
-                  Nombre de Item
+                  Nombre del Item Encontrado
                 </div>
                 <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
                   Cantidad
