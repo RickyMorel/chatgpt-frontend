@@ -130,24 +130,27 @@ class ClientBlockComponent extends React.Component {
             <div></div>
           }
         </div>
-        <div className="col s1">
+        <div className="col s2">
           {
-            <button className={`waves-effect waves-light btn-small ${this.state.isEditing ? Color.Button_1 : Color.Second}`} onClick={() => openMapModalCallback(phoneNumber)}>
-              <i className="material-icons">{this.state.isEditing ? "save" : "edit"}</i>
-            </button>
-          }
-        </div>
-        <div className="col s1">
-          {
-            chatIsBlocked == true || isGloballyBlocked == true ?
-            <a className={`waves-effect waves-light btn btn-small right ${Color.First
-            }`} onClick={() => this.handleBlock(phoneNumber, false, clientRegisterBlockedStateFunc)}>
-                <i className="material-icons">remove_circle</i>
-            </a>
-            :
-            <a className={`waves-effect waves-light btn btn-small right ${Color.Fifths}`} onClick={() => this.handleBlock(phoneNumber, true, clientRegisterBlockedStateFunc)}>
-              <i className="material-icons">check</i>
-            </a>
+            <div>
+              <button className={`waves-effect waves-light btn-small ${this.state.isEditing ? Color.Button_1 : Color.Second}`} onClick={() => this.handleEditMode(phoneNumber)}>
+                <i className="material-icons">{this.state.isEditing ? "save" : "edit"}</i>
+              </button>
+              <button className={`waves-effect waves-light btn-small ${Color.Button_1} ${hasLocation ? '' : 'disabled'}`} style={{marginLeft: '25px'}} onClick={() => openMapModalCallback(phoneNumber)}>
+                <i className="material-icons">map</i>
+              </button>
+              {
+                chatIsBlocked == true || isGloballyBlocked == true ?
+                <a className={`waves-effect waves-light btn btn-small right ${Color.First
+                }`} onClick={() => this.handleBlock(phoneNumber, false, clientRegisterBlockedStateFunc)}>
+                    <i className="material-icons">remove_circle</i>
+                </a>
+                :
+                <a className={`waves-effect waves-light btn btn-small right ${Color.Fifths}`} onClick={() => this.handleBlock(phoneNumber, true, clientRegisterBlockedStateFunc)}>
+                  <i className="material-icons">check</i>
+                </a>
+              }
+            </div>
           }
         </div>
       </div>
