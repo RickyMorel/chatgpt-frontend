@@ -9,11 +9,13 @@ const API_KEY = 'AIzaSyAABDFNQWqSoqDeJBIAUCHfxInlTDtRp6A'; // Replace with your 
 
 const Map = ({ modalIsOpen, clientNumber, closeCallback }) => {
     const mapRef = useRef(null);
+    const markerRef = useRef(null);
     const [position, setPosition] = useState(undefined);
     const [originalPosition, setOriginalPosition] = useState(undefined);
     const [loading, setLoading] = useState(true);
     const [noPos, setNoPos] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const isEditingRef = useRef(isEditing);
 
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: API_KEY,
@@ -21,56 +23,79 @@ const Map = ({ modalIsOpen, clientNumber, closeCallback }) => {
         libraries: ['maps'],
     });
 
-    useEffect(() => {
-        const fetchClientLocation = async () => {
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-location/getLocationByNumber?phoneNumber=${clientNumber}`);
-                const positionObj = { lat: response.data.location.lat, lng: response.data.location.lng };
-                setPosition(positionObj);
-                setOriginalPosition(positionObj);
-            } catch (error) {
-                console.log("Error fetching location:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    useEffect(() => {fetchClientLocation()}, [clientNumber]);
+    useEffect(() => { initializeMap(isLoaded, mapRef, originalPosition, position, setPosition);}, [isLoaded, modalIsOpen, originalPosition]);
+    useEffect(() => { isEditingRef.current = isEditing;}, [isEditing]);
 
-        fetchClientLocation();
-    }, [clientNumber]);
+    const fetchClientLocation = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-location/getLocationByNumber?phoneNumber=${clientNumber}`);
+            const positionObj = { lat: response.data.location.lat, lng: response.data.location.lng };
+            setPosition(positionObj);
+            setOriginalPosition(positionObj);
+            setIsEditing(false)
+        } catch (error) {
+            console.log("Error fetching location:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    useEffect(() => {
+    const initializeMap = (isLoaded, mapRef, originalPosition, position, setPosition) => {
         if (isLoaded && mapRef.current) {
             const mapInstance = new window.google.maps.Map(mapRef.current, {
                 center: originalPosition,
                 zoom: 14,
             });
-
+    
             const markerInstance = new window.google.maps.Marker({
                 position,
                 map: mapInstance,
                 title: 'Client Location',
             });
 
-
-            mapInstance.addListener('click', (event) => {
-                const newPosition = {
-                    lat: event.latLng.lat(),
-                    lng: event.latLng.lng(),
-                };
-                setPosition(newPosition);
-                markerInstance.setPosition(newPosition);
-            });
+            markerRef.current = markerInstance
+    
+            mapInstance.addListener('click', (e) => handleMapClick(e, markerInstance));
         }
-    }, [isLoaded, modalIsOpen, originalPosition]); // Ensure map is initialized when modal is open
+    }
+
+    const handleMapClick = (event, markerInstance) => {
+        if(isEditingRef.current == false) { return; }
+                
+        const newPosition = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng(),
+        };
+        setPosition(newPosition);
+        markerInstance.setPosition(newPosition);
+    }
 
     const handleEditMode = () => {
-        setIsEditing(!isEditing)
+        const newIsEditing = !isEditing
+        setIsEditing(newIsEditing)
+
+        if(newIsEditing == false) {
+            updateLocation()
+        }
+    }
+
+    const handleEditLocation = (e) => {
+        if(e.target.value.includes(',') == false) { return; }
+
+        // const positions = e.target.value.split(',')
+        // const newPosition = {lat: positions[0].trim(), lng: positions[1].trim()}
+
+        // console.log("positions", positions)
+        // console.log("newPosition", newPosition)
+
+        // setPosition({lat: newPosition.lat, lng: newPosition.lng});
     }
     
     const updateLocation = async () => {
         const locationObj = {
             phoneNumber: clientNumber,
-            location: position,
+            location: {lat: +position.lat, lng: +position.lng},
             locationPicture: "",
             locationDescription: ""
         }
@@ -79,12 +104,20 @@ const Map = ({ modalIsOpen, clientNumber, closeCallback }) => {
 
     return (
         <Modal isOpen={modalIsOpen} onRequestClose={closeCallback} style={PopupStyle.Medium}>
-            <button className={`waves-effect waves-light btn-small ${isEditing ? Color.Button_1 : Color.Second}`} onClick={() => handleEditMode(clientNumber)}>
-                <i className="material-icons">{isEditing ? "save" : "edit"}</i>
-            </button>
+            <div className="row">
+                <div className="col s10">
+                    <input style={{display: 'block' }} name='location' onChange={(e) => handleEditLocation(e)}/>
+                </div>
+                <div className="col s2">
+                    <button className={`waves-effect waves-light btn-small ${isEditing ? Color.Button_1 : Color.Second}`} onClick={() => handleEditMode(clientNumber)}>
+                        <i className="material-icons">{isEditing ? "save" : "edit"}</i>
+                    </button>
+                </div>
+            </div>
             <div ref={mapRef} style={{ height: '90%', width: '90%' }} />
         </Modal>
     );
 };
 
 export default Map;
+
