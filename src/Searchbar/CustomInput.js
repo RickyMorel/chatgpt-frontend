@@ -14,6 +14,14 @@ class CustomInput extends Component {
         this.datePickerRef = React.createRef();
     }
 
+    componentDidMount() {
+        if(!this.props.value) { return;}
+
+        this.setState({
+            input: this.props.value
+        });
+    }
+
     handleChange = (event, onChange) => {
         const input = event.target.value;
         console.log("input", input)
@@ -39,7 +47,7 @@ class CustomInput extends Component {
             justifyContent: 'space-between',
             paddingLeft: '15px',
             paddingRight: '15px',
-            textAlign: 'left',
+            textAlign: 'center',
             outline: 'none',
             ...CssProperties.SmallHeaderTextStyle,
           };

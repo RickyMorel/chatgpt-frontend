@@ -28,9 +28,9 @@ class CustomSelect extends Component {
               justifyContent: 'space-between',
               paddingLeft: '15px',
               paddingRight: '15px',
-              textAlign: 'left',
+              textAlign: 'center',
               outline: 'none',
-              ...CssProperties.SmallHeaderTextStyle,
+              ...CssProperties.BodyTextStyle,
             }),
             menu: (provided) => ({
               ...provided,
@@ -56,14 +56,14 @@ class CustomSelect extends Component {
             dropdownIndicator: (provided) => ({
                 ...provided,
                 padding: '0', // Remove padding around the icon
-                width: '75px',
-                height: '75px',
+                width: height ?? '75px',
+                height: height ?? '75px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 svg: {
-                  width: '50px',
-                  height: '50px',
+                  width: height ?? '75px',
+                  height: height ?? '75px',
                 },
               }),
               indicatorSeparator: () => ({

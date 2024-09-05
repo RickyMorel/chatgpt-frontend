@@ -35,6 +35,8 @@ class OrderScreen extends Component {
 
   componentDidMount() {
     this.fetchOrderData();
+    this.fetchMovilData();
+    this.fetchInventoryItemNames();
   }
 
   fetchOrderData = async () => {
@@ -49,6 +51,30 @@ class OrderScreen extends Component {
     } catch (error) {
 
     }
+
+    this.props.setIsLoading(false)
+  };
+
+  fetchInventoryItemNames = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
+      this.setState({
+        inventoryItemNamesWithCodes: response.data,
+      });
+    } catch (error) {
+
+    }
+  };
+
+  fetchMovilData = async () => {
+    this.props.setIsLoading(true)
+
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/extentions/getEmporioMoviles`);
+      this.setState({
+        movilObjs: response.data,
+      });
+    } catch (error) {}
 
     this.props.setIsLoading(false)
   };
@@ -320,13 +346,22 @@ class OrderScreen extends Component {
             <div className="col-5"></div>
         </div>
 
-        <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
-          <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon="autorenew" onClickCallback={this.handleCheckOrders}/></div>
-          <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Editar Pedidos" icon="edit" onClickCallback={this.handleEditMode}/></div>
-          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon="add" link="createOrder"/></div>
-          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
-          <div className="col-8"></div>
-        </div>
+        {
+          this.state.isEditing ?
+          <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
+            <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text="Guardar" classStyle="btnGreen" width="182px" height="45px" icon="save" onClickCallback={this.handleSave}/></div>
+            <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text="Cancelare" classStyle="btnRed" icon="cancel" link="orders"/></div>
+            <div className="col-10"></div>
+          </div>
+          :
+          <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
+            <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon="autorenew" onClickCallback={this.handleCheckOrders}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Editar Pedidos" icon="edit" onClickCallback={this.handleEditMode}/></div>
+            <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon="add" link="createOrder"/></div>
+            <div class="flex-grow-1"style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
+            <div className="col-8"></div>
+          </div>
+        }
 
         <div style={orderPanelStyling}>
           <div style={{display: 'flex'}}>

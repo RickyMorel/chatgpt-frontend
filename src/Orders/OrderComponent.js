@@ -7,6 +7,9 @@ import Select from 'react-select';
 import { Color, ColorHex } from '../Colors';
 import Utils from '../Utils';
 import CssProperties from '../CssProperties';
+import CustomSelect from '../Searchbar/CustomSelect';
+import CustomDatePicker from '../Searchbar/CustomDatePicker';
+import CustomInput from '../Searchbar/CustomInput';
 const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
@@ -55,8 +58,8 @@ class OrderComponent extends React.Component {
       return `${formattedNumber}`;
   };
 
-  handleEditMovil = (e) => {
-    const wantedMovil = this.props.movilObjs.find(x => x.van == e.target.value)
+  handleEditMovil = (oldValue, newValue) => {
+    const wantedMovil = this.props.movilObjs.find(x => x.van == newValue)
 
     this.setState({
       selectedMovil: wantedMovil
@@ -164,6 +167,7 @@ class OrderComponent extends React.Component {
 
   render() {
     const { orderNumber , name, phoneNumber, inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
+    //const { isEditing } = this.state;
 
     const onlyVendorConfirmed = "CONFIRMADO SOLO POR VENDEDOR"
     const noLongerWantedItem = "CLIENTE NO QUIERE"
@@ -172,6 +176,13 @@ class OrderComponent extends React.Component {
     const NOT_IN_INVENTORY = "NOT_IN_INVENTORY"
     const SURE = "SURE"
     const SIN_MOVIL = "Sin movil"
+
+    const movilOptions = this?.props?.movilObjs?.map(x => ({value: x.van, label: x.van}))
+    const botStateOptions = [
+      {value: SURE, label: 'FALTA CONFIRMAR'},
+      {value: confirmedState, label: 'Confirmado'},
+      {value: canceldState, label: 'Cancelado'}
+    ]
 
     let orderItemCount = 0
 
@@ -212,20 +223,56 @@ class OrderComponent extends React.Component {
       const orderItem = this.state.order.find(y => y.code == x.code && y.askedProductName == x.askedProductName)
       const orderItemSelect = {value: orderItem.code, label: orderItem.name}
 
+      console.log("orderItem.botState", orderItem.botState, "botStateOptions", botStateOptions)
+
       return(
         <div className="row">
           <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}}>
             {x.askedProductName}
           </div>
           <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}}>
-            {displayedName}
+            {
+              !isEditing ?
+              displayedName
+              :
+              <CustomSelect
+                width='100%'
+                height='30px'
+                options={orderItemCodesSelect}
+                onChange={(value) => this.handleEditOrderItem("name", value.value, x.code, x.askedProductName)}
+                value={orderItemSelect}
+                isSearchable={true}
+              />
+            }
           </div>
-          <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
-            {x.amount}
+          <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody, display: 'flex',  justifyContent: 'center', alignItems: 'center'}}>
+            {
+              !isEditing ?
+              x.amount
+              :
+              <CustomInput
+                width='75px'
+                height='40px'
+                dataType="number"
+                value={orderItem.amount}
+                onChange={(value) => this.handleEditOrderItem("amount", value, x.code, x.askedProductName)}
+              />
+            }
           </div>
-          <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}></div>
-          <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
-            {botStateHtml}
+          <div className="col-4" style={{...styles.textStyle, color: ColorHex.TextBody}}>
+            {
+              !isEditing ? 
+              botStateHtml
+              :
+              <CustomSelect
+                width='100%'
+                height='30px'
+                options={botStateOptions}
+                onChange={(value) => this.handleEditOrderItem("botState", value, x.code, x.askedProductName)}
+                value={orderItem.botState}
+                isSearchable={false}
+              />
+            }
           </div>
         </div>
         // <div className='row'>
@@ -282,20 +329,39 @@ class OrderComponent extends React.Component {
       )
     });
 
-    const movilOptions = this?.props?.movilObjs?.map(x => 
-      <option value={x.van}>{x.van}</option>
-    )
-
     return (
       <div>
         <div style={styles.trStyle}>
           <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-2'>{name}</div>
           <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-2'><a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>+{phoneNumber}</a></div>
           <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-2'>{orderItemsOrdered.length}</div>
-          <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
+          {
+            !isEditing ? 
+              <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-1'>{Utils.formatDate(this.state.deliveryDate)}</div>
+            :
+            <CustomDatePicker
+              width='119px'
+              height='30px'
+              includeButton={false}
+              selected={this.state.deliveryDate}
+              onChange={(date) => this.handleEditDate(date)}
+            /> 
+          }
           <div style={{...styles.textStyle, color: this.orderStateColor}} className='col-3'>{unsureItemHtml}</div>
-          <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
-          {/* <button ref={this.dropdownBtn} onClick={this.handleDropdown} style={{border: '0px', backgroundColor: 'transparent'}} className='col-1' data-toggle="collapse" data-target={`#collapse_${orderNumber}`} aria-expanded={this?.state?.isDropdownOpen} aria-controls={`collapse_${orderNumber}`}><i className="material-icons" style={styles.arrowDown}>{this?.state?.isDropdownOpen == true ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}</i></button> */}
+          {
+            !isEditing ? 
+              <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
+            :
+            <CustomSelect
+              width='154px'
+              height='30px'
+              placeHolderText={"Sin Movil"}
+              options={movilOptions}
+              onChange={(value) => this.handleEditMovil(this?.state?.selectedMovil?.van, value)}
+              value={movilOptions?.find(y => y.value == this?.state?.selectedMovil?.van)}
+              isSearchable={false}
+            />
+          }
           <button
             ref={this.dropdownBtn}
             onClick={this.handleDropdown}
@@ -324,8 +390,8 @@ class OrderComponent extends React.Component {
                 <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
                   Cantidad
                 </div>
-                <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}></div>
-                <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
+                {/* <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}></div> */}
+                <div className="col-4" style={{...styles.textStyle, color: ColorHex.TextBody}}>
                   Estado de Item
                 </div>
               </div>

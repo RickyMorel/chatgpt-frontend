@@ -19,13 +19,13 @@ class CustomDatePicker extends Component {
     };
 
     render() {
-        const { selected, onChange } = this.props;
+        const { selected, onChange, width, height, includeButton = true } = this.props;
 
         const styling = {
             backgroundColor: ColorHex.White,
             color: ColorHex.TextBody,
-            width: '700px',
-            height: '75px',
+            width: width ?? '700px',
+            height: height ?? '75px',
             borderRadius: '10px',
             boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
             border: `1px solid ${ColorHex.BorderColor}`,
@@ -43,8 +43,8 @@ class CustomDatePicker extends Component {
           const dateButtonStyle = {
             backgroundColor: ColorHex.White,
             fontColor: ColorHex.TextBody,
-            width: '75px',
-            height: '75px',
+            width: height ?? '75px',
+            height: height ?? '75px',
             borderRadius: '10px',
             boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
             border: `1px solid ${ColorHex.BorderColor}`,
@@ -59,19 +59,23 @@ class CustomDatePicker extends Component {
             outline: 'none',
           }
 
-        return (
+        const datePicker = 
+        <DatePicker
+            id="datepicker"
+            dateFormat="dd/MM/yy"
+            selected={selected}
+            onChange={onChange}
+            locale={es}
+            customInput={<input style={styling} />}
+            popperPlacement="bottom-start"
+            ref={this.datePickerRef}
+        /> 
+
+        const html = 
+        includeButton ? 
             <div style={{display: 'flex'}}>
                 <div className="flex-grow-2" style={{paddingRight: '25px'}}>
-                    <DatePicker
-                        id="datepicker"
-                        dateFormat="dd/MM/yy"
-                        selected={selected}
-                        onChange={onChange}
-                        locale={es}
-                        customInput={<input style={styling} />}
-                        popperPlacement="bottom-start"
-                        ref={this.datePickerRef}
-                    />  
+                    {datePicker}
                 </div>
                 <div className="flex-grow-1">
                     <button onClick={this.handleOpenDatePicker} style={dateButtonStyle}>
@@ -79,7 +83,10 @@ class CustomDatePicker extends Component {
                     </button>
                 </div>
             </div>
-        );
+        : 
+        datePicker
+
+        return html;
     }
 }
 
