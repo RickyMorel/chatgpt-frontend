@@ -10,7 +10,7 @@ class CustomButton extends Component {
     }
 
     render() {
-        const { text, icon, onClickCallback, link, width, height, classStyle } = this.props;
+        const { text, icon, onClickCallback, link, width, height, classStyle, color, iconSize } = this.props;
 
         const styling = {
             width: width ?? 'auto', // Adjust width based on content
@@ -25,7 +25,7 @@ class CustomButton extends Component {
             paddingTop: '10px',
             paddingBottom: '10px',
             whiteSpace: 'nowrap',
-            color: 'inherit',
+            color: color ??'inherit',
             textAlign: 'center',
             textDecoration: 'none', 
             ...CssProperties.BodyTextStyle,
@@ -35,13 +35,13 @@ class CustomButton extends Component {
         const iconHtml = text ? 
         (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <i className='material-icons' style={{ fontSize: '25px', marginRight: '10px' }}>{icon}</i>
+                <i className='material-icons' style={{ fontSize: iconSize ?? '25px', marginRight: '10px' }}>{icon}</i>
                 <div>{text}</div>
             </div>
         )
         :
         (
-            <i className='material-icons' style={{ fontSize: '40px' }}>{icon}</i>
+            <i className='material-icons' style={{ fontSize: iconSize ?? '40px' }}>{icon}</i>
         )
 
         return (

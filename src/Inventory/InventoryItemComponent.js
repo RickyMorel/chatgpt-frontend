@@ -1,5 +1,8 @@
 import React from 'react';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
+import CssProperties from '../CssProperties';
+import CustomButton from '../Searchbar/CustomButton';
+import Utils from '../Utils';
 
 class InventoryItemComponent extends React.Component {
 
@@ -24,46 +27,55 @@ class InventoryItemComponent extends React.Component {
         const { item, isInDailyInventory, isPromoItem, handleClickCallback, handleSelectPromoItemCallback, handleEditItemCallback, reccomendations } = this.props;
 
         return (
-        <div className="row list-item z-depth-2 border">
-            <div className="col s4">
-                <span className="client-name">{item.name}</span>
+        <div className="row" style={trStyle}>
+            <div className="col-5">
+                <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'left', marginTop: '12px'}}>{Utils.getCutName(item.name)}</p>
             </div>
-            <div className="col s3">
+            <div className={isInDailyInventory ? "col-1" : "col-2"}>
                 {
                     reccomendations?.length > 0 ?
-                    <span className="client-name orange-text">{`Rec: ${reccomendations.join(", ")}`}</span>
+                    <div></div>
+                    // <span className="client-name orange-text">{`Rec: ${reccomendations.join(", ")}`}</span>
                     :
                     <div></div>
                 }
             </div>
-            <div className="col s1">
+            <div className="col-1">
                 <span className="client-name red-text">{item.imageLink == " " ? "Sin imagen" : ""}</span>
             </div>
-            <div className="col s2">
-                <span className="client-name">{this.formatPrice(item.price)}</span>
+            <div className="col-2">
+                <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginTop: '12px'}}>{this.formatPrice(item.price)}</p>
             </div>
+            <div className="col-1">
+                <CustomButton iconSize="25px" width='40px' height="40px" icon="edit" onClickCallback={() => handleEditItemCallback(item)}/>
+            </div> 
             {
-                isInDailyInventory == false ? 
-                <div className="col s1">
-                    <a className={`waves-effect waves-light btn btn-small right ${Color.Second}`} onClick={() => handleEditItemCallback(item)}>
-                    <i className="material-icons">edit</i>
-                    </a>
-                </div> 
-                :
-                <div className="col s1">
-                    <a className={`btn btn-small right ${isPromoItem == true ? Color.First : Color.Third}`} onClick={() => handleSelectPromoItemCallback(item, isPromoItem)}>
-                        <i className="material-icons">star_border</i>
-                    </a>
+                isInDailyInventory ? 
+                <div className="col-1">
+                    <CustomButton iconSize="25px" className="red" color={`${isPromoItem == true ? ColorHex.First : ColorHex.First}`} width='40px' height="40px" icon="loyalty" onClickCallback={() => handleSelectPromoItemCallback(item, isPromoItem)}/>
                 </div>
+                :
+                <></>
             }
-            <div className="col s1">
-                <a className={`waves-effect waves-light btn btn-small right ${isInDailyInventory == true ? Color.Second : Color.Fifth}`} onClick={() => handleClickCallback(item, isInDailyInventory)}>
-                <i className="material-icons">{isInDailyInventory == true ? "arrow_back" : "arrow_forward"}</i>
-                </a>
+            <div className="col-1">
+                <CustomButton iconSize="25px" width='40px' height="40px" icon={isInDailyInventory == true ? "remove" : "add"} onClickCallback={() => handleClickCallback(item, isInDailyInventory)}/>
             </div>
         </div>
         );
     }
 }
+
+const trStyle = {
+    borderRadius: '10px',
+    backgroundColor: ColorHex.White,
+    boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+    border: `1px solid ${ColorHex.BorderColor}`,
+    height: '50px',
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: '12px',
+    display: 'flex',
+    marginLeft: '5px',
+  }
 
 export default InventoryItemComponent;

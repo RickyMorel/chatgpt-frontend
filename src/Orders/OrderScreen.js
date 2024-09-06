@@ -9,6 +9,7 @@ import SearchBar from '../Searchbar/Searchbar';
 import Dropdown from '../Searchbar/Dropdown';
 import CustomButton from '../Searchbar/CustomButton';
 import './ScrollView.css'
+import StatCard from '../Searchbar/StatCard';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -164,30 +165,7 @@ class OrderScreen extends Component {
     );
 
     this.setState({ filteredOrders: filteredOrders });
-  };
-
-  getOrderCountCard = (title, amountColor, amountFunction) => {
-    let orderAmountCardStyling = {
-      width: '215px',
-      height: '72px',
-      marginTop: '10px',
-      alignItems: 'center',
-      padding: '10px',
-      boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
-      border: `1px solid ${ColorHex.BorderColor}`,
-      borderRadius: '12px',
-      backgroundColor: ColorHex.White
-    }
-
-    return (
-      <div style={orderAmountCardStyling}>
-          <div class="text-center">
-            <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '1px'}}>{title}</p>
-            <p style={{...CssProperties.SmallHeaderTextStyle, color: amountColor, marginTop: '-16px'}}>{amountFunction()}</p>
-          </div>
-      </div>
-    )
-  } 
+  }; 
 
   closeAllDropdowns = (openDropdownId) => {
     this.orderRefs.forEach(orderElement => {
@@ -337,12 +315,12 @@ class OrderScreen extends Component {
         <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Pedidos</p>
         
         <div style={{display: 'flex'}}>
-            <div class="flex-grow-1">{this.getOrderCountCard("Pedidos Total", ColorHex.TextBody, () => dropdownItems[0]?.value?.length ?? 0)}</div>
-            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Pedidos Confirmados", ColorHex.GreenFabri, () => dropdownItems[1]?.value?.length ?? 0)}</div>
-            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Pedidos Pendientes", ColorHex.OrangeFabri, () => dropdownItems[2]?.value?.length ?? 0)}</div>
-            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Pedidos Con Errores", ColorHex.RedFabri, () => dropdownItems[3]?.value?.length ?? 0)}</div>
-            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Pedidos Cancelados", ColorHex.TextBody, () => dropdownItems[4]?.value?.length ?? 0)}</div>
-            <div class="flex-grow-1" style={{paddingLeft: '25px'}}>{this.getOrderCountCard("Ventas", ColorHex.GreenFabri, () => `₲${totalSales.toLocaleString()}`)}</div>
+            <div class="flex-grow-1"><StatCard title="Pedidos Total" amountColor={ColorHex.TextBody} amountFunction={() => dropdownItems[0]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Pedidos Confirmados" amountColor={ColorHex.GreenFabri} amountFunction={() => dropdownItems[1]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Pedidos Pendientes" amountColor={ColorHex.OrangeFabri} amountFunction={() => dropdownItems[2]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Pedidos Con Errores" amountColor={ColorHex.RedFabri} amountFunction={() => dropdownItems[3]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Pedidos Cancelados" amountColor={ColorHex.TextBody} amountFunction={() => dropdownItems[4]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Ventas" amountColor={ColorHex.GreenFabri} amountFunction={() => `₲${totalSales.toLocaleString()}`}/></div>
             <div className="col-5"></div>
         </div>
 

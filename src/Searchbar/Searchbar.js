@@ -33,20 +33,21 @@ class SearchBar extends Component {
     // };
 
     render() {
-        const { searchText, OnSearchCallback } = this.props;
+        const { searchText, OnSearchCallback, width, height } = this.props;
 
         const searchBarStyling = {
-            backgroundColor: ColorHex.Background,
-            width: '292px',
-            height: '45px',
+            backgroundColor: ColorHex.White,
+            width: width ?? '292px',
+            height: height ?? '45px',
             borderRadius: '10px',
-            border: '0px',
+            border: `1px solid ${ColorHex.BorderColor}`,
             position: 'relative',
             display: 'flex', 
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingLeft: '15px',
             paddingRight: '15px',
+            boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
         }
 
         return (
@@ -56,7 +57,7 @@ class SearchBar extends Component {
                 placeholder={searchText}
                 value={this.state.searchInput}
                 onChange={(e) => this.handleSearchInputChange(e, OnSearchCallback)}
-                style={{border: '0px', outline: '0px', backgroundColor: ColorHex.Background, width: '90%', height: '100%', borderRadius: '10px', color: ColorHex.TextBody, ...CssProperties.TextBody}}
+                style={{border: '0px', outline: '0px', backgroundColor: ColorHex.White, width: '90%', height: '100%', borderRadius: '10px', color: ColorHex.TextBody, ...CssProperties.TextBody}}
             />
             <i className='material-icons' style={{color: ColorHex.TextBody, fontSize: '25px'}}>search</i>
         </div>

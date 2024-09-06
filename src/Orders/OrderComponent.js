@@ -1,15 +1,13 @@
 import axios from 'axios';
-import { es } from 'date-fns/locale';
 import React from 'react';
-import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import Select from 'react-select';
-import { Color, ColorHex } from '../Colors';
-import Utils from '../Utils';
+import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
-import CustomSelect from '../Searchbar/CustomSelect';
+import CustomButton from '../Searchbar/CustomButton';
 import CustomDatePicker from '../Searchbar/CustomDatePicker';
 import CustomInput from '../Searchbar/CustomInput';
+import CustomSelect from '../Searchbar/CustomSelect';
+import Utils from '../Utils';
 const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
@@ -117,12 +115,6 @@ class OrderComponent extends React.Component {
 
   }
 
-  closeDropdown = (openDropdownId) => {
-    if(openDropdownId == this.props.orderNumber) {return;}
-
-    //this.setState({ isDropdownOpen: false });
-  }
-
   handleSave = async () => {
     if(this?.state?.selectedMovil?.van == undefined) {this.props.showPopup(new Error(`Seleccione un movil de entrega para el pedido`)); return;}
     if(this?.state?.order.find(x => x.botState == "CONFIRMED") == undefined && this?.state?.order.find(x => x.botState == "SURE")) {this.props.showPopup(new Error(`Hay algunos items que no se confirmaron`)); return;}
@@ -216,17 +208,14 @@ class OrderComponent extends React.Component {
       else if(x.botState == "UNSURE") {botStateHtml = <div style={{color: ColorHex.OrangeFabri}}>Inseguro</div>}
       else if(x.botState == NOT_IN_INVENTORY) {botStateHtml = <div style={{color: ColorHex.RedFabri}}>No encontro en inventario</div>;}
 
-      const askedProductNameColor = x.askedProductName.includes(onlyVendorConfirmed) || x.askedProductName.includes(noLongerWantedItem) ? "red" : "black"
       const displayedName = x.name.replace(badFormatString, "")
 
       const orderItemCodesSelect = inventoryItemNamesWithCodes?.map(x => ({value: x.code, label: x.name}))
       const orderItem = this.state.order.find(y => y.code == x.code && y.askedProductName == x.askedProductName)
       const orderItemSelect = {value: orderItem.code, label: orderItem.name}
 
-      console.log("orderItem.botState", orderItem.botState, "botStateOptions", botStateOptions)
-
       return(
-        <div className="row">
+        <div className="row" style={{paddingBottom: '15px'}}>
           <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}}>
             {x.askedProductName}
           </div>
@@ -269,65 +258,20 @@ class OrderComponent extends React.Component {
                 height='30px'
                 options={botStateOptions}
                 onChange={(value) => this.handleEditOrderItem("botState", value, x.code, x.askedProductName)}
-                value={orderItem.botState}
+                value={botStateOptions.find(x => x.value == orderItem.botState) ?? botStateOptions[0]}
                 isSearchable={false}
               />
             }
           </div>
         </div>
-        // <div className='row'>
-        //   <div className='col s2'>
-        //     <span style={{ width: '100%'  }}>{i}</span>
-        //   </div>
-        //   <div className='col s3'>
-        //     <span style={{ width: '100%', color: askedProductNameColor}}>{x.askedProductName}</span>
-        //   </div>
-        //   <div className='col s3'>
-        //   {
-        //       isEditing == true ?
-        //       <Select
-        //           options={orderItemCodesSelect}
-        //           onChange={(value) => this.handleEditOrderItem("name", value.value, x.code, x.askedProductName)}
-        //           value={orderItemSelect}
-        //           isSearchable={true}
-        //       />
-        //       :
-        //       <span style={{ width: '100%'  }}>{displayedName}</span>
-        //     }
-        //   </div>       
-        //   <div className='col s1'>
-        //     {
-        //       isEditing == true ?
-        //       <input style={{display: 'block' }} name='amount' value={orderItem.amount} onChange={(e) => this.handleEditOrderItem("amount", e.target.value, x.code, x.askedProductName)}/>
-        //       :
-        //       <span style={{ width: '100%'  }}>{x.amount}</span>
-        //     }
-        //   </div>
-        //   <div className='col s3'>
-        //     {
-        //       isEditing == true ?
-        //       <div style={{ display: 'flex', alignItems: 'center' }}>
-        //         <select style={{display: 'block' }} name='botState' value={orderItem.botState} onChange={(e) => this.handleEditOrderItem("botState", e.target.value, x.code, x.askedProductName)}>
-        //           <option value={SURE}>Falta confirmar</option>
-        //           <option value={confirmedState}>Confirmado</option>
-        //           <option value={canceldState}>Cancelado</option>
-        //         </select>
-        //         {
-        //           orderItemsOrdered.indexOf(x) == orderItemsOrdered.length - 1 ?
-        //           <button onClick={() => this.handleAddProduct()} className={`waves-effect waves-light btn ${Color.Fifth}`}>
-        //             <i className={`material-icons`}>add_circle_outline</i>
-        //           </button>
-        //           :
-        //           <div></div>
-        //         }
-        //       </div>
-        //       :
-        //       <span style={{ width: '100%'  }}>{botStateHtml}</span>
-        //     }
-        //   </div>
-        // </div>
       )
     });
+
+    if(isEditing) {
+      orderList.push(
+        <CustomButton width='100%' height="75px" icon="add" onClickCallback={() => this.handleAddProduct()}/>
+      )
+    }
 
     return (
       <div>
@@ -390,7 +334,6 @@ class OrderComponent extends React.Component {
                 <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}>
                   Cantidad
                 </div>
-                {/* <div className="col-2" style={{...styles.textStyle, color: ColorHex.TextBody}}></div> */}
                 <div className="col-4" style={{...styles.textStyle, color: ColorHex.TextBody}}>
                   Estado de Item
                 </div>
@@ -403,66 +346,7 @@ class OrderComponent extends React.Component {
               </div>
           </div>
         </div>
-
       </div>
-    //   <li className="collection-item">
-    //   <div className={`collapsible-header N${phoneNumber}`} style={styles.collapsibleHeader}>
-    //     <span className="client-name" style={styles.smallerText}>{orderNumber}</span>
-    //     <span className="client-name" style={styles.clientName}>{name}</span>
-    //     <span className="client-name" style={styles.clientName}>
-    //       <a href={`https://wa.me/${phoneNumber}`} target="_blank" rel="noopener noreferrer" style={styles.underlinedLink}>{phoneNumber}</a>
-    //     </span>
-    //     <span className="client-name" style={styles.smallerText}>{orderItemsOrdered.length}</span>
-    //     <span className="client-name" style={styles.clientName}>{unsureItemHtml}</span>
-    //     <span className="client-name" style={styles.clientName}>
-    //       {
-    //         isEditing && currentOpenOrder === phoneNumber ?
-    //         <div class="input-field">
-    //           <input id="pointsUsed" name='pointsUsed' type="number" class="validate" style={{display: 'block' }} onChange={this.handleEditPoints}/>
-    //           <label for="first_name">Puntos usados</label>
-    //         </div> 
-    //         :
-    //         this?.state?.pointsUsed == 0 ? <div></div> : <span>{this?.state?.pointsUsed}</span>
-    //       }
-    //     </span>
-    //     <span className="client-name" style={styles.clientName}>
-    //       {
-    //         isEditing ? 
-    //         <select style={styles.select} name='movil' value={this?.state?.selectedMovil?.van ?? SIN_MOVIL} onChange={this.handleEditMovil}>
-    //           <option value={SIN_MOVIL}>{SIN_MOVIL}</option>
-    //           {movilOptions}
-    //         </select> :
-    //         <span>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</span>
-    //       }
-    //     </span>
-    //     <span className="client-name" style={styles.clientName}>
-    //       {
-    //         isEditing && currentOpenOrder === phoneNumber ?
-    //         <DatePicker
-    //           style={{display: 'block' }}
-    //           dateFormat="dd/MM/yy"
-    //           id="datepicker"
-    //           selected={this.state.deliveryDate}
-    //           onChange={(date) => this.handleEditDate(date)}
-    //           locale={es}
-    //         />
-    //         :
-    //         <div>{Utils.formatDate(this.state.deliveryDate)}</div>
-    //       }
-    //     </span>
-    //     {
-    //       isEditing && currentOpenOrder === phoneNumber ?
-    //       <button onClick={this.handleEditMode} style={styles.button}>
-    //         <i className={`${isEditing && currentOpenOrder === phoneNumber ? "orange-text" : "grey-text"} material-icons`}>{isEditing && currentOpenOrder === phoneNumber ? "save" : "edit"}</i>
-    //       </button> :
-    //       <div></div>
-    //     }
-    //     <a><i className="material-icons" style={styles.arrowDown}>keyboard_arrow_down</i></a>
-    //   </div>
-    //   <div className="collapsible-body">
-    //     {orderList}
-    //   </div>
-    // </li>
     );
   }
 }
