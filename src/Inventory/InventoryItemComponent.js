@@ -28,10 +28,10 @@ class InventoryItemComponent extends React.Component {
 
         return (
         <div className="row" style={trStyle}>
-            <div className="col-5">
+            <div className={isInDailyInventory ? "col-5" : "col-6"}>
                 <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'left', marginTop: '12px'}}>{Utils.getCutName(item.name)}</p>
             </div>
-            <div className={isInDailyInventory ? "col-1" : "col-2"}>
+            {/* <div className={isInDailyInventory ? "col-1" : "col-2"}>
                 {
                     reccomendations?.length > 0 ?
                     <div></div>
@@ -39,9 +39,9 @@ class InventoryItemComponent extends React.Component {
                     :
                     <div></div>
                 }
-            </div>
-            <div className="col-1">
-                <span className="client-name red-text">{item.imageLink == " " ? "Sin imagen" : ""}</span>
+            </div> */}
+            <div className="col-2">
+                <p style={{...CssProperties.BodyTextStyle, color: ColorHex.RedFabri, textAlign: 'center'}}>{item.imageLink == " " ? "Sin Imagen" : ""}</p>
             </div>
             <div className="col-2">
                 <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginTop: '12px'}}>{this.formatPrice(item.price)}</p>
@@ -52,13 +52,13 @@ class InventoryItemComponent extends React.Component {
             {
                 isInDailyInventory ? 
                 <div className="col-1">
-                    <CustomButton iconSize="25px" className="red" color={`${isPromoItem == true ? ColorHex.First : ColorHex.First}`} width='40px' height="40px" icon="loyalty" onClickCallback={() => handleSelectPromoItemCallback(item, isPromoItem)}/>
+                    <CustomButton iconSize="25px" className="red" classStyle={isPromoItem == true ? `btnBlue-clicked` : 'btnBlue'} width='40px' height="40px" icon="loyalty" onClickCallback={() => handleSelectPromoItemCallback(item, isPromoItem)}/>
                 </div>
                 :
                 <></>
             }
             <div className="col-1">
-                <CustomButton iconSize="25px" width='40px' height="40px" icon={isInDailyInventory == true ? "remove" : "add"} onClickCallback={() => handleClickCallback(item, isInDailyInventory)}/>
+                <CustomButton iconSize="25px" width='40px' classStyle={isInDailyInventory == true ? "btnRed" : "btnGreen"} height="40px" icon={isInDailyInventory == true ? "remove" : "add"} onClickCallback={() => handleClickCallback(item, isInDailyInventory)}/>
             </div>
         </div>
         );

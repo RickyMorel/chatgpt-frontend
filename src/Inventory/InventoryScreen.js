@@ -8,6 +8,7 @@ import InventoryItemComponent from './InventoryItemComponent';
 import CssProperties from '../CssProperties';
 import CustomSelect from '../Searchbar/CustomSelect';
 import CustomButton from '../Searchbar/CustomButton';
+import CustomToggle from '../Searchbar/CustomToggle';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -149,8 +150,10 @@ class InventoryScreen extends Component {
         }
     }
 
-    handleDayTabClick = async (selectedDayNumber) => {
+    handleDayTabClick = async (selectedItem) => {
+        const selectedDayNumber = selectedItem.value
         const allInventories = this.state.dayInventories
+        console.log("allInventories", allInventories, "selectedDayNumber", selectedDayNumber)
         let selectedInventoryItems = {day: allInventories[selectedDayNumber].day , items: this.state.products.filter(x => allInventories[selectedDayNumber].itemIds.includes(x.code))}
 
         this.setState({
@@ -286,9 +289,7 @@ class InventoryScreen extends Component {
     render() {
         const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory, selectedDayNumber} = this.state
 
-        console.log("filteredProducts", filteredProducts)
         const orderedFilteredProducts = filteredProducts?.sort((a, b) => this.sortByName(a, b, "name"))
-        console.log("orderedFilteredProducts", orderedFilteredProducts)
         const allProductsList = orderedFilteredProducts?.map(x => {
             if(selectedDayInventory?.items?.find(y => y.code == x.code)) {return null;}
 
@@ -365,6 +366,7 @@ class InventoryScreen extends Component {
 
         return (
             <div>
+                {editItemModal}
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{`Inventario de ${dayDropdownOptions.find(x => x.value == selectedDayNumber).label}`}</p>
 
                 <div style={{display: 'flex'}}>
@@ -379,7 +381,13 @@ class InventoryScreen extends Component {
                         />
                     </div>
                     <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Crear un item" width="175px" height="45px" icon="add" onClickCallback={this.handleOpenCreateItem}/></div>
-                    <div className="col-10"></div>
+                    <div className="col-6"></div>
+                    <div className="col-3" style={{marginLeft: '50px'}}>
+                        <CustomToggle text="Auto Promo" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange}/>
+                    {/* <div className="switch" style={{ paddingRight: '20px' }}>
+                        <label><input type="checkbox" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange} /><span className="lever"></span>Auto Promo</label>
+                    </div> */}
+                    </div>
                 </div>
 
                 <div className='row' style={{paddingTop: '25px'}}>
@@ -393,7 +401,7 @@ class InventoryScreen extends Component {
                         </div>
                     </div>
                         <div className='col-6'>
-                            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>Articulos Cargados</p>
+                            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{`Items en el Inventario de ${dayDropdownOptions.find(x => x.value == selectedDayNumber).label}`}</p>
                             <div style={inventoryPanelStyling}>
                                 <SearchBar width='100%' height='45px' itemList={selectedDayInventory?.items} searchText="Buscar Productos..." OnSearchCallback={(value) => this.handleSearch(value, true)}/>
                                 <div style={scrollStyle}>

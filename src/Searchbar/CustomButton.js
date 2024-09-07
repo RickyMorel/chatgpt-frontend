@@ -10,7 +10,7 @@ class CustomButton extends Component {
     }
 
     render() {
-        const { text, icon, onClickCallback, link, width, height, classStyle, color, iconSize } = this.props;
+        const { text, icon, onClickCallback, link, width, height, classStyle, iconSize } = this.props;
 
         const styling = {
             width: width ?? 'auto', // Adjust width based on content
@@ -25,7 +25,7 @@ class CustomButton extends Component {
             paddingTop: '10px',
             paddingBottom: '10px',
             whiteSpace: 'nowrap',
-            color: color ??'inherit',
+            color: 'inherit',
             textAlign: 'center',
             textDecoration: 'none', 
             ...CssProperties.BodyTextStyle,

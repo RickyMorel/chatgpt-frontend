@@ -21,6 +21,7 @@ export class ColorHex {
     static GreyFabri = "#A8A8A8"
     static GreenFabri = "#00CC14"
     static OrangeFabri = "#F7BF44"
+    static BlueFabri = "#4680FF"
     static RedFabri = "#F74444"
     static TextBody = "#606060"
     static BorderColor = "#B3B3B3"
