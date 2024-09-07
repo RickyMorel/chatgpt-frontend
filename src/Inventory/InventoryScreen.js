@@ -380,13 +380,13 @@ class InventoryScreen extends Component {
                             isSearchable={false}
                         />
                     </div>
-                    <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Crear un item" width="175px" height="45px" icon="add" onClickCallback={this.handleOpenCreateItem}/></div>
+                    <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
+                        <CustomButton text="Crear Pedido"  width="175px" height="45px" icon="add" link="createItem"/>
+                        {/* <CustomButton text="Crear un item" width="175px" height="45px" icon="add" onClickCallback={this.handleOpenCreateItem}/> */}
+                    </div>
                     <div className="col-6"></div>
                     <div className="col-3" style={{marginLeft: '50px'}}>
                         <CustomToggle text="Auto Promo" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange}/>
-                    {/* <div className="switch" style={{ paddingRight: '20px' }}>
-                        <label><input type="checkbox" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange} /><span className="lever"></span>Auto Promo</label>
-                    </div> */}
                     </div>
                 </div>
 
