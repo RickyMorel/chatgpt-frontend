@@ -84,9 +84,20 @@ class App extends Component {
             <Route exact path="/createOrder">
               <div style={{margin: '15px'}}><AddOrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
-            <Route exact path="/createItem">
+            <Route exact path="/createItem" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <InventoryEditItemScreen 
+                    {...props}  
+                    showPopup={this.props.showPopup} 
+                    setIsLoading={this.setIsLoading} 
+                  />
+                </div>
+              )} 
+            />
+            {/* <Route exact path="/createItem">
               <div style={{margin: '15px'}}><InventoryEditItemScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
-            </Route>
+            </Route> */}
           </Switch>
         </div>
       </div>

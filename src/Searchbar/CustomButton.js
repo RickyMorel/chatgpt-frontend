@@ -10,10 +10,10 @@ class CustomButton extends Component {
     }
 
     render() {
-        const { text, icon, onClickCallback, link, width, height, classStyle, iconSize } = this.props;
+        const { text, icon, onClickCallback, link, width, height, classStyle, iconSize, linkData } = this.props;
 
         const styling = {
-            width: width ?? 'auto', // Adjust width based on content
+            width: width ?? 'auto',
             height: height ?? '45px',
             borderRadius: '10px',
             boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
@@ -46,7 +46,7 @@ class CustomButton extends Component {
 
         return (
             link ? (
-                <Link to={link} style={styling} className={classStyle ?? 'nav-item'}>
+                <Link to={{pathname: `/${link}`, state: {linkData} }} style={styling} className={classStyle ?? 'nav-item'}>
                     {iconHtml}
                 </Link>
             ) : (

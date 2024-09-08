@@ -10,7 +10,7 @@ class CustomSelect extends Component {
     }
 
     render() {
-        const { options, onChange, value, isSearchable, placeHolderText, width, height } = this.props;
+        const { options, onChange, value, isSearchable, placeHolderText, width, height, isMulti = false } = this.props;
 
         const customStyles = {
             control: (provided) => ({
@@ -79,6 +79,7 @@ class CustomSelect extends Component {
                 value={value}
                 isSearchable={isSearchable}
                 styles={customStyles}
+                isMulti={isMulti}
             />
         );
     }

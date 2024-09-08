@@ -14,8 +14,8 @@ class CustomInput extends Component {
         this.datePickerRef = React.createRef();
     }
 
-    componentDidMount() {
-        if(!this.props.value) { return;}
+    componentDidUpdate(prevProps) {
+        if(this.props?.value == prevProps?.value) {return;}
 
         this.setState({
             input: this.props.value
@@ -24,7 +24,6 @@ class CustomInput extends Component {
 
     handleChange = (event, onChange) => {
         const input = event.target.value;
-        console.log("input", input)
         this.setState({ input }, () => {
             onChange(input)
         });
@@ -32,6 +31,8 @@ class CustomInput extends Component {
 
     render() {
         const { placeHolderText, dataType, onChange, width, height } = this.props;
+
+        console.log("this.props.value", this.props.value)
 
         const styling = {
             backgroundColor: ColorHex.White,

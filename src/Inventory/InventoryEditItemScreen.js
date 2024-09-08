@@ -4,16 +4,17 @@ import "react-datepicker/dist/react-datepicker.css";
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
 import CustomButton from '../Searchbar/CustomButton';
-import CustomDatePicker from '../Searchbar/CustomDatePicker';
 import CustomInput from '../Searchbar/CustomInput';
-import CustomScroll from '../Searchbar/CustomScroll';
 import CustomSelect from '../Searchbar/CustomSelect';
+import RemovableItem from '../Searchbar/RemovableItem';
 
 class InventoryEditItemScreen extends Component {
     constructor(props) {
         super(props);
     
         this.state = {
+            products: [],
+            allTags: [],
             itemToEdit: {
                 name: '',
                 code: '',
@@ -22,8 +23,21 @@ class InventoryEditItemScreen extends Component {
                 price: '',
                 imageLink: ''
             },
-            newTagInput: ''
+            newTagInput: '',
+            isCreateItem: true
         };
+    }
+
+    componentDidMount() {
+        const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
+
+        console.log("itemData", itemData)
+
+        this.setState({
+            itemToEdit: itemData ? {...itemData} : initialItemToEditState,
+            isCreateItem: itemData == undefined
+        })
+        this.fetchProductData()
     }
 
     componentDidUpdate = (prevProps) => {
@@ -35,9 +49,36 @@ class InventoryEditItemScreen extends Component {
         })
     }
 
+    fetchProductData = async () => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/allItems`);
+
+            this.getAllTags(response.data)
+
+            this.setState({
+                products: response.data,
+            });
+        } catch (error) {}
+    };
+
+    getAllTags = (products) => {
+        let allTags = this.state.allTags
+
+        products?.forEach(item => {
+            item.tags.forEach(tag => {
+                if(allTags.includes(tag) == false) { allTags.push(tag) }
+            });
+        });
+
+        allTags = allTags?.sort()
+
+        this.setState({
+            allTags: allTags
+        })
+    }
+
     handleAddNewTag = () => {
         const newTag = this.state.newTagInput
-        this.props.addNewTagCallback(newTag)
 
         const newTagsArray = [...this.state.itemToEdit.tags, newTag]
 
@@ -46,16 +87,15 @@ class InventoryEditItemScreen extends Component {
                 ...this.state.itemToEdit,
                 tags: newTagsArray
             },
-            newTagInput: "",
+            // newTagInput: "",
         })
     }
 
-     handleSave = async () => {
+    handleSave = async () => {
         const itemToEdit = this.state.itemToEdit
-        this.props.closeCallback()
 
         try {
-            if(this.props.isCreateItem) {
+            if(this.state.isCreateItem) {
                 let newItem = {...itemToEdit}
                 newItem.code = itemToEdit.name
                 newItem.amount = 20
@@ -69,8 +109,7 @@ class InventoryEditItemScreen extends Component {
             } else {
                 const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/inventory/updateItem`, itemToEdit);
             }
-            this.props.updateProductsCallback(itemToEdit)
-            return null
+            this.props.history.goBack()
           } catch (error) {
             console.log("ERROR", error)
             this.props.showPopup(new Error("Ya existe un item con este nombre!"));
@@ -78,7 +117,6 @@ class InventoryEditItemScreen extends Component {
     }
 
     handleStringChange = (name, value) => {
-
         if(name == "newTagInput") {
             this.setState({
                 newTagInput: value
@@ -95,8 +133,9 @@ class InventoryEditItemScreen extends Component {
         })
     }
 
-    handleTagChange = (e) => {
-        const selectedOptions = Array.isArray(e.target.value) ? e.target.value : [e.target.value];
+    handleTagChange = (options) => {
+        const selectedOptions = options.map(x => x.value)
+
         this.setState(prevState => ({
             itemToEdit: {
                 ...prevState.itemToEdit,
@@ -105,69 +144,162 @@ class InventoryEditItemScreen extends Component {
         }));
     }
 
+    handleRemoveTag = (tagToRemove) => {
+        const selectedOptions = this.state.itemToEdit.tags.filter(x => x != tagToRemove)
+
+        this.setState(prevState => ({
+            itemToEdit: {
+                ...prevState.itemToEdit,
+                tags: selectedOptions
+            }
+        }));
+    }
+
+    formInput = (title, placeholder, dataName, dataType = 'text') => (
+        <>
+            <p style={headersStyle}>{title}</p>
+            <CustomInput
+                width='800px'
+                height='75px'
+                placeHolderText={placeholder}
+                dataType={dataType}
+                onChange={(value) => this.handleStringChange(dataName, value)}
+                value={this.state.itemToEdit[dataName]}
+            />
+        </>
+    )
+
     render() {
+        const allTagOptions = this.state.allTags.map(x => ({label: x, value: x}))
+        const itemTagsHtml = this.state?.itemToEdit?.tags?.map(x => (
+            <RemovableItem itemName={x} deleteCallback={this.handleRemoveTag} width='594px' height='75px'/>
+        ))
+
         return (
             <div>
-                <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Crear Item</p>
+                <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{this.state.isCreateItem ? 'Crear Item' : 'Editar Item'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text="Crear Item" classStyle="btnGreen" width="182px" height="45px" icon="save" onClickCallback={this.handleSave}/></div>
-                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text="Cancelar Creacion" classStyle="btnRed" icon="cancel" link="inventory"/></div>
+                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Crear Item' : 'Editar Item'} classStyle="btnGreen" width="182px" height="45px" icon="save" onClickCallback={this.handleSave}/></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon="cancel" link="inventory"/></div>
                     <div className="col-10"></div>
                 </div>
                 <div className="row">
                     <div className="col-6">
-                        <p style={headersStyle}>Nombre del item *</p>
-                        <CustomInput
-                            width='800px'
-                            height='75px'
-                            placeHolderText="Ingresar nombre de item......"
-                            dataType="text"
-                            onChange={(value) => this.handleStringChange("name", value)}
-                        />
+                        {this.formInput("Nombre del item *", "Ingresar nombre de item......", "name")}
+                        {this.formInput("Descripcion del item *", "Ingresar descripcion de item......", "description")}
+                        {this.formInput("Precio del item *", "Ingresar precio de item......", "price", "number")}
+                        {this.formInput("URL De Imagen", "Ingresar URL del imagen......", "imageLink")}
+                        <div style={{...blockStyle, height: '305px'}}>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'center', 
+                                alignItems: 'center', 
+                                ...scrollStyle
+                            }}>
+                                <img style={{ maxWidth: '100%', maxHeight: '100%' }} src={this.state?.itemToEdit?.imageLink} alt="Example Image" />
+                            </div>
+                        </div>
                     </div>
                     <div className="col-6">
                         <p style={headersStyle}>Agregar Nuevas Etiquetas</p>
-                        <CustomInput
+                        <div style={{display: 'flex', paddingBottom: '0px'}}>
+                            <div className="flex-grow-2" style={{paddingRight: '25px'}}>
+                                <CustomInput
+                                    width='700px'
+                                    height='75px'
+                                    placeHolderText="Ingresar una nueva etiqueta para agregar......"
+                                    dataType="text"
+                                    onChange={(value) => this.handleStringChange("newTagInput", value)}
+                                />
+                            </div>
+                            <div className="flex-grow-1">
+                                <button onClick={this.handleAddNewTag} style={addNewTagButtonStyle}>
+                                    <i className='material-icons' style={{ fontSize: '40px'}}>add</i>
+                                </button>
+                            </div>
+                        </div>
+                        <p style={headersStyle}>Etiquetas del item</p>
+                        <CustomSelect
                             width='800px'
-                            height='75px'
-                            placeHolderText="Ingresar una nueva etiqueta para agregar......"
-                            dataType="text"
-                            onChange={(value) => this.handleStringChange("newTagInput", value)}
+                            placeHolderText={"Ingresar las etiquetas del item......"}
+                            options={allTagOptions}
+                            onChange={this.handleTagChange}
+                            value={this.state.itemToEdit.tags.map(x => ({value: x, label: x}))}
+                            isSearchable={true}
+                            isMulti={true}
                         />
+                        <div style={{...blockStyle, height: '65%', marginTop: '40px'}}>
+                            <div style={{...scrollStyle, overflowY: 'scroll', display: itemTagsHtml.length > 0 ? '' : 'flex' }}>
+                                {
+                                    itemTagsHtml.length > 0 ?
+                                    itemTagsHtml
+                                    :
+                                    <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody}}>No tiene etiquetas</p>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-6">
-                        <p style={headersStyle}>Descripcion del item *</p>     
-                        <CustomInput
-                            width='800px'
-                            height='75px'
-                            placeHolderText="Ingresar descripcion del item......"
-                            dataType="text"
-                            onChange={(value) => this.handleStringChange("description", value)}
-                        />
-                    </div>
-                    <div className="col-6">
-                        {/* <p style={headersStyle}>Puntos</p>
-                        <CustomInput
-                            placeHolderText="Ingresar puntos de descuento usados......"
-                            dataType="number"
-                            onChange={this.handlePointsChange}
-                        /> */}
-                    </div>
-                </div>
-    
-                {/* <p style={headersStyle}>Pedido del Cliente *</p>
-                <CustomScroll panelIncluded={true} blocks={itemsHtml}/> */}
             </div>
         )
     }
 }
 
+const initialItemToEditState = {
+    name: '',
+    code: '',
+    description: '',
+    tags: [],
+    price: '',
+    imageLink: ''
+}
+
+const scrollStyle = {
+    borderRadius: '10px',
+    backgroundColor: ColorHex.Background,
+    padding: '10px',
+    boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+
+const blockStyle = {
+    width: '800px',
+    marginTop: '10px',
+    marginTop: '25px',
+    padding: '25px',
+    boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+    border: `1px solid ${ColorHex.BorderColor}`,
+    borderRadius: '10px',
+    backgroundColor: ColorHex.White
+}
+
 const headersStyle = {
     ...CssProperties.SmallHeaderTextStyle,
     color: ColorHex.TextBody, 
-    marginTop: '25px'
+    marginTop: '10px',
+    marginBottom: '0px'
+}
+
+const addNewTagButtonStyle = {
+    backgroundColor: ColorHex.White,
+    fontColor: ColorHex.TextBody,
+    width: '75px',
+    height: '75px',
+    borderRadius: '10px',
+    boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+    border: `1px solid ${ColorHex.BorderColor}`,
+    position: 'relative',
+    display: 'flex',   
+    alignItems: 'center', 
+    justifyContent: 'space-between', 
+    paddingLeft: '15px',
+    paddingRight: '15px',
+    color: ColorHex.TextBody,
+    textAlign: 'center',
+    outline: 'none',
 }
 
 export default InventoryEditItemScreen;

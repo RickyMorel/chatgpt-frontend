@@ -28,7 +28,7 @@ class InventoryScreen extends Component {
           itemToEdit: null,
           addedTags: [],
           productReccomendations: [],
-          autoPromo: true,
+          autoPromo: false,
           selectedDayNumber: 0
         };
     }
@@ -56,6 +56,7 @@ class InventoryScreen extends Component {
     fetchProductData = async () => {
         try {
             const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/allItems`);
+            console.log("fetchProductData", response.data)
             this.setState({
             products: response.data,
             filteredProducts: response.data,
@@ -288,6 +289,8 @@ class InventoryScreen extends Component {
 
     render() {
         const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory, selectedDayNumber} = this.state
+
+        console.log("selectedDayInventory", selectedDayInventory)
 
         const orderedFilteredProducts = filteredProducts?.sort((a, b) => this.sortByName(a, b, "name"))
         const allProductsList = orderedFilteredProducts?.map(x => {

@@ -31,15 +31,6 @@ class InventoryItemComponent extends React.Component {
             <div className={isInDailyInventory ? "col-5" : "col-6"}>
                 <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'left', marginTop: '12px'}}>{Utils.getCutName(item.name)}</p>
             </div>
-            {/* <div className={isInDailyInventory ? "col-1" : "col-2"}>
-                {
-                    reccomendations?.length > 0 ?
-                    <div></div>
-                    // <span className="client-name orange-text">{`Rec: ${reccomendations.join(", ")}`}</span>
-                    :
-                    <div></div>
-                }
-            </div> */}
             <div className="col-2">
                 <p style={{...CssProperties.BodyTextStyle, color: ColorHex.RedFabri, textAlign: 'center'}}>{item.imageLink == " " ? "Sin Imagen" : ""}</p>
             </div>
@@ -47,7 +38,7 @@ class InventoryItemComponent extends React.Component {
                 <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginTop: '12px'}}>{this.formatPrice(item.price)}</p>
             </div>
             <div className="col-1">
-                <CustomButton iconSize="25px" width='40px' height="40px" icon="edit" onClickCallback={() => handleEditItemCallback(item)}/>
+                <CustomButton iconSize="25px" width='40px' height="40px" icon="edit" link="createItem" linkData={item}/>
             </div> 
             {
                 isInDailyInventory ? 
