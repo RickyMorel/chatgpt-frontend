@@ -358,13 +358,13 @@ class InventoryScreen extends Component {
         };
 
         const dayDropdownOptions = [
-            {value: 0, label: 'Lunes'},
-            {value: 1, label: 'Martes'},
-            {value: 2, label: 'Miercoles'},
-            {value: 3, label: 'Jueves'},
-            {value: 4, label: 'Viernes'},
-            {value: 5, label: 'Sabado'},
-            {value: 6, label: 'Domingo'},
+            {value: 0, label: 0 == this.state.nextDayIndex ? `Lunes (Pendiente)` : 'Lunes'},
+            {value: 1, label: 1 == this.state.nextDayIndex ? `Martes (Pendiente)` : 'Martes'},
+            {value: 2, label: 2 == this.state.nextDayIndex ? `Miercoles (Pendiente)` : 'Miercoles'},
+            {value: 3, label: 3 == this.state.nextDayIndex ? `Jueves (Pendiente)` : 'Jueves'},
+            {value: 4, label: 4 == this.state.nextDayIndex ? `Viernes (Pendiente)` : 'Viernes'},
+            {value: 5, label: 5 == this.state.nextDayIndex ? `Sabado (Pendiente)` : 'Sabado'},
+            {value: 6, label: 6 == this.state.nextDayIndex ? `Domingo (Pendiente)` : 'Domingo'},
         ]
 
         return (
