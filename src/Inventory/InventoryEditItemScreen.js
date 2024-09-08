@@ -24,7 +24,8 @@ class InventoryEditItemScreen extends Component {
                 imageLink: ''
             },
             newTagInput: '',
-            isCreateItem: true
+            isCreateItem: true,
+            fieldsWithErrors: []
         };
     }
 
@@ -100,10 +101,18 @@ class InventoryEditItemScreen extends Component {
                 newItem.code = itemToEdit.name
                 newItem.amount = 20
 
-                if(!newItem.name || newItem.name.length < 1) { this.props.showPopup(new Error("Falta ponerle un nombre al item!")); return;}
-                if(!newItem.imageLink || newItem.imageLink.length < 1) { this.props.showPopup(new Error("Falta ponerle una imagen al item!")); return;}
-                if(!newItem.description || newItem.description.length < 1) { this.props.showPopup(new Error("Falta ponerle una descripcion al item!")); return;}
-                if(!newItem.tags || newItem.tags.length < 1) { this.props.showPopup(new Error("Falta ponerle etiquetas al item!")); return;}
+                let missingFields = []
+                if(!newItem.name || newItem.name.length < 1) { missingFields.push("name");}
+                if(!newItem.imageLink || newItem.imageLink.length < 1) { missingFields.push("imageLink");}
+                if(!newItem.description || newItem.description.length < 1) { missingFields.push("description");}
+                if(!newItem.price || newItem.price.length < 1) { missingFields.push("price");}
+                // if(!newItem.tags || newItem.tags.length < 1) { missingFields.push("tags");}
+
+                this.setState({
+                    fieldsWithErrors: missingFields
+                })
+
+                if(missingFields.length > 0) {return;}
                 
                 const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/inventory/addItems`, [newItem]);
             } else {
@@ -165,6 +174,7 @@ class InventoryEditItemScreen extends Component {
                 dataType={dataType}
                 onChange={(value) => this.handleStringChange(dataName, value)}
                 value={this.state.itemToEdit[dataName]}
+                hasError={this.state.fieldsWithErrors.includes(dataName)}
             />
         </>
     )
@@ -183,12 +193,23 @@ class InventoryEditItemScreen extends Component {
                     <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon="cancel" link="inventory"/></div>
                     <div className="col-10"></div>
                 </div>
+                <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, marginTop: '10px', marginBottom: '-5px'}}>
+                    {
+                        this.state.fieldsWithErrors.map(x => {
+                            if(x == 'name') {return "*Falta nombre.\n"} 
+                            else if(x == 'description') {return "*Falta descripcion.\n"} 
+                            else if(x == 'imageLink') {return "*Falta imagen.\n"} 
+                            else if(x == 'tags') {return "*Falta etiquetas.\n"} 
+                            else if(x == 'price') {return "*Falta precio.\n"} 
+                        })
+                    }
+                </p>
                 <div className="row">
                     <div className="col-6">
                         {this.formInput("Nombre del item *", "Ingresar nombre de item......", "name")}
                         {this.formInput("Descripcion del item *", "Ingresar descripcion de item......", "description")}
                         {this.formInput("Precio del item *", "Ingresar precio de item......", "price", "number")}
-                        {this.formInput("URL De Imagen", "Ingresar URL del imagen......", "imageLink")}
+                        {this.formInput("URL De Imagen *", "Ingresar URL del imagen......", "imageLink")}
                         <div style={{...blockStyle, height: '305px'}}>
                             <div style={{
                                 display: 'flex',
@@ -196,7 +217,12 @@ class InventoryEditItemScreen extends Component {
                                 alignItems: 'center', 
                                 ...scrollStyle
                             }}>
-                                <img style={{ maxWidth: '100%', maxHeight: '100%' }} src={this.state?.itemToEdit?.imageLink} alt="Example Image" />
+                                {
+                                    this.state?.itemToEdit?.imageLink?.length > 0 ?
+                                    <img style={{ maxWidth: '100%', maxHeight: '100%' }} src={this.state?.itemToEdit?.imageLink} alt="Example Image" />
+                                    :
+                                    <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody}}>Imagen No Encontrado</p>
+                                }
                             </div>
                         </div>
                     </div>
@@ -234,7 +260,7 @@ class InventoryEditItemScreen extends Component {
                                     itemTagsHtml.length > 0 ?
                                     itemTagsHtml
                                     :
-                                    <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody}}>No tiene etiquetas</p>
+                                    <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody}}>No Tiene Etiquetas</p>
                                 }
                             </div>
                         </div>
