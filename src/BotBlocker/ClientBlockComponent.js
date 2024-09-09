@@ -4,6 +4,8 @@ import { Color, ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
 import Utils from '../Utils';
 import CustomButton from '../Searchbar/CustomButton';
+import { faPenToSquare, faEnvelopeCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faFloppyDisk, faEnvelope} from '@fortawesome/free-regular-svg-icons';
 
 class ClientBlockComponent extends React.Component {
 
@@ -131,10 +133,10 @@ class ClientBlockComponent extends React.Component {
         <div className='col-1'>
           <div className="row">
             <div className="col-6">
-              <CustomButton iconSize="25px" width='50px' classStyle={this.state.isEditing == true ? "" : "btnGreen"} height="50px" icon={this.state.isEditing? "floppy-disk-o" : "pen-to-square"} onClickCallback={this.handleEditMode}/>
+              <CustomButton iconSize="25px" width='50px' classStyle={this.state.isEditing == true ? "" : "btnGreen"} height="50px" icon={this.state.isEditing? faFloppyDisk : faPenToSquare} onClickCallback={this.handleEditMode}/>
             </div>
             <div className="col-6">
-              <CustomButton iconSize="25px" width='50px' classStyle={chatIsBlocked == true || isGloballyBlocked == true ? "btnGreen" : "btnRed"} height="50px" icon={chatIsBlocked == true || isGloballyBlocked == true ? "envelope--" : "envelope-slash--"} onClickCallback={() => this.handleBlock(phoneNumber, clientRegisterBlockedStateFunc)}/>
+              <CustomButton iconSize="25px" width='50px' classStyle={chatIsBlocked == true || isGloballyBlocked == true ? "btnGreen" : "btnRed"} height="50px" icon={chatIsBlocked == true || isGloballyBlocked == true ? faEnvelope : faEnvelopeCircleCheck} onClickCallback={() => this.handleBlock(phoneNumber, clientRegisterBlockedStateFunc)}/>
             </div>
           </div>
         </div>
@@ -203,7 +205,7 @@ const trStyle = {
   backgroundColor: ColorHex.White,
   boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
   border: `1px solid ${ColorHex.BorderColor}`,
-  height: '50px',
+  height: '70px',
   width: '100%',
   alignItems: 'center',
   marginBottom: '12px',

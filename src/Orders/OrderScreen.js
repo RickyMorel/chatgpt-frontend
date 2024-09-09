@@ -10,6 +10,8 @@ import Dropdown from '../Searchbar/Dropdown';
 import CustomButton from '../Searchbar/CustomButton';
 import './ScrollView.css'
 import StatCard from '../Searchbar/StatCard';
+import { faPenToSquare, faArrowRotateRight} from '@fortawesome/free-solid-svg-icons';
+import { faFloppyDisk, faRectangleXmark, faSquarePlus} from '@fortawesome/free-regular-svg-icons';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -327,15 +329,15 @@ class OrderScreen extends Component {
         {
           this.state.isEditing ?
           <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-            <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text="Guardar" classStyle="btnGreen" width="182px" height="45px" icon="save" onClickCallback={this.handleSave}/></div>
-            <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text="Cancelare" classStyle="btnRed" icon="cancel" link="orders"/></div>
+            <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text="Guardar" classStyle="btnGreen" width="182px" height="45px" icon={faFloppyDisk} onClickCallback={this.handleSave}/></div>
+            <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text="Cancelare" classStyle="btnRed" icon={faRectangleXmark} link="orders"/></div>
             <div className="col-10"></div>
           </div>
           :
           <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
-            <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon="autorenew" onClickCallback={this.handleCheckOrders}/></div>
-            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Editar Pedidos" icon="edit" onClickCallback={this.handleEditMode}/></div>
-            <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon="add" link="createOrder"/></div>
+            <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon={faArrowRotateRight} onClickCallback={this.handleCheckOrders}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Editar Pedidos" icon={faPenToSquare} onClickCallback={this.handleEditMode}/></div>
+            <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon={faSquarePlus} link="createOrder"/></div>
             <div class="flex-grow-1"style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
             <div className="col-8"></div>
           </div>

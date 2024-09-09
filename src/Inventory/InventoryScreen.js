@@ -9,6 +9,7 @@ import CssProperties from '../CssProperties';
 import CustomSelect from '../Searchbar/CustomSelect';
 import CustomButton from '../Searchbar/CustomButton';
 import CustomToggle from '../Searchbar/CustomToggle';
+import { faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -384,7 +385,7 @@ class InventoryScreen extends Component {
                         />
                     </div>
                     <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
-                        <CustomButton text="Crear Pedido"  width="175px" height="45px" icon="add" link="createItem"/>
+                        <CustomButton text="Crear Pedido"  width="175px" height="45px" icon={faSquarePlus} link="createItem"/>
                         {/* <CustomButton text="Crear un item" width="175px" height="45px" icon="add" onClickCallback={this.handleOpenCreateItem}/> */}
                     </div>
                     <div className="col-6"></div>

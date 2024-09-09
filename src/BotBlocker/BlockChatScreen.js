@@ -9,6 +9,7 @@ import CustomButton from '../Searchbar/CustomButton';
 import CustomToggle from '../Searchbar/CustomToggle';
 import SearchBar from '../Searchbar/Searchbar';
 import CustomSelect from '../Searchbar/CustomSelect';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 class BlockChatScreen extends Component {
   constructor(props) {
@@ -250,7 +251,7 @@ class BlockChatScreen extends Component {
         </div>
 
         <div style={{display: 'flex', width: '100%', paddingTop: '25px', justifyContent: 'flex-start', alignItems: 'center'}}>
-          <div style={{flexGrow: 0}}><CustomButton text="Enviar Mensajes" icon="paper-plane" onClickCallback={this.handleCheckOrders}/></div>
+          <div style={{flexGrow: 0}}><CustomButton text="Enviar Mensajes" icon={faPaperPlane} onClickCallback={this.handleCheckOrders}/></div>
           <div style={{flexGrow: 0, marginLeft: '45px'}}><CustomToggle text="Bloquear Chat Bot" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/></div>
         </div>
 

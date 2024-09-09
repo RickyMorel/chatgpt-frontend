@@ -3,6 +3,7 @@ import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
 import '../SideNav.css';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class CustomButton extends Component {
     constructor(props) {
@@ -35,14 +36,13 @@ class CustomButton extends Component {
         const iconHtml = text ? 
         (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <img style={{marginRight: '10px', color: 'inherit'}} width={iconSize ?? '25px'} height={iconSize ?? '25px'} src={icon.includes('--') ? `icons/${icon.replaceAll('--', '')}.svg` : `icons/fa-${icon}.svg`}/>
-                {/* <i className='material-icons' style={{ fontSize: iconSize ?? '25px', marginRight: '10px' }}>{icon}</i> */}
+                <FontAwesomeIcon icon={icon} style={{ fontSize: iconSize ?? '25px', marginRight: '10px' }}/>
                 <div>{text}</div>
             </div>
         )
         :
         (
-            <img width={iconSize ?? '40px'} height={iconSize ?? '40px'} src={icon.includes('--') ? `icons/${icon.replaceAll('--', '')}.svg` : `icons/fa-${icon}.svg`}/>
+            <FontAwesomeIcon icon={icon} style={{ fontSize: iconSize ?? '40px' }}/>
         )
 
         return (
