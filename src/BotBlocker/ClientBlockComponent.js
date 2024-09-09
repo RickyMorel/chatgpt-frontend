@@ -1,6 +1,9 @@
 import React from 'react'
 import axios from 'axios';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
+import CssProperties from '../CssProperties';
+import Utils from '../Utils';
+import CustomButton from '../Searchbar/CustomButton';
 
 class ClientBlockComponent extends React.Component {
 
@@ -77,8 +80,9 @@ class ClientBlockComponent extends React.Component {
     }
   };
 
-  handleBlock = async (phoneNumber, newBlockedState, clientRegisterBlockedStateFunc) => {
+  handleBlock = async (phoneNumber, clientRegisterBlockedStateFunc) => {
     try {
+      const newBlockedState = !this.state.isBlocked
       const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/blockClientChat`, {phoneNumber: phoneNumber, isBlocked: newBlockedState});
       clientRegisterBlockedStateFunc(phoneNumber, newBlockedState)
       this.setState({
@@ -95,16 +99,16 @@ class ClientBlockComponent extends React.Component {
       clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite, allClientLocations, willMessageTommorrow } = this.props;
 
     return (
-      <div className={willMessageTommorrow ? `row ${Color.Third} list-item z-depth-2 border` : `row list-item z-depth-2 border`}>
-        <div className="col s12 m4">
+      <div className="row" style={trStyle}>
+        <div className='col-3'>
           {
-            this.state.isEditing == true ?
-            <input style={{display: 'block' }} value={this.state.name} onChange={(e) => this.handleNameChange(e.target.value)}/>
-            :
-            <span className="client-name">{this.state.name}</span>
-          }
+             this.state.isEditing == true ?
+             <input style={{display: 'block' }} value={this.state.name} onChange={(e) => this.handleNameChange(e.target.value)}/>
+             :
+              <p style={trTextStyle}>{this.state.name}</p>
+           }
         </div>
-        <div className="col s12 m3">
+        <div className="col-3">
           {
             this.state.isEditing == true ?
             <select style={{display: 'block' }} value={this.state.address} onChange={(e) => this.handleAddressChange(e.target.value)}>
@@ -115,43 +119,103 @@ class ClientBlockComponent extends React.Component {
               }
             </select>
             :
-            <span>{this.state.address}</span>
+            <p style={trTextStyle}>{this.state.address}</p>
           }
         </div>
-        <div className="col s12 m2">
-          <span>+{phoneNumber}</span>
+        <div className="col-3">
+          <p style={trTextStyle}>+{phoneNumber}</p>
         </div>
-        <div className="col s12 m1">
-          {
-            isFavorite == true ? 
-            <a><i style={{ color: "#ff8c00" }} className={`material-icons`}>star</i></a>
-            :
-            <div></div>
-          }
+        <div className="col-2">
+          <p style={{...trTextStyle, color: chatIsBlocked == true || isGloballyBlocked == true ? ColorHex.RedFabri : ColorHex.GreenFabri}}>{chatIsBlocked == true || isGloballyBlocked == true ? 'NO' : 'SI'}</p>
+        </div> 
+        <div className='col-1'>
+          <div className="row">
+            <div className="col-6">
+              <CustomButton iconSize="25px" width='50px' classStyle={this.state.isEditing == true ? "" : "btnGreen"} height="50px" icon={this.state.isEditing? "floppy-disk-o" : "pen-to-square"} onClickCallback={this.handleEditMode}/>
+            </div>
+            <div className="col-6">
+              <CustomButton iconSize="25px" width='50px' classStyle={chatIsBlocked == true || isGloballyBlocked == true ? "btnGreen" : "btnRed"} height="50px" icon={chatIsBlocked == true || isGloballyBlocked == true ? "envelope--" : "envelope-slash--"} onClickCallback={() => this.handleBlock(phoneNumber, clientRegisterBlockedStateFunc)}/>
+            </div>
+          </div>
         </div>
-        <div className="col s12 m1">
-          {
-            <button className={`waves-effect waves-light btn-small ${this.state.isEditing ? Color.Button_1 : Color.Second}`} onClick={this.handleEditMode}>
-              <i className="material-icons">{this.state.isEditing ? "save" : "edit"}</i>
-            </button>
-          }
-        </div>
-        <div className="col s12 m1">
-          {
-            chatIsBlocked == true || isGloballyBlocked == true ?
-            <a className={`waves-effect waves-light btn btn-small right ${Color.First
-            }`} onClick={() => this.handleBlock(phoneNumber, false, clientRegisterBlockedStateFunc)}>
-                <i className="material-icons">remove_circle</i>
-            </a>
-            :
-            <a className={`waves-effect waves-light btn btn-small right ${Color.Fifths}`} onClick={() => this.handleBlock(phoneNumber, true, clientRegisterBlockedStateFunc)}>
-              <i className="material-icons">check</i>
-            </a>
-          }
-        </div>
-      </div>
+    </div>
+      // <div className={willMessageTommorrow ? `row ${Color.Third} list-item z-depth-2 border` : `row list-item z-depth-2 border`}>
+      //   <div className="col s12 m4">
+      //     {
+      //       this.state.isEditing == true ?
+      //       <input style={{display: 'block' }} value={this.state.name} onChange={(e) => this.handleNameChange(e.target.value)}/>
+      //       :
+      //       <span className="client-name">{this.state.name}</span>
+      //     }
+      //   </div>
+      //   <div className="col s12 m3">
+      //     {
+      //       this.state.isEditing == true ?
+      //       <select style={{display: 'block' }} value={this.state.address} onChange={(e) => this.handleAddressChange(e.target.value)}>
+      //         {
+      //           allClientLocations && allClientLocations?.map(x => (
+      //             <option value={x}>{x}</option>
+      //           ))
+      //         }
+      //       </select>
+      //       :
+      //       <span>{this.state.address}</span>
+      //     }
+      //   </div>
+      //   <div className="col s12 m2">
+      //     <span>+{phoneNumber}</span>
+      //   </div>
+      //   <div className="col s12 m1">
+      //     {
+      //       isFavorite == true ? 
+      //       <a><i style={{ color: "#ff8c00" }} className={`material-icons`}>star</i></a>
+      //       :
+      //       <div></div>
+      //     }
+      //   </div>
+      //   <div className="col s12 m1">
+      //     {
+      //       <button className={`waves-effect waves-light btn-small ${this.state.isEditing ? Color.Button_1 : Color.Second}`} onClick={this.handleEditMode}>
+      //         <i className="material-icons">{this.state.isEditing ? "save" : "edit"}</i>
+      //       </button>
+      //     }
+      //   </div>
+      //   <div className="col s12 m1">
+      //     {
+      //       chatIsBlocked == true || isGloballyBlocked == true ?
+      //       <a className={`waves-effect waves-light btn btn-small right ${Color.First
+      //       }`} onClick={() => this.handleBlock(phoneNumber, false, clientRegisterBlockedStateFunc)}>
+      //           <i className="material-icons">remove_circle</i>
+      //       </a>
+      //       :
+      //       <a className={`waves-effect waves-light btn btn-small right ${Color.Fifths}`} onClick={() => this.handleBlock(phoneNumber, true, clientRegisterBlockedStateFunc)}>
+      //         <i className="material-icons">check</i>
+      //       </a>
+      //     }
+      //   </div>
+      // </div>
     );
   }
+}
+
+const trStyle = {
+  borderRadius: '10px',
+  backgroundColor: ColorHex.White,
+  boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+  border: `1px solid ${ColorHex.BorderColor}`,
+  height: '50px',
+  width: '100%',
+  alignItems: 'center',
+  marginBottom: '12px',
+  display: 'flex',
+  marginLeft: '5px',
+}
+
+const trTextStyle = {
+  ...CssProperties.BodyTextStyle,
+  color: ColorHex.TextBody,
+  textAlign: 'center',
+  marginTop: '12px'
 }
 
 export default ClientBlockComponent;

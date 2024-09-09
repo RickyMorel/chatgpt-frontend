@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import ClientBlockComponent from './ClientBlockComponent';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
 import PaginatedScrollView from './PaginatedScrollView';
+import CssProperties from '../CssProperties';
+import StatCard from '../Searchbar/StatCard';
+import CustomButton from '../Searchbar/CustomButton';
+import CustomToggle from '../Searchbar/CustomToggle';
+import SearchBar from '../Searchbar/Searchbar';
+import CustomSelect from '../Searchbar/CustomSelect';
 
 class BlockChatScreen extends Component {
   constructor(props) {
@@ -231,50 +237,111 @@ class BlockChatScreen extends Component {
 
       return <ClientBlockComponent key={x.id} {...x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {orderedLocations}
         showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
-  });
+    });
 
     return (
-      <div className={`card bordered ${Color.Background}`}>
-        <div className="card-content">
-        <div className="row">
-            <div className="col s3">
-              <span className="card-title">Bloquear Chat</span>
+      <div>
+        <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Clientes</p>
+
+        <div style={{display: 'flex'}}>
+            <div class="flex-grow-1"><StatCard title="Clientes a Mensajear" amountColor={ColorHex.TextBody} amountFunction={() => this.state.clientsToMessageTommorrow}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Mensajes Enviados" amountColor={ColorHex.GreenFabri} amountFunction={() => 711}/></div>
+            <div className="col-10"></div>
+        </div>
+
+        <div style={{display: 'flex', width: '100%', paddingTop: '25px', justifyContent: 'flex-start', alignItems: 'center'}}>
+          <div style={{flexGrow: 0}}><CustomButton text="Enviar Mensajes" icon="paper-plane" onClickCallback={this.handleCheckOrders}/></div>
+          <div style={{flexGrow: 0, marginLeft: '45px'}}><CustomToggle text="Bloquear Chat Bot" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/></div>
+        </div>
+
+        <div style={orderPanelStyling}>
+          <div className='row'>
+            <div className="col-10">
+              <SearchBar width='100%' height='45px' itemList={this.state.products} searchText="Buscar Clientes..." OnSearchCallback={(value) => this.handleSearch(value, false)}/>
             </div>
-            <div className="col s3">
-              <span className="">Clientes a mensajear: </span>
-              {
-              <span className="bold green-text">{this.state.clientsToMessageTommorrow}</span>
-              }
-            </div>
-            <div className="col s4">
-              <label className='small-text'>Bloquear Chatbot</label>
-              <div class="switch">
-                <label>
-                  No
-                  <input type="checkbox" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/>
-                  <span class="lever"></span>
-                  Si
-                </label>
-              </div>
-            </div>
-            <div className="col s2">
-              <label className='right'>Resetear</label>
-              <a className={`waves-effect waves-light btn-small right ${Color.Fifths}`} onClick={this.handleClearAllBlocks}>
-                <i className="material-icons">autorenew</i>
-              </a>
+            <div className="col-2">
+              <CustomSelect
+                width='292px'
+                height='45px'
+                // options={dayDropdownOptions}
+                // onChange={(value) => this.handleDayTabClick(value)}
+                // value={dayDropdownOptions.find(x => x.value == selectedDayNumber)}
+                isSearchable={false}
+              />
             </div>
           </div>
-          <input
-            type="text"
-            placeholder="Buscar clientes..."
-            value={this.state.searchInput}
-            onChange={this.handleSearchInputChange}
-          />
-          <PaginatedScrollView clientBlocks={clientBlocks} fetchMoreData={this.fetchClientData} pageSize={this.state.pageSize}/>
+          <div style={{ alignItems: 'center', width: '100%', marginTop: '25px'}}>
+            <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
+              <div style={headerStyle} className='col-3'>Nombre del Cliente</div>
+              <div style={headerStyle} className='col-3'>Ubicacion</div>
+              <div style={headerStyle} className='col-3'>Numero de Telefono</div>
+              <div style={headerStyle} className='col-2'>Cliente a Mensajear</div>
+              <div style={headerStyle} className='col-1'></div>
+            </div>
+
+            <PaginatedScrollView clientBlocks={clientBlocks} fetchMoreData={this.fetchClientData} pageSize={this.state.pageSize}/>
+          </div>
         </div>
       </div>
+      // <div className={`card bordered ${Color.Background}`}>
+      //   <div className="card-content">
+      //   <div className="row">
+      //       <div className="col s3">
+      //         <span className="card-title">Bloquear Chat</span>
+      //       </div>
+      //       <div className="col s3">
+      //         <span className="">Clientes a mensajear: </span>
+      //         {
+      //         <span className="bold green-text">{this.state.clientsToMessageTommorrow}</span>
+      //         }
+      //       </div>
+      //       <div className="col s4">
+      //         <label className='small-text'>Bloquear Chatbot</label>
+      //         <div class="switch">
+      //           <label>
+      //             No
+      //             <input type="checkbox" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/>
+      //             <span class="lever"></span>
+      //             Si
+      //           </label>
+      //         </div>
+      //       </div>
+      //       <div className="col s2">
+      //         <label className='right'>Resetear</label>
+      //         <a className={`waves-effect waves-light btn-small right ${Color.Fifths}`} onClick={this.handleClearAllBlocks}>
+      //           <i className="material-icons">autorenew</i>
+      //         </a>
+      //       </div>
+      //     </div>
+      //     <input
+      //       type="text"
+      //       placeholder="Buscar clientes..."
+      //       value={this.state.searchInput}
+      //       onChange={this.handleSearchInputChange}
+      //     />
+      //     <PaginatedScrollView clientBlocks={clientBlocks} fetchMoreData={this.fetchClientData} pageSize={this.state.pageSize}/>
+      //   </div>
+      // </div>
     );
   }
+}
+
+const headerStyle = {
+  textAlign: 'center',
+  color: ColorHex.TextBody,
+  ...CssProperties.BodyTextStyle
+}
+
+const orderPanelStyling = {
+  width: '100%',
+  height: '70vh',
+  marginTop: '10px',
+  marginTop: '25px',
+  padding: '25px',
+  boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+  border: `1px solid ${ColorHex.BorderColor}`,
+  borderRadius: '10px',
+  backgroundColor: ColorHex.White
 }
 
 export default BlockChatScreen;

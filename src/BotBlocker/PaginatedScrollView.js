@@ -1,4 +1,5 @@
 import React, { Component, createRef } from 'react';
+import { ColorHex } from '../Colors';
 
 class PaginatedScrollView extends Component {
   constructor(props) {
@@ -47,11 +48,32 @@ class PaginatedScrollView extends Component {
 
   render() {
     return (
-      <div ref={this.scrollRef} style={{ overflowY: 'scroll', height: '63vh', overflowX: 'hidden' }}>
-        {this.props.clientBlocks}
+      <div style={scrollPanelStyle}>
+        <div ref={this.scrollRef} style={scrollStyle}>
+          {this.props.clientBlocks}
+        </div>
       </div>
-    );
+    )
   }
+}
+
+const scrollStyle = {
+  overflowY: 'scroll', 
+  height: '100%',
+  width: '100%',
+  alignItems: 'center',
+  overflowX: 'hidden'
+}
+
+const scrollPanelStyle = {
+  borderRadius: '10px',
+  backgroundColor: ColorHex.Background,
+  padding: '10px',
+  boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
+  height: '55vh',
+  width: '100%',
+  alignItems: 'center',
+  paddingTop: '10px'
 }
 
 export default PaginatedScrollView;

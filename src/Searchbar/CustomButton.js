@@ -35,13 +35,14 @@ class CustomButton extends Component {
         const iconHtml = text ? 
         (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <i className='material-icons' style={{ fontSize: iconSize ?? '25px', marginRight: '10px' }}>{icon}</i>
+                <img style={{marginRight: '10px', color: 'inherit'}} width={iconSize ?? '25px'} height={iconSize ?? '25px'} src={icon.includes('--') ? `icons/${icon.replaceAll('--', '')}.svg` : `icons/fa-${icon}.svg`}/>
+                {/* <i className='material-icons' style={{ fontSize: iconSize ?? '25px', marginRight: '10px' }}>{icon}</i> */}
                 <div>{text}</div>
             </div>
         )
         :
         (
-            <i className='material-icons' style={{ fontSize: iconSize ?? '40px' }}>{icon}</i>
+            <img width={iconSize ?? '40px'} height={iconSize ?? '40px'} src={icon.includes('--') ? `icons/${icon.replaceAll('--', '')}.svg` : `icons/fa-${icon}.svg`}/>
         )
 
         return (

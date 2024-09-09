@@ -43,7 +43,7 @@ class CustomToggle extends Component {
                     id="flexSwitchCheckDefault"
                 />
                 <label
-                    style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginLeft: '10px' }}
+                    style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginLeft: '10px'}}
                     className="form-check-label"
                     htmlFor="flexSwitchCheckDefault"
                 >
