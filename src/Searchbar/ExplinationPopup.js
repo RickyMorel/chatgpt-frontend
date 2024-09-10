@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
+import zIndex from '@mui/material/styles/zIndex';
 
 class ExplinationPopup extends Component {
     constructor(props) {
@@ -14,8 +15,7 @@ class ExplinationPopup extends Component {
           width: width ?? '272px',
           height: height ?? '86px',
           borderRadius: '10px',
-          boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
-          // border: `1px solid ${ColorHex.BorderColor}`,
+          boxShadow: '0px 15px 15px rgba(0, 0, 0, 0.5)',
           borderLeft: `1px solid ${ColorHex.BorderColor}`,
           borderRight: `1px solid ${ColorHex.BorderColor}`,
           borderBottom: `1px solid ${ColorHex.BorderColor}`,
@@ -23,7 +23,7 @@ class ExplinationPopup extends Component {
           alignItems: 'center',
           paddingLeft: '15px',
           paddingRight: '15px',
-          paddingTop: '10px',
+          paddingTop: '20px',
           paddingBottom: '10px',
           color: 'inherit',
           textAlign: 'center',
@@ -31,7 +31,8 @@ class ExplinationPopup extends Component {
           ...CssProperties.BodyTextStyle,
           justifyContent: 'center',
           position: 'absolute',
-          backgroundColor: ColorHex.White
+          backgroundColor: ColorHex.White,
+          zIndex: 9999
         };
 
         const tailStyle = {
@@ -45,6 +46,7 @@ class ExplinationPopup extends Component {
           borderLeft: '10px solid transparent',
           borderRight: '10px solid transparent',
           borderBottom: `10px solid ${ColorHex.White}`,  // The color should match the background of the box
+          zIndex: 9999
         };
         
 

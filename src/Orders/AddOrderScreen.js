@@ -8,6 +8,8 @@ import CustomDatePicker from '../Searchbar/CustomDatePicker';
 import CustomInput from '../Searchbar/CustomInput';
 import CustomScroll from '../Searchbar/CustomScroll';
 import CustomSelect from '../Searchbar/CustomSelect';
+import { faFloppyDisk, faRectangleXmark } from '@fortawesome/free-regular-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 class AddOrderScreen extends Component {
     constructor(props) {
@@ -212,7 +214,7 @@ class AddOrderScreen extends Component {
             </div>
         )})
 
-        itemsHtml.push(<CustomButton width='100%' height="75px" icon="add" onClickCallback={() => this.handleAddOrRemoveProduct()}/>)
+        itemsHtml.push(<CustomButton width='100%' height="75px" icon={faPlus} onClickCallback={() => this.handleAddOrRemoveProduct()}/>)
 
         const headersStyle = {
             ...CssProperties.MediumHeadetTextStyle,
@@ -225,8 +227,8 @@ class AddOrderScreen extends Component {
         <div>
            <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Crear Pedido</p>
            <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text="Agregar Pedido" classStyle="btnGreen" width="182px" height="45px" icon="save" onClickCallback={this.handleSave}/></div>
-                <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text="Cancelar Pedido" classStyle="btnRed" icon="cancel" link="orders"/></div>
+                <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text="Agregar Pedido" classStyle="btnGreen" width="182px" height="45px" icon={faFloppyDisk} onClickCallback={this.handleSave}/></div>
+                <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text="Cancelar Pedido" classStyle="btnRed" icon={faRectangleXmark} link="orders"/></div>
                 <div className="col-10"></div>
             </div>
             <div className="row">

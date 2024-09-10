@@ -1,12 +1,13 @@
-import React, { Component, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Sidenav, Nav } from 'rsuite';
-import { Color, ColorHex } from './Colors';
-import { useLocation } from 'react-router-dom'
-import useSound from 'use-sound';
-import firebase from "./firebaseConfig";
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Sidenav } from 'rsuite';
+import { ColorHex } from './Colors';
 import CssProperties from './CssProperties';
+import firebase from "./firebaseConfig";
 import './SideNav.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartShopping, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
@@ -82,12 +83,12 @@ function SideNav(props)  {
   };
 
   const navBarButton = [
-    {icon: "shopping_cart", nameText: "Pedidos", link: "/orders"},
-    {icon: "contacts", nameText: "Clientes", link: "/blockChats"},
-    {icon: "local_mall", nameText: "Inventario", link: "/inventory"},
-    {icon: "call", nameText: "Atención Especial", link: "/problematicChats"},
-    {icon: "access_time", nameText: "Tiempos y Lugares", link: "/dayLocation"},
-    {icon: "cloud", nameText: "Cargar Datos", link: "/"},
+    {icon: faCartShopping, nameText: "Pedidos", link: "/orders"},
+    {icon: faUserGroup, nameText: "Clientes", link: "/blockChats"},
+    {icon: faClipboardList, nameText: "Inventario", link: "/inventory"},
+    {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
+    {icon: faClock, nameText: "Tiempos y Lugares", link: "/dayLocation"},
+    {icon: faCloud, nameText: "Cargar Datos", link: "/"},
   ]
 
   const navBarButtonHtmls = navBarButton.map(x => {
@@ -95,7 +96,7 @@ function SideNav(props)  {
 
     return (
     <Link to={x.link} style={navBarButtonStyle} className='nav-item rounded'>
-      <i className="material-icons me-2">{x.icon}</i>
+      <FontAwesomeIcon icon={x.icon} style={{ fontSize: '25px' }}/>
       <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px', marginTop: '15px'}}>{x.nameText}</p>
     </Link>
     )

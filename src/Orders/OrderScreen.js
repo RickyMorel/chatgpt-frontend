@@ -170,9 +170,9 @@ class OrderScreen extends Component {
   }; 
 
   closeAllDropdowns = (openDropdownId) => {
-    this.orderRefs.forEach(orderElement => {
-        orderElement.closeDropdown(openDropdownId)
-    });
+    // this.orderRefs.forEach(orderElement => {
+    //     orderElement.closeDropdown(openDropdownId)
+    // });
   }
 
   render() {

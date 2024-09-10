@@ -28,7 +28,7 @@ class CustomToggle extends Component {
     }
 
     render() {
-        const { text, value, onChange, width, height } = this.props;
+        const { text, value, onChange, width, height, explinationText } = this.props;
 
         return (
           <>
@@ -52,7 +52,7 @@ class CustomToggle extends Component {
               </div>
               {
                 this.state.showHint ?
-                <ExplinationPopup text="Al activar Auto Promo, se elegirán los mejores artículos para ponerlos en promoción"/>
+                <ExplinationPopup text={explinationText}/>
                 :
                 <></>
               }

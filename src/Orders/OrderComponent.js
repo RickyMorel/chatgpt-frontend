@@ -8,6 +8,7 @@ import CustomDatePicker from '../Searchbar/CustomDatePicker';
 import CustomInput from '../Searchbar/CustomInput';
 import CustomSelect from '../Searchbar/CustomSelect';
 import Utils from '../Utils';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
@@ -214,6 +215,8 @@ class OrderComponent extends React.Component {
       const orderItem = this.state.order.find(y => y.code == x.code && y.askedProductName == x.askedProductName)
       const orderItemSelect = {value: orderItem.code, label: orderItem.name}
 
+      console.log("x.amount", x.amount)
+
       return(
         <div className="row" style={{paddingBottom: '15px'}}>
           <div className="col-3" style={{...styles.textStyle, color: ColorHex.TextBody}}>
@@ -243,7 +246,7 @@ class OrderComponent extends React.Component {
                 width='75px'
                 height='40px'
                 dataType="number"
-                value={orderItem.amount}
+                value={x.amount}
                 onChange={(value) => this.handleEditOrderItem("amount", value, x.code, x.askedProductName)}
               />
             }
@@ -269,7 +272,7 @@ class OrderComponent extends React.Component {
 
     if(isEditing) {
       orderList.push(
-        <CustomButton width='100%' height="75px" icon="add" onClickCallback={() => this.handleAddProduct()}/>
+        <CustomButton width='100%' height="75px" icon={faPlus} onClickCallback={() => this.handleAddProduct()}/>
       )
     }
 

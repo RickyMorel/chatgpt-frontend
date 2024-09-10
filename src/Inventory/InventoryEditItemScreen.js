@@ -7,6 +7,8 @@ import CustomButton from '../Searchbar/CustomButton';
 import CustomInput from '../Searchbar/CustomInput';
 import CustomSelect from '../Searchbar/CustomSelect';
 import RemovableItem from '../Searchbar/RemovableItem';
+import { faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 
 class InventoryEditItemScreen extends Component {
     constructor(props) {
@@ -189,8 +191,8 @@ class InventoryEditItemScreen extends Component {
             <div>
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{this.state.isCreateItem ? 'Crear Item' : 'Editar Item'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Crear Item' : 'Editar Item'} classStyle="btnGreen" width="182px" height="45px" icon="save" onClickCallback={this.handleSave}/></div>
-                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon="cancel" link="inventory"/></div>
+                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Crear Item' : 'Editar Item'} classStyle="btnGreen" width="182px" height="45px" icon={this.state.isCreateItem ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="inventory"/></div>
                     <div className="col-10"></div>
                 </div>
                 <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, marginTop: '10px', marginBottom: '-5px'}}>

@@ -4,7 +4,7 @@ import { Color, ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
 import Utils from '../Utils';
 import CustomButton from '../Searchbar/CustomButton';
-import { faPenToSquare, faEnvelopeCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faEnvelopeCircleCheck, faCommentSlash, faComment } from '@fortawesome/free-solid-svg-icons';
 import { faFloppyDisk, faEnvelope} from '@fortawesome/free-regular-svg-icons';
 
 class ClientBlockComponent extends React.Component {
@@ -87,9 +87,13 @@ class ClientBlockComponent extends React.Component {
       const newBlockedState = !this.state.isBlocked
       const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/blockClientChat`, {phoneNumber: phoneNumber, isBlocked: newBlockedState});
       clientRegisterBlockedStateFunc(phoneNumber, newBlockedState)
+      
       this.setState({
         isBlocked: newBlockedState
       })
+
+      this.props.handleBlockCallback(newBlockedState)
+
       return response
     } catch (error) {
       return error
@@ -99,6 +103,10 @@ class ClientBlockComponent extends React.Component {
   render() {
     const { name, phoneNumber, chatIsBlocked, isGloballyBlocked,
       clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite, allClientLocations, willMessageTommorrow } = this.props;
+
+  console.log("willMessageTommorrow", willMessageTommorrow)
+        
+    const isGoingToMessage = chatIsBlocked == false && isGloballyBlocked == false && willMessageTommorrow != undefined
 
     return (
       <div className="row" style={trStyle}>
@@ -128,7 +136,7 @@ class ClientBlockComponent extends React.Component {
           <p style={trTextStyle}>+{phoneNumber}</p>
         </div>
         <div className="col-2">
-          <p style={{...trTextStyle, color: chatIsBlocked == true || isGloballyBlocked == true ? ColorHex.RedFabri : ColorHex.GreenFabri}}>{chatIsBlocked == true || isGloballyBlocked == true ? 'NO' : 'SI'}</p>
+          <p style={{...trTextStyle, color: !isGoingToMessage ? ColorHex.RedFabri : ColorHex.GreenFabri}}>{!isGoingToMessage ? 'NO' : 'SI'}</p>
         </div> 
         <div className='col-1'>
           <div className="row">
@@ -136,7 +144,7 @@ class ClientBlockComponent extends React.Component {
               <CustomButton iconSize="25px" width='50px' classStyle={this.state.isEditing == true ? "" : "btnGreen"} height="50px" icon={this.state.isEditing? faFloppyDisk : faPenToSquare} onClickCallback={this.handleEditMode}/>
             </div>
             <div className="col-6">
-              <CustomButton iconSize="25px" width='50px' classStyle={chatIsBlocked == true || isGloballyBlocked == true ? "btnGreen" : "btnRed"} height="50px" icon={chatIsBlocked == true || isGloballyBlocked == true ? faEnvelope : faEnvelopeCircleCheck} onClickCallback={() => this.handleBlock(phoneNumber, clientRegisterBlockedStateFunc)}/>
+              <CustomButton iconSize="25px" width='50px' classStyle={!isGoingToMessage ? "btnGreen" : "btnRed"} height="50px" icon={chatIsBlocked == true || isGloballyBlocked == true ? faComment : faCommentSlash} onClickCallback={() => this.handleBlock(phoneNumber, clientRegisterBlockedStateFunc)}/>
             </div>
           </div>
         </div>

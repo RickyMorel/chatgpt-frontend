@@ -39,4 +39,12 @@
 .btnBlue-clicked {
   background-color: #4680FF;
 }
+
+.btnGrey-clicked {
+  background-color: #B3B3B3;
+}
+
+.btnRed-clicked {
+  background-color: #F74444;
+}
   

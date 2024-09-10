@@ -4,6 +4,8 @@ import CssProperties from '../CssProperties';
 import { es } from 'date-fns/locale';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 
 class CustomDatePicker extends Component {
     constructor(props) {
@@ -79,7 +81,7 @@ class CustomDatePicker extends Component {
                 </div>
                 <div className="flex-grow-1">
                     <button onClick={this.handleOpenDatePicker} style={dateButtonStyle}>
-                        <i className='material-icons' style={{ fontSize: '40px'}}>date_range</i>
+                        <FontAwesomeIcon icon={faCalendarDays} style={{ fontSize: '40px' }}/>
                     </button>
                 </div>
             </div>

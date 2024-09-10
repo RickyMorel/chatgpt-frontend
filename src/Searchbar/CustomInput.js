@@ -15,6 +15,12 @@ class CustomInput extends Component {
         this.datePickerRef = React.createRef();
     }
 
+    componentDidMount() {
+        this.setState({
+            input: this.props.value
+        });
+    }
+
     componentDidUpdate(prevProps) {
         if(this.props?.value == prevProps?.value) {return;}
 

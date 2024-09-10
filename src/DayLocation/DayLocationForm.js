@@ -210,10 +210,7 @@ class DayLocationForm extends Component {
         canMessageTommorrowsClients: false
       })
       const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/messageTommorrowsClients`);
-      console.log("handleSendMessages", response)
-      return null
     } catch (error) {
-      console.log("handleSendMessages ERROR", error)
       this.props.showPopup(new Error(error.response.data.message))
     }
   }
