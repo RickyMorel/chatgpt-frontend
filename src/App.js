@@ -15,6 +15,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AddOrderScreen from './Orders/AddOrderScreen';
 import InventoryEditItemScreen from './Inventory/InventoryEditItemScreen';
+import EditClientScreen from './BotBlocker/EditClientScreen';
 
 class App extends Component {
   constructor(props) {
@@ -95,9 +96,17 @@ class App extends Component {
                 </div>
               )} 
             />
-            {/* <Route exact path="/createItem">
-              <div style={{margin: '15px'}}><InventoryEditItemScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
-            </Route> */}
+            <Route exact path="/editClient" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <EditClientScreen 
+                    {...props}  
+                    showPopup={this.props.showPopup} 
+                    setIsLoading={this.setIsLoading} 
+                  />
+                </div>
+              )} 
+            />
           </Switch>
         </div>
       </div>

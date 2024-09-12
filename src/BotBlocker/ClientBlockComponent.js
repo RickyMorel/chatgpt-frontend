@@ -21,30 +21,31 @@ class ClientBlockComponent extends React.Component {
   }
 
   componentDidMount() {
-    const wasBlocked = this.props.chatIsBlocked
+    console.log("this.props.client", this.props.client)
+    const wasBlocked = this.props.client.chatIsBlocked
 
     this.setState({
       isBlocked: wasBlocked,
-      name: this.props.name,
-      address: this.props.address
+      name: this.props.client.name,
+      address: this.props.client.address
     })
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.chatIsBlocked !== prevProps.chatIsBlocked) {
+    if (this.props.client.chatIsBlocked !== prevProps.client.chatIsBlocked) {
       this.setState({
-        isBlocked: this.props.chatIsBlocked,
+        isBlocked: this.props.client.chatIsBlocked,
       })
     }
 
-    if (this.props.name !== prevProps.name) {
+    if (this.props.client.name !== prevProps.client.name) {
       this.setState({
-        name: this.props.name
+        name: this.props.client.name
       })
     }
-    if (this.props.address !== prevProps.address) {
+    if (this.props.client.address !== prevProps.client.address) {
       this.setState({
-        address: this.props.address
+        address: this.props.client.address
       })
     }
   }
@@ -71,7 +72,7 @@ class ClientBlockComponent extends React.Component {
 
   handleNameChange = async (newName) => {
     try {
-      const clientObj = {phoneNumber: this.props.phoneNumber, name: newName}
+      const clientObj = {phoneNumber: this.props.client.phoneNumber, name: newName}
       this.setState({
         name: newName
       })
@@ -101,12 +102,12 @@ class ClientBlockComponent extends React.Component {
   }
 
   render() {
-    const { name, phoneNumber, chatIsBlocked, isGloballyBlocked,
-      clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, isFavorite, allClientLocations, willMessageTommorrow } = this.props;
+    const { client, isGloballyBlocked,
+      clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, allClientLocations, willMessageTommorrow } = this.props;
 
   console.log("willMessageTommorrow", willMessageTommorrow)
         
-    const isGoingToMessage = chatIsBlocked == false && isGloballyBlocked == false && willMessageTommorrow != undefined
+    const isGoingToMessage = client.chatIsBlocked == false && isGloballyBlocked == false && willMessageTommorrow != undefined
 
     return (
       <div className="row" style={trStyle}>
@@ -133,7 +134,7 @@ class ClientBlockComponent extends React.Component {
           }
         </div>
         <div className="col-3">
-          <p style={trTextStyle}>+{phoneNumber}</p>
+          <p style={trTextStyle}>+{client.phoneNumber}</p>
         </div>
         <div className="col-2">
           <p style={{...trTextStyle, color: !isGoingToMessage ? ColorHex.RedFabri : ColorHex.GreenFabri}}>{!isGoingToMessage ? 'NO' : 'SI'}</p>
@@ -141,10 +142,10 @@ class ClientBlockComponent extends React.Component {
         <div className='col-1'>
           <div className="row">
             <div className="col-6">
-              <CustomButton iconSize="25px" width='50px' classStyle={this.state.isEditing == true ? "" : "btnGreen"} height="50px" icon={this.state.isEditing? faFloppyDisk : faPenToSquare} onClickCallback={this.handleEditMode}/>
+              <CustomButton iconSize="25px" width='40px' classStyle="btnGreen" height="40px" icon={faPenToSquare} link="editClient" linkData={client}/>
             </div>
             <div className="col-6">
-              <CustomButton iconSize="25px" width='50px' classStyle={!isGoingToMessage ? "btnGreen" : "btnRed"} height="50px" icon={chatIsBlocked == true || isGloballyBlocked == true ? faComment : faCommentSlash} onClickCallback={() => this.handleBlock(phoneNumber, clientRegisterBlockedStateFunc)}/>
+              <CustomButton iconSize="25px" width='50px' classStyle={!isGoingToMessage ? "btnGreen" : "btnRed"} height="50px" icon={client.chatIsBlocked == true || isGloballyBlocked == true ? faComment : faCommentSlash} onClickCallback={() => this.handleBlock(client.phoneNumber, clientRegisterBlockedStateFunc)}/>
             </div>
           </div>
         </div>

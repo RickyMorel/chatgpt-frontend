@@ -290,7 +290,7 @@ class BlockChatScreen extends Component {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked
       const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == x.address)
 
-      return <ClientBlockComponent key={x.id} {...x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {orderedLocations}
+      return <ClientBlockComponent key={x.id} client={x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {orderedLocations}
         showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}
         handleBlockCallback={this.handleBlockCallback}/>
     });
