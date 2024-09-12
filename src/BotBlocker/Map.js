@@ -7,7 +7,7 @@ import { Color } from '../Colors';
 
 const API_KEY = 'AIzaSyAABDFNQWqSoqDeJBIAUCHfxInlTDtRp6A'; // Replace with your actual API key
 
-const Map = ({ clientNumber }) => {
+const Map = ({ positionObj, clientNumber }) => {
     const mapRef = useRef(null);
     const markerRef = useRef(null);
     const [position, setPosition] = useState(undefined);
@@ -23,23 +23,13 @@ const Map = ({ clientNumber }) => {
         libraries: ['maps'],
     });
 
-    useEffect(() => {fetchClientLocation()}, [clientNumber]);
+    useEffect(() => {
+        setPosition(positionObj);
+        setOriginalPosition(positionObj);
+        setIsEditing(false)
+    }, [positionObj]);
     useEffect(() => { initializeMap(isLoaded, mapRef, originalPosition, position, setPosition);}, [isLoaded, originalPosition]);
     useEffect(() => { isEditingRef.current = isEditing;}, [isEditing]);
-
-    const fetchClientLocation = async () => {
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-location/getLocationByNumber?phoneNumber=${clientNumber}`);
-            const positionObj = { lat: response.data.location.lat, lng: response.data.location.lng };
-            setPosition(positionObj);
-            setOriginalPosition(positionObj);
-            setIsEditing(false)
-        } catch (error) {
-            console.log("Error fetching location:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const initializeMap = (isLoaded, mapRef, originalPosition, position, setPosition) => {
         if (isLoaded && mapRef.current) {

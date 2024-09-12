@@ -39,8 +39,6 @@ class CustomInput extends Component {
     render() {
         const { placeHolderText, dataType, onChange, width, height, hasError } = this.props;
 
-        console.log("this.props.value", this.props.value)
-
         const styling = {
             backgroundColor: ColorHex.White,
             color: ColorHex.TextBody,

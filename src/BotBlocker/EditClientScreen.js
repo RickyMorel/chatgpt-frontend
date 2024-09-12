@@ -16,6 +16,7 @@ class EditClientScreen extends Component {
         this.state = {
             fieldsWithErrors: [],
             clientLocations: [],
+            locationData: undefined,
             clientToEdit: undefined
         };
     }
@@ -30,6 +31,7 @@ class EditClientScreen extends Component {
         })
 
         this.fetchAllClientLocations()
+        this.fetchClientLocation(itemData)
     }
 
     fetchAllClientLocations = async () => {
@@ -42,6 +44,20 @@ class EditClientScreen extends Component {
         } catch (error) {
           console.log("error", error)
           return error
+        }
+    };
+
+    fetchClientLocation = async (clientToEdit) => {
+        try {
+            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-location/getLocationByNumber?phoneNumber=${clientToEdit.phoneNumber}`);
+            
+            this.setState({
+                locationData: response.data
+            })
+
+            console.log(response.data)
+        } catch (error) {
+            console.log("Error fetching location:", error);
         }
     };
 
@@ -61,20 +77,22 @@ class EditClientScreen extends Component {
     )
 
     render() {
-        const {clientToEdit, clientLocations} = this.state
+        const {clientToEdit, clientLocations, locationData} = this.state
 
         const favoriteFoodsHtml = clientToEdit?.favoriteFoods?.map(x => (
             <RemovableItem itemName={x} deleteCallback={this.handleRemoveTag} width='594px' height='75px'/>
         ))
 
         const clientLocationOptions = clientLocations?.map(x => ({value: x, label: x}))
+
+        console.log("NO CHIN", locationData?.locationPicture.trim('"'))
         
         return (
             <div>
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{'Editar Cliente'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
                     <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={'Editar Item'} classStyle="btnGreen" width="182px" height="45px" icon={faPenToSquare} onClickCallback={this.handleSave}/></div>
-                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={'Cancelar Cambios'} classStyle="btnRed" icon={faRectangleXmark} link="inventory"/></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={'Cancelar Cambios'} classStyle="btnRed" icon={faRectangleXmark} link="blockChats"/></div>
                     <div className="col-10"></div>
                 </div>
                 <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, marginTop: '10px', marginBottom: '-5px'}}>
@@ -123,8 +141,8 @@ class EditClientScreen extends Component {
                                 ...scrollStyle
                             }}>
                                 {
-                                    this.state?.itemToEdit?.imageLink?.length > 0 ?
-                                    <img style={{ maxWidth: '100%', maxHeight: '100%' }} src={this.state?.itemToEdit?.imageLink} alt="Example Image" />
+                                    locationData?.locationPicture?.length > 0 ?
+                                    <img style={{ maxWidth: '100%', maxHeight: '100%' }} src={locationData?.locationPicture.trim('"')} alt="Example Image" />
                                     :
                                     <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody}}>Imagen No Encontrado</p>
                                 }
@@ -132,7 +150,7 @@ class EditClientScreen extends Component {
                         </div>
                         <p style={headersStyle}>Google Maps Ubicacion</p>
                         <div style={{...blockStyle, height: '85%'}}>
-                                <Map clientNumber="595971160800"/>
+                                <Map clientNumber={clientToEdit?.phoneNumber} positionObj={{ lat: locationData?.location.lat, lng: locationData?.location.lng }}/>
                             {/* <div style={{...scrollStyle, display: 'flex'}}>
                             </div> */}
                         </div>
