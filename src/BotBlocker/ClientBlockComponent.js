@@ -21,7 +21,6 @@ class ClientBlockComponent extends React.Component {
   }
 
   componentDidMount() {
-    console.log("this.props.client", this.props.client)
     const wasBlocked = this.props.client.chatIsBlocked
 
     this.setState({
@@ -104,8 +103,6 @@ class ClientBlockComponent extends React.Component {
   render() {
     const { client, isGloballyBlocked,
       clientRegisterBlockedStateFunc, tomorrowsDayLocationIndex, dayLocations, allClientLocations, willMessageTommorrow } = this.props;
-
-  console.log("willMessageTommorrow", willMessageTommorrow)
         
     const isGoingToMessage = client.chatIsBlocked == false && isGloballyBlocked == false && willMessageTommorrow != undefined
 

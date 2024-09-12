@@ -5,15 +5,45 @@ import CustomButton from '../Searchbar/CustomButton'
 import { faPenToSquare, faRectangleXmark, faSquarePlus } from '@fortawesome/free-solid-svg-icons'
 import CustomSelect from '../Searchbar/CustomSelect'
 import CustomInput from '../Searchbar/CustomInput'
+import Map from './Map'
+import axios from 'axios';
+import RemovableItem from '../Searchbar/RemovableItem'
 
 class EditClientScreen extends Component {
     constructor(props) {
         super(props);
     
         this.state = {
-            fieldsWithErrors: []
+            fieldsWithErrors: [],
+            clientLocations: [],
+            clientToEdit: undefined
         };
     }
+
+    componentDidMount() {
+        const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
+
+        console.log("itemData", itemData)
+
+        this.setState({
+            clientToEdit: {...itemData},
+        })
+
+        this.fetchAllClientLocations()
+    }
+
+    fetchAllClientLocations = async () => {
+        try {
+          const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getAllClientZones`);
+    
+          this.setState({
+            clientLocations: [...response.data]
+          })
+        } catch (error) {
+          console.log("error", error)
+          return error
+        }
+    };
 
     formInput = (title, placeholder, dataName, dataType = 'text') => (
         <>
@@ -24,13 +54,21 @@ class EditClientScreen extends Component {
                 placeHolderText={placeholder}
                 dataType={dataType}
                 onChange={(value) => this.handleStringChange(dataName, value)}
-                // value={this.state.itemToEdit[dataName]}
+                value={this.state?.clientToEdit[dataName]}
                 hasError={this.state.fieldsWithErrors.includes(dataName)}
             />
         </>
     )
 
     render() {
+        const {clientToEdit, clientLocations} = this.state
+
+        const favoriteFoodsHtml = clientToEdit?.favoriteFoods?.map(x => (
+            <RemovableItem itemName={x} deleteCallback={this.handleRemoveTag} width='594px' height='75px'/>
+        ))
+
+        const clientLocationOptions = clientLocations?.map(x => ({value: x, label: x}))
+        
         return (
             <div>
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{'Editar Cliente'}</p>
@@ -52,17 +90,28 @@ class EditClientScreen extends Component {
                 </p>
                 <div className="row">
                     <div className="col-6">
-                        {this.formInput("Numero de Cliente *", " ", "phoneNumber")}
-                        {this.formInput("Nombre de Cliente *", "Ingresar nombre de cliente......", "name")}
+                        {clientToEdit && this.formInput("Numero de Cliente *", " ", "phoneNumber")}
+                        {clientToEdit && this.formInput("Nombre de Cliente *", "Ingresar nombre de cliente......", "name")}
                         <p style={headersStyle}>Barrio *</p>
                         <CustomSelect
                             width='800px'
                             placeHolderText={"Ingresar el barrio....."}
-                            // options={allTagOptions}
+                            options={clientLocationOptions}
                             onChange={this.handleTagChange}
-                            // value={this.state.itemToEdit.tags.map(x => ({value: x, label: x}))}
+                            value={clientLocationOptions.find(x => x.value == clientToEdit.address)}
                             isSearchable={true}
                         />
+                        <p style={headersStyle}>Productos Favoritos</p>
+                        <div style={{...blockStyle, height: '65%'}}>
+                            <div style={{...scrollStyle, overflowY: 'scroll', display: favoriteFoodsHtml?.length > 0 ? '' : 'flex' }}>
+                                {
+                                    favoriteFoodsHtml?.length > 0 ?
+                                    favoriteFoodsHtml
+                                    :
+                                    <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody}}>No Tiene Productos Favoritos</p>
+                                }
+                            </div>
+                        </div>
                     </div>
                     <div className="col-6">
                         <p style={headersStyle}>Foto de Ubicacion</p>
@@ -81,40 +130,10 @@ class EditClientScreen extends Component {
                                 }
                             </div>
                         </div>
-                        <div style={{display: 'flex', paddingBottom: '0px'}}>
-                            <div className="flex-grow-2" style={{paddingRight: '25px'}}>
-                                <CustomInput
-                                    width='700px'
-                                    height='75px'
-                                    placeHolderText="Ingresar una nueva etiqueta para agregar......"
-                                    dataType="text"
-                                    onChange={(value) => this.handleStringChange("newTagInput", value)}
-                                />
-                            </div>
-                            <div className="flex-grow-1">
-                                <button onClick={this.handleAddNewTag} style={addNewTagButtonStyle}>
-                                    <i className='material-icons' style={{ fontSize: '40px'}}>add</i>
-                                </button>
-                            </div>
-                        </div>
-                        <p style={headersStyle}>Etiquetas del item</p>
-                        <CustomSelect
-                            width='800px'
-                            placeHolderText={"Ingresar las etiquetas del item......"}
-                            // options={allTagOptions}
-                            onChange={this.handleTagChange}
-                            // value={this.state.itemToEdit.tags.map(x => ({value: x, label: x}))}
-                            isSearchable={true}
-                            isMulti={true}
-                        />
-                        <div style={{...blockStyle, height: '65%', marginTop: '40px'}}>
-                            {/* <div style={{...scrollStyle, overflowY: 'scroll', display: itemTagsHtml.length > 0 ? '' : 'flex' }}>
-                                {
-                                    itemTagsHtml.length > 0 ?
-                                    itemTagsHtml
-                                    :
-                                    <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody}}>No Tiene Etiquetas</p>
-                                }
+                        <p style={headersStyle}>Google Maps Ubicacion</p>
+                        <div style={{...blockStyle, height: '85%'}}>
+                                <Map clientNumber="595971160800"/>
+                            {/* <div style={{...scrollStyle, display: 'flex'}}>
                             </div> */}
                         </div>
                     </div>
@@ -131,14 +150,12 @@ const scrollStyle = {
     boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
     height: '100%',
     width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center'
+    // alignItems: 'center',
+    // justifyContent: 'center'
   }
 
 const blockStyle = {
     width: '800px',
-    marginTop: '10px',
-    marginTop: '25px',
     padding: '25px',
     boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
     border: `1px solid ${ColorHex.BorderColor}`,
