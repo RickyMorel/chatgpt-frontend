@@ -129,7 +129,7 @@ class EditClientScreen extends Component {
         let clientLocationOptions = clientLocations?.filter(x => x.includes(",") == false)?.map(x => ({value: x, label: x}))
 
         return (
-            <div>
+            <div style={{overflowY: 'scroll', overflowX: 'hidden', flex: 1, height: '100vh'}}>
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{'Editar Cliente'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
                     <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={'Guardar Cambios'} classStyle="btnGreen" width="182px" height="45px" icon={faPenToSquare} onClickCallback={this.handleSave}/></div>
@@ -161,7 +161,7 @@ class EditClientScreen extends Component {
                             isSearchable={true}
                         />
                         <p style={headersStyle}>Productos Favoritos</p>
-                        <div style={{...blockStyle, height: '65%'}}>
+                        <div style={{...blockStyle, height: '655px'}}>
                             <div style={{...scrollStyle, overflowY: 'scroll', display: favoriteFoodsHtml?.length > 0 ? '' : 'flex' }}>
                                 {
                                     favoriteFoodsHtml?.length > 0 ?
@@ -190,7 +190,7 @@ class EditClientScreen extends Component {
                             </div>
                         </div>
                         <p style={headersStyle}>Google Maps Ubicacion</p>
-                        <div style={{...blockStyle, height: '85%'}}>
+                        <div style={{...blockStyle, height: '655px'}}>
                             <Map clientNumber={clientToEdit?.phoneNumber} positionObj={{ lat: locationData?.location.lat, lng: locationData?.location.lng }}/>
                         </div>
                     </div>

@@ -3,7 +3,10 @@ import { useJsApiLoader } from '@react-google-maps/api';
 import Modal from 'react-modal';
 import { PopupStyle } from '../Popups/PopupManager';
 import axios from 'axios';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
+import CustomButton from '../Searchbar/CustomButton';
+import { faCopy, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import CssProperties from '../CssProperties';
 
 const API_KEY = 'AIzaSyAABDFNQWqSoqDeJBIAUCHfxInlTDtRp6A'; // Replace with your actual API key
 
@@ -26,87 +29,111 @@ const Map = ({ positionObj, clientNumber }) => {
     useEffect(() => {
         setPosition(positionObj);
         setOriginalPosition(positionObj);
-        setIsEditing(false)
+        setIsEditing(false);
     }, [positionObj]);
-    useEffect(() => { initializeMap(isLoaded, mapRef, originalPosition, position, setPosition);}, [isLoaded, originalPosition]);
-    useEffect(() => { isEditingRef.current = isEditing;}, [isEditing]);
+
+    useEffect(() => {
+        initializeMap(isLoaded, mapRef, originalPosition, position, setPosition);
+    }, [isLoaded, originalPosition]);
+
+    useEffect(() => {
+        isEditingRef.current = isEditing;
+    }, [isEditing]);
 
     const initializeMap = (isLoaded, mapRef, originalPosition, position, setPosition) => {
         if (isLoaded && mapRef.current) {
             const mapInstance = new window.google.maps.Map(mapRef.current, {
                 center: originalPosition,
                 zoom: 14,
+                // Disable the Map and Satellite buttons
+                mapTypeControl: false, 
+                fullscreenControl: false, // Hides the fullscreen control
+                streetViewControl: false, // Hides Street View Pegman
+                zoomControl: true, // Keep the zoom controls (set to false to hide)
+                scaleControl: true, // Keep scale control (can be disabled if needed)
             });
-    
+
             const markerInstance = new window.google.maps.Marker({
                 position,
                 map: mapInstance,
                 title: 'Client Location',
             });
 
-            markerRef.current = markerInstance
-    
+            markerRef.current = markerInstance;
+
             mapInstance.addListener('click', (e) => handleMapClick(e, markerInstance));
         }
+    };
+
+    const copyLocation= () => {
+        navigator.clipboard.writeText(`${position.lat}, ${position.lng}`);
     }
 
     const handleMapClick = (event, markerInstance) => {
-        if(isEditingRef.current == false) { return; }
-                
+        if (isEditingRef.current === false) {
+            return;
+        }
+
         const newPosition = {
             lat: event.latLng.lat(),
             lng: event.latLng.lng(),
         };
         setPosition(newPosition);
         markerInstance.setPosition(newPosition);
-    }
+    };
 
     const handleEditMode = () => {
-        const newIsEditing = !isEditing
-        setIsEditing(newIsEditing)
+        const newIsEditing = !isEditing;
+        setIsEditing(newIsEditing);
 
-        if(newIsEditing == false) {
-            updateLocation()
+        if (newIsEditing === false) {
+            // updateLocation()
         }
-    }
+    };
 
-    const handleEditLocation = (e) => {
-        if(e.target.value.includes(',') == false) { return; }
-
-        // const positions = e.target.value.split(',')
-        // const newPosition = {lat: positions[0].trim(), lng: positions[1].trim()}
-
-        // console.log("positions", positions)
-        // console.log("newPosition", newPosition)
-
-        // setPosition({lat: newPosition.lat, lng: newPosition.lng});
-    }
-    
-    const updateLocation = async () => {
-        const locationObj = {
-            phoneNumber: clientNumber,
-            location: {lat: +position.lat, lng: +position.lng},
-            locationPicture: "",
-            locationDescription: ""
+    const handleEditLocation = () => {
+        if (!isEditing) {
+            return;
         }
-        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-location/updateClientLocation`, locationObj);
-    }
+    };
 
     return (
-            <div ref={mapRef} style={{ height: '100%', width: '100%' }}>
-                <div className="row">
-                    <div className="col s10">
-                        <input style={{display: 'block' }} name='location' onChange={(e) => handleEditLocation(e)}/>
+        <div style={{ position: 'relative', height: '100%', width: '100%' }}>
+            <div ref={mapRef} style={{ height: '100%', width: '100%' }} />
+            
+            {/* Button Container */}
+            <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ ...coordinatesStyling }}>
+                        <p style={{ color: ColorHex.TextBody, ...CssProperties.BodyTextStyle, textAlign: 'center' }}>
+                            {`Coordenadas: ${position?.lat?.toString().substring(0, 9)}, ${position?.lng?.toString()?.substring(0, 9)}`}
+                        </p>
                     </div>
-                    <div className="col s2">
-                        <button className={`waves-effect waves-light btn-small ${isEditing ? Color.Button_1 : Color.Second}`} onClick={() => handleEditMode(clientNumber)}>
-                            <i className="material-icons">{isEditing ? "save" : "edit"}</i>
-                        </button>
-                    </div>
+                    <CustomButton text={'Copiar Ubicacion'} icon={faCopy} onClickCallback={copyLocation} />
+                    <CustomButton text={'Editar Ubicacion'} icon={faPenToSquare} onClickCallback={handleEditMode} />
                 </div>
             </div>
+        </div>
     );
 };
 
-export default Map;
+const coordinatesStyling = {
+    backgroundColor: ColorHex.White,
+    color: ColorHex.TextBody,
+    width: '319px',
+    height: '45px',
+    borderRadius: '10px',
+    boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+    border: `1px solid ${ColorHex.BorderColor}`,
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: '15px',
+    paddingLeft: '15px',
+    paddingRight: '15px',
+    textAlign: 'center',
+    outline: 'none',
+  };
 
+export default Map;
