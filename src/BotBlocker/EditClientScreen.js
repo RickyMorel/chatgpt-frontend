@@ -54,6 +54,12 @@ class EditClientScreen extends Component {
         }
     }
 
+    handleLocationChange = (newPos) => {
+        this.setState({
+            locationData: {...this.state.locationData, location: newPos}
+        })
+    }
+
     handleStringChange = (name, value) => {
         this.setState({
             clientToEdit: {
@@ -191,7 +197,7 @@ class EditClientScreen extends Component {
                         </div>
                         <p style={headersStyle}>Google Maps Ubicacion</p>
                         <div style={{...blockStyle, height: '655px'}}>
-                            <Map clientNumber={clientToEdit?.phoneNumber} positionObj={{ lat: locationData?.location.lat, lng: locationData?.location.lng }}/>
+                            <Map clientNumber={clientToEdit?.phoneNumber} locationChangeCallback={this.handleLocationChange} positionObj={{ lat: locationData?.location.lat, lng: locationData?.location.lng }}/>
                         </div>
                     </div>
                 </div>
