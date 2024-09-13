@@ -24,14 +24,43 @@ class EditClientScreen extends Component {
     componentDidMount() {
         const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
 
-        console.log("itemData", itemData)
-
         this.setState({
             clientToEdit: {...itemData},
         })
 
         this.fetchAllClientLocations()
         this.fetchClientLocation(itemData)
+        this.fetchExtraClientData(itemData)
+    }
+
+    handleSave = async () => {
+        console.log("handleSave")
+        const {clientToEdit, locationData} = this.state
+
+        try {
+            const clientObj = {
+                phoneNumber: clientToEdit.phoneNumber,
+                name: clientToEdit.name,
+                address: clientToEdit.address,
+                location: locationData.location,
+                locationPicture: locationData.locationPicture
+            }
+            console.log("handleSave", clientObj)
+            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/updateWithLocation`, clientObj);
+            this.props.history.goBack()
+        } catch (error) {
+            console.log("error", error)
+            //this.props.showPopup(new Error(error.response.data.message))
+        }
+    }
+
+    handleStringChange = (name, value) => {
+        this.setState({
+            clientToEdit: {
+                ...this.state.clientToEdit,
+                [name]: value
+            }
+        })
     }
 
     fetchAllClientLocations = async () => {
@@ -40,6 +69,19 @@ class EditClientScreen extends Component {
     
           this.setState({
             clientLocations: [...response.data]
+          })
+        } catch (error) {
+          console.log("error", error)
+          return error
+        }
+    };
+
+    fetchExtraClientData = async (clientToEdit) => {
+        try {
+          const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getClientByPhoneNumber?phoneNumber=${clientToEdit.phoneNumber}`);
+    
+          this.setState({
+            clientToEdit: response.data
           })
         } catch (error) {
           console.log("error", error)
@@ -61,7 +103,7 @@ class EditClientScreen extends Component {
         }
     };
 
-    formInput = (title, placeholder, dataName, dataType = 'text') => (
+    formInput = (title, placeholder, dataName, dataType = 'text', canEdit = true) => (
         <>
             <p style={headersStyle}>{title}</p>
             <CustomInput
@@ -72,26 +114,25 @@ class EditClientScreen extends Component {
                 onChange={(value) => this.handleStringChange(dataName, value)}
                 value={this.state?.clientToEdit[dataName]}
                 hasError={this.state.fieldsWithErrors.includes(dataName)}
+                canEdit={canEdit}
             />
         </>
     )
 
     render() {
         const {clientToEdit, clientLocations, locationData} = this.state
-
+        
         const favoriteFoodsHtml = clientToEdit?.favoriteFoods?.map(x => (
             <RemovableItem itemName={x} deleteCallback={this.handleRemoveTag} width='594px' height='75px'/>
         ))
 
-        const clientLocationOptions = clientLocations?.map(x => ({value: x, label: x}))
+        let clientLocationOptions = clientLocations?.filter(x => x.includes(",") == false)?.map(x => ({value: x, label: x}))
 
-        console.log("NO CHIN", locationData?.locationPicture.trim('"'))
-        
         return (
             <div>
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{'Editar Cliente'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={'Editar Item'} classStyle="btnGreen" width="182px" height="45px" icon={faPenToSquare} onClickCallback={this.handleSave}/></div>
+                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={'Guardar Cambios'} classStyle="btnGreen" width="182px" height="45px" icon={faPenToSquare} onClickCallback={this.handleSave}/></div>
                     <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={'Cancelar Cambios'} classStyle="btnRed" icon={faRectangleXmark} link="blockChats"/></div>
                     <div className="col-10"></div>
                 </div>
@@ -108,14 +149,14 @@ class EditClientScreen extends Component {
                 </p>
                 <div className="row">
                     <div className="col-6">
-                        {clientToEdit && this.formInput("Numero de Cliente *", " ", "phoneNumber")}
+                        {clientToEdit && this.formInput("Numero de Cliente *", " ", "phoneNumber", "numeric", false)}
                         {clientToEdit && this.formInput("Nombre de Cliente *", "Ingresar nombre de cliente......", "name")}
                         <p style={headersStyle}>Barrio *</p>
                         <CustomSelect
                             width='800px'
                             placeHolderText={"Ingresar el barrio....."}
                             options={clientLocationOptions}
-                            onChange={this.handleTagChange}
+                            onChange={(option) => this.handleStringChange("address", option.value)}
                             value={clientLocationOptions.find(x => x.value == clientToEdit.address)}
                             isSearchable={true}
                         />
@@ -150,9 +191,7 @@ class EditClientScreen extends Component {
                         </div>
                         <p style={headersStyle}>Google Maps Ubicacion</p>
                         <div style={{...blockStyle, height: '85%'}}>
-                                <Map clientNumber={clientToEdit?.phoneNumber} positionObj={{ lat: locationData?.location.lat, lng: locationData?.location.lng }}/>
-                            {/* <div style={{...scrollStyle, display: 'flex'}}>
-                            </div> */}
+                            <Map clientNumber={clientToEdit?.phoneNumber} positionObj={{ lat: locationData?.location.lat, lng: locationData?.location.lng }}/>
                         </div>
                     </div>
                 </div>
@@ -168,8 +207,6 @@ const scrollStyle = {
     boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
     height: '100%',
     width: '100%',
-    // alignItems: 'center',
-    // justifyContent: 'center'
   }
 
 const blockStyle = {

@@ -37,10 +37,10 @@ class CustomInput extends Component {
     };
 
     render() {
-        const { placeHolderText, dataType, onChange, width, height, hasError } = this.props;
+        const { placeHolderText, dataType, onChange, width, height, hasError, canEdit = true } = this.props;
 
         const styling = {
-            backgroundColor: ColorHex.White,
+            backgroundColor: canEdit ? ColorHex.White : ColorHex.Background,
             color: ColorHex.TextBody,
             width: width ?? '800px',
             height: height ?? '75px',
@@ -59,7 +59,10 @@ class CustomInput extends Component {
           };
 
         return (
+            canEdit ?
             <input name='pointsUsed' type={dataType} value={this.state.input} placeholder={placeHolderText} class="validate" style={styling} onChange={(e) => this.handleChange(e, onChange)}/>
+            :
+            <input disabled name='pointsUsed' type={dataType} value={this.state.input} placeholder={placeHolderText} class="validate" style={styling} onChange={(e) => this.handleChange(e, onChange)}/>
         );
     }
 }
