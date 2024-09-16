@@ -9,13 +9,15 @@ import CustomInput from '../Searchbar/CustomInput';
 import CustomScroll from '../Searchbar/CustomScroll';
 import CustomSelect from '../Searchbar/CustomSelect';
 import { faFloppyDisk, faRectangleXmark } from '@fortawesome/free-regular-svg-icons';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 class AddOrderScreen extends Component {
     constructor(props) {
         super(props);
 
         const orderData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
+
+        console.log("orderData", orderData)
     
         this.state = {
             clientNumbers: [],
@@ -26,7 +28,8 @@ class AddOrderScreen extends Component {
             movil: orderData?.movil ?? "",
             items: orderData?.items ?? [],
             deliveryDate: orderData?.deliveryDate ?? new Date(),
-            isCreateOrder: orderData == undefined
+            isCreateOrder: orderData == undefined,
+            orderState: orderData?.orderState ?? "CONFIRMED"
         };
     }
 
@@ -92,7 +95,7 @@ class AddOrderScreen extends Component {
         })
     }
 
-     handleSave = async () => {
+    handleSave = async () => {
         try {
             const orderDto = {
                 clientNumber: this.state.clientNumber,
@@ -141,6 +144,12 @@ class AddOrderScreen extends Component {
         })
     }
 
+    handleOrderStateChange = (value) => {
+        this.setState({
+            orderState: value.value
+        })
+    }
+
     handleItemChange = (itemCode, newCode = undefined, newAmount = undefined) => {
         console.log("handleItemChange", itemCode, newCode, newAmount)
         let allItems = [...this.state.items]
@@ -179,6 +188,10 @@ class AddOrderScreen extends Component {
     render() {
         const { inventoryItemCodes, clientNumbers, movilObjs } = this.state
 
+        const confirmedState = "CONFIRMED"
+        const canceldState = "CANCELED"
+        const SURE = "SURE"
+
         const movilNames = movilObjs?.map(x => ({value: x.van, label: x.van}))
         
         const filteredInventoryItemCodes = this?.state?.items?.length > 0 ? 
@@ -209,10 +222,11 @@ class AddOrderScreen extends Component {
                         placeHolderText="Ingresar cantidad......"
                         dataType="number"
                         onChange={(value) => this.handleItemChange(x.code, undefined, value)}
+                        value={x.amount}
                     />
                 </div>
                 <div className="col s1">
-                    <CustomButton width='100%' height="75px" icon="close" onClickCallback={() => this.handleAddOrRemoveProduct(x.code)}/>
+                    <CustomButton width='100%' height="75px" icon={faTrash} onClickCallback={() => this.handleAddOrRemoveProduct(x.code)}/>
                 </div>
             </div>
         )})
@@ -224,6 +238,12 @@ class AddOrderScreen extends Component {
             color: ColorHex.TextBody, 
             marginTop: '25px'
         }
+
+        const botStateOptions = [
+            {value: SURE, label: 'FALTA CONFIRMAR'},
+            {value: confirmedState, label: 'Confirmado'},
+            {value: canceldState, label: 'Cancelado'}
+          ]
 
         
         const addOrderModalNew =             
@@ -246,7 +266,7 @@ class AddOrderScreen extends Component {
                     />
                 </div>
                 <div className="col-6">
-                    <p style={headersStyle}>Movil</p>
+                    <p style={headersStyle}>Movil *</p>
                     <CustomSelect placeHolderText={"Ingresar movil......"}
                         options={movilNames}
                         onChange={this.handleMovilChange}
@@ -264,12 +284,39 @@ class AddOrderScreen extends Component {
                     />    
                 </div>
                 <div className="col-6">
-                    <p style={headersStyle}>Puntos</p>
-                    <CustomInput
-                        placeHolderText="Ingresar puntos de descuento usados......"
-                        dataType="number"
-                        onChange={this.handlePointsChange}
-                    />
+                    {
+                        !this.state.isCreateOrder ?
+                        <div className='row'>
+                            <div className="col-9">
+                                <p style={headersStyle}>Estado Del Pedido *</p>
+                                <CustomSelect
+                                    width='600px'
+                                    options={botStateOptions}
+                                    onChange={this.handleOrderStateChange}
+                                    value={botStateOptions.find(x => x.value == this.state.orderState) ?? botStateOptions[0]}
+                                    isSearchable={false}
+                                />
+                            </div>
+                            <div className="col-3">
+                                <p style={headersStyle}>Puntos</p>
+                                <CustomInput
+                                    placeHolderText="Ingresar puntos de descuento usados......"
+                                    dataType="number"
+                                    onChange={this.handlePointsChange}
+                                    width='150px'
+                                />
+                            </div>
+                        </div>
+                        :
+                        <>
+                            <p style={headersStyle}>Puntos</p>
+                            <CustomInput
+                                placeHolderText="Ingresar puntos de descuento usados......"
+                                dataType="number"
+                                onChange={this.handlePointsChange}
+                            />
+                        </>
+                    }
                 </div>
             </div>
 

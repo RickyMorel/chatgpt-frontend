@@ -26,7 +26,14 @@
 .btnGreen *, 
 .btnBlue *, 
 .nav-item * {
-  color: #606060;
+  color: #606060
+}
+
+.btnRed, 
+.btnGreen, 
+.btnBlue, 
+.nav-item {
+  background-color: #ffffff
 }
 
 /* Clicked */

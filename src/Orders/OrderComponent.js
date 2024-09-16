@@ -159,7 +159,8 @@ class OrderComponent extends React.Component {
   }
 
   render() {
-    const { orderNumber , name, phoneNumber, inventoryItemNamesWithCodes, isEditing, currentOpenOrder } = this.props;
+    const { orderNumber , name, phoneNumber, inventoryItemNamesWithCodes, isEditing, pointsUsed, currentOpenOrder } = this.props;
+    console.log("PROPSSSSSSS", this.props)
     //const { isEditing } = this.state;
 
     const onlyVendorConfirmed = "CONFIRMADO SOLO POR VENDEDOR"
@@ -214,8 +215,6 @@ class OrderComponent extends React.Component {
       const orderItemCodesSelect = inventoryItemNamesWithCodes?.map(x => ({value: x.code, label: x.name}))
       const orderItem = this.state.order.find(y => y.code == x.code && y.askedProductName == x.askedProductName)
       const orderItemSelect = {value: orderItem.code, label: orderItem.name}
-
-      console.log("x.amount", x.amount)
 
       return(
         <div className="row" style={{paddingBottom: '15px'}}>
@@ -309,7 +308,17 @@ class OrderComponent extends React.Component {
               isSearchable={false}
             />
           }
-          <div className='col-1' style={{display: 'flex', justifyContent: 'center'}}><CustomButton width='40px' height='40px' iconSize={25} icon={faPenToSquare} onClickCallback={this.handleEditMode}/></div>
+          <div className='col-1' style={{display: 'flex', justifyContent: 'center'}}>
+            <CustomButton iconSize={25} width='40px' height="40px" icon={faPenToSquare} link="createOrder" 
+            linkData={{
+              clientNumber: phoneNumber,
+              pointsUsed: pointsUsed,
+              movil: this.state.selectedMovil?.van,
+              items: orderItemsOrdered,
+              deliveryDate: this.state.deliveryDate,
+              orderState: this.props.orderState
+            }}/>
+          </div>
           <button
             ref={this.dropdownBtn}
             onClick={this.handleDropdown}

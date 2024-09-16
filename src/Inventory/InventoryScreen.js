@@ -9,7 +9,7 @@ import CssProperties from '../CssProperties';
 import CustomSelect from '../Searchbar/CustomSelect';
 import CustomButton from '../Searchbar/CustomButton';
 import CustomToggle from '../Searchbar/CustomToggle';
-import { faSquarePlus } from '@fortawesome/free-regular-svg-icons';
+import { faFloppyDisk, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -382,10 +382,17 @@ class InventoryScreen extends Component {
                         />
                     </div>
                     <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
-                        <CustomButton text="Crear Pedido"  width="175px" height="45px" icon={faSquarePlus} link="createItem"/>
-                        {/* <CustomButton text="Crear un item" width="175px" height="45px" icon="add" onClickCallback={this.handleOpenCreateItem}/> */}
+                        <CustomButton text="Crear Item"  width="175px" height="45px" icon={faSquarePlus} link="createItem"/>
                     </div>
-                    <div className="col-6"></div>
+                    <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
+                        {
+                            this.state.needsToSave ? 
+                            <CustomButton text="Guardar Cambios"  width="195px" height="45px" classStyle='btnGreen' icon={faFloppyDisk} onClickCallback={this.saveDailyInventories}/>
+                            :
+                            <></>
+                        }
+                    </div>
+                    <div className={this.state.needsToSave ? "col-5" : 'col-6'}></div>
                     <div className="col-3" style={{marginLeft: '50px'}}>
                         <CustomToggle text="Auto Promo" explinationText="Al activar Auto Promo, se elegirán los mejores artículos para ponerlos en promoción" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange}/>
                     </div>
