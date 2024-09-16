@@ -11,13 +11,13 @@ class CustomButton extends Component {
     }
 
     render() {
-        const { text, icon, onClickCallback, link, width, height, classStyle, iconSize, linkData } = this.props;
+        const { text, icon, onClickCallback, link, width, height, classStyle, iconSize, linkData, disabled = false } = this.props;
 
         const styling = {
             width: width ?? 'auto',
             height: height ?? '45px',
             borderRadius: '10px',
-            boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+            boxShadow: !disabled ? '0px 5px 5px rgba(0, 0, 0, 0.3)' : '',
             border: `1px solid ${ColorHex.BorderColor}`,
             display: 'flex',   
             alignItems: 'center', 
@@ -30,14 +30,14 @@ class CustomButton extends Component {
             textAlign: 'center',
             textDecoration: 'none', 
             ...CssProperties.BodyTextStyle,
-            justifyContent: 'center'
+            justifyContent: 'center',
         };
 
         const iconHtml = text ? 
         (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <FontAwesomeIcon icon={icon} style={{ fontSize: iconSize ?? '25px', marginRight: '10px' }}/>
-                <div>{text}</div>
+                <FontAwesomeIcon icon={icon} style={{ fontSize: iconSize ?? '25px', marginRight: '10px', color: !disabled ? 'inherit' : ColorHex.GreyFabri}} />
+                <div style={{color: !disabled ? 'inherit' : ColorHex.GreyFabri}}>{text}</div>
             </div>
         )
         :
@@ -51,7 +51,7 @@ class CustomButton extends Component {
                     {iconHtml}
                 </Link>
             ) : (
-                <button onClick={onClickCallback} style={styling} className={classStyle ?? 'nav-item'}>
+                <button onClick={onClickCallback} disabled={disabled} style={styling} className={!disabled ? classStyle ?? 'nav-item' : ''}>
                     {iconHtml}
                 </button>
             )

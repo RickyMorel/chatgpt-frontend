@@ -19,6 +19,7 @@ const Map = ({ positionObj, clientNumber, locationChangeCallback }) => {
     const [noPos, setNoPos] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const isEditingRef = useRef(isEditing);
+    const asuncionCenterPos = {lat: -25.285881866150206, lng: -57.57914900481195}
 
     const { isLoaded } = useJsApiLoader({
         googleMapsApiKey: API_KEY,
@@ -26,24 +27,29 @@ const Map = ({ positionObj, clientNumber, locationChangeCallback }) => {
         libraries: ['maps'],
     });
 
+    // useEffect(() => {
+    //     initializeMap(isLoaded)
+    // }, [isLoaded]);
+
     useEffect(() => {
         setPosition(positionObj);
         setOriginalPosition(positionObj);
-        setIsEditing(false);
     }, [positionObj]);
 
     useEffect(() => {
-        initializeMap(isLoaded, mapRef, originalPosition, position, setPosition);
+        initializeMap(isLoaded, originalPosition);
     }, [isLoaded, originalPosition]);
 
     useEffect(() => {
         isEditingRef.current = isEditing;
     }, [isEditing]);
 
-    const initializeMap = (isLoaded, mapRef, originalPosition, position, setPosition) => {
+    const initializeMap = (isLoaded, originalPosition) => {
+        console.log("initializeMap")
         if (isLoaded && mapRef.current) {
+            console.log("initializeMap ifffffff", originalPosition)
             const mapInstance = new window.google.maps.Map(mapRef.current, {
-                center: originalPosition,
+                center: originalPosition?.lat ? originalPosition : asuncionCenterPos,
                 zoom: 14,
                 mapTypeControl: false,
                 fullscreenControl: false,
@@ -57,9 +63,8 @@ const Map = ({ positionObj, clientNumber, locationChangeCallback }) => {
                 map: mapInstance,
                 title: 'Client Location',
             });
-
+            
             markerRef.current = markerInstance;
-
             mapInstance.addListener('click', (e) => handleMapClick(e, markerInstance));
         }
     };
@@ -116,14 +121,16 @@ const Map = ({ positionObj, clientNumber, locationChangeCallback }) => {
             <ToastContainer />
             <div ref={mapRef} style={{ height: '100%', width: '100%' }} />
             
-            {/* Button Container */}
             <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
                     <div style={{ ...coordinatesStyling, width: !isEditing ? '319px' : '429px' }}>
                         <p style={{ color: ColorHex.TextBody, ...CssProperties.BodyTextStyle, textAlign: 'center', whiteSpace: 'nowrap' }}>
                             {
                                 !isEditing ?
-                                `Coordenadas: ${position?.lat?.toString().substring(0, 9)}, ${position?.lng?.toString()?.substring(0, 9)}`
+                                    position?.lat ?
+                                    `Coordenadas: ${position?.lat?.toString().substring(0, 9)}, ${position?.lng?.toString()?.substring(0, 9)}`
+                                    :
+                                    `Este cliente no tiene ubicacion`
                                 :
                                 `Haga clic en el mapa para establecer la ubicación...`
                             }
@@ -132,12 +139,12 @@ const Map = ({ positionObj, clientNumber, locationChangeCallback }) => {
                     {
                         !isEditing ?
                         <>
-                            <CustomButton text={'Copiar Ubicacion'} icon={faCopy} onClickCallback={copyLocation} />
+                            <CustomButton text={'Copiar Ubicacion'} icon={faCopy} disabled={position?.lat == undefined} onClickCallback={copyLocation} />
                             <CustomButton text={'Editar Ubicacion'} icon={faPenToSquare} onClickCallback={handleEditMode} />
                         </>
                         :
                         <>
-                            <CustomButton text={'Guardar'} classStyle="btnGreen" icon={faFloppyDisk} onClickCallback={() => locationChangeCallback(position)}/>
+                            <CustomButton text={'Guardar'} classStyle="btnGreen" icon={faFloppyDisk} onClickCallback={() => { setIsEditing(false); locationChangeCallback(position) }}/>
                             <CustomButton text={'Cancelar'} classStyle="btnRed" icon={faRectangleXmark} onClickCallback={() => cancelEditing()}/>
                         </>
                     }

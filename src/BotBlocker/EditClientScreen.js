@@ -54,11 +54,26 @@ class EditClientScreen extends Component {
         }
     }
 
-    handleLocationChange = (newPos) => {
+    // handleLocationChange = (newPos) => {
+    //     this.setState({
+    //         locationData: {...this.state.locationData, location: newPos}
+    //     })
+    // }
+
+    handleLocationChange = async (newPos) => {
+        const locationObj = {
+            phoneNumber: this.state.clientToEdit.phoneNumber,
+            location: {lat: +newPos.lat, lng: +newPos.lng},
+            locationPicture: this.state.locationData.locationPicture ?? "",
+            locationDescription: this.state.locationData.locationDescription ?? ""
+        }
+
         this.setState({
             locationData: {...this.state.locationData, location: newPos}
         })
-    }
+
+        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-location/updateClientLocation`, locationObj);
+    };
 
     handleStringChange = (name, value) => {
         this.setState({
@@ -197,7 +212,7 @@ class EditClientScreen extends Component {
                         </div>
                         <p style={headersStyle}>Google Maps Ubicacion</p>
                         <div style={{...blockStyle, height: '655px'}}>
-                            <Map clientNumber={clientToEdit?.phoneNumber} locationChangeCallback={this.handleLocationChange} positionObj={{ lat: locationData?.location.lat, lng: locationData?.location.lng }}/>
+                            <Map clientNumber={clientToEdit?.phoneNumber} locationChangeCallback={this.handleLocationChange} positionObj={{ lat: locationData?.location?.lat, lng: locationData?.location?.lng }}/>
                         </div>
                     </div>
                 </div>
