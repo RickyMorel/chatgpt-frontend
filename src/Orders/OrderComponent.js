@@ -8,7 +8,7 @@ import CustomDatePicker from '../Searchbar/CustomDatePicker';
 import CustomInput from '../Searchbar/CustomInput';
 import CustomSelect from '../Searchbar/CustomSelect';
 import Utils from '../Utils';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faPlus } from '@fortawesome/free-solid-svg-icons';
 const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
@@ -294,7 +294,7 @@ class OrderComponent extends React.Component {
               onChange={(date) => this.handleEditDate(date)}
             /> 
           }
-          <div style={{...styles.textStyle, color: this.orderStateColor}} className='col-3'>{unsureItemHtml}</div>
+          <div style={{...styles.textStyle, color: this.orderStateColor}} className='col-2'>{unsureItemHtml}</div>
           {
             !isEditing ? 
               <div style={{...styles.textStyle, color: ColorHex.TextBody}} className='col-1'>{this?.state?.selectedMovil?.van ?? SIN_MOVIL}</div>
@@ -309,6 +309,7 @@ class OrderComponent extends React.Component {
               isSearchable={false}
             />
           }
+          <div className='col-1' style={{display: 'flex', justifyContent: 'center'}}><CustomButton width='40px' height='40px' iconSize={25} icon={faPenToSquare} onClickCallback={this.handleEditMode}/></div>
           <button
             ref={this.dropdownBtn}
             onClick={this.handleDropdown}

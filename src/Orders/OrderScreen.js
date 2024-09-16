@@ -299,10 +299,11 @@ class OrderScreen extends Component {
            <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
             <div style={headerStyle} className='col-2'>Nombre del Cliente</div>
             <div style={headerStyle} className='col-2'>Numero del Cliente</div>
-            <div style={headerStyle} className='col-2'>Cantidad de Items</div>
+            <div style={headerStyle} className='col-2'>Cantidad Items</div>
             <div style={headerStyle} className='col-1'>Fecha</div>
-            <div style={headerStyle} className='col-3'>Estado del Pedido</div>
+            <div style={headerStyle} className='col-2'>Estado del Pedido</div>
             <div style={headerStyle} className='col-1'>Movil</div>
+            <div style={headerStyle} className='col-1'>Editar Pedido</div>
             <div style={headerStyle} className='col-1'></div>
            </div>
 
@@ -326,22 +327,13 @@ class OrderScreen extends Component {
             <div className="col-5"></div>
         </div>
 
-        {
-          this.state.isEditing ?
-          <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-            <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text="Guardar" classStyle="btnGreen" width="182px" height="45px" icon={faFloppyDisk} onClickCallback={this.handleSave}/></div>
-            <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text="Cancelare" classStyle="btnRed" icon={faRectangleXmark} link="orders"/></div>
-            <div className="col-10"></div>
-          </div>
-          :
-          <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
-            <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon={faArrowRotateRight} onClickCallback={this.handleCheckOrders}/></div>
-            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Editar Pedidos" icon={faPenToSquare} onClickCallback={this.handleEditMode}/></div>
-            <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon={faSquarePlus} link="createOrder"/></div>
-            <div class="flex-grow-1"style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
-            <div className="col-8"></div>
-          </div>
-        }
+        <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
+          <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon={faArrowRotateRight} onClickCallback={this.handleCheckOrders}/></div>
+          <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Editar Pedidos" icon={faPenToSquare} onClickCallback={this.handleEditMode}/></div>
+          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon={faSquarePlus} link="createOrder"/></div>
+          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
+          <div className="col-8"></div>
+        </div>
 
         <div style={orderPanelStyling}>
           <div style={{display: 'flex'}}>

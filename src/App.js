@@ -82,9 +82,6 @@ class App extends Component {
             <Route exact path="/problematicChats">
               <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
-            <Route exact path="/createOrder">
-              <div style={{margin: '15px'}}><AddOrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
-            </Route>
             <Route exact path="/createItem" 
               render={(props) => (
                 <div style={{margin: '15px'}}>
@@ -93,6 +90,13 @@ class App extends Component {
                     showPopup={this.props.showPopup} 
                     setIsLoading={this.setIsLoading} 
                   />
+                </div>
+              )} 
+            />
+            <Route exact path="/createOrder" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <AddOrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />

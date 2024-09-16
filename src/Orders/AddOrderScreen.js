@@ -14,16 +14,19 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 class AddOrderScreen extends Component {
     constructor(props) {
         super(props);
+
+        const orderData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
     
         this.state = {
             clientNumbers: [],
             inventoryItemCodes: [],
             movilObjs: null,
-            clientNumber: "",
-            pointsUsed: 0,
-            movil: "",
-            items: [],
-            deliveryDate: new Date()
+            clientNumber: orderData?.clientNumber ?? "",
+            pointsUsed: orderData?.pointsUsed ?? 0,
+            movil: orderData?.movil ?? "",
+            items: orderData?.items ?? [],
+            deliveryDate: orderData?.deliveryDate ?? new Date(),
+            isCreateOrder: orderData == undefined
         };
     }
 
