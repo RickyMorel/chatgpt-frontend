@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
 import Select from 'react-select';
+import Utils from '../Utils';
 
 class CustomSelect extends Component {
     constructor(props) {
@@ -10,7 +11,7 @@ class CustomSelect extends Component {
     }
 
     render() {
-        const { options, onChange, value, isSearchable, placeHolderText, width, height, isMulti = false } = this.props;
+        const { options, onChange, value, isSearchable, placeHolderText, width, height, hasError, isMulti = false } = this.props;
 
         const customStyles = {
             control: (provided) => ({
@@ -20,8 +21,8 @@ class CustomSelect extends Component {
               width: width ?? '800px',
               height: height ?? '75px',
               borderRadius: '10px',
-              boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
-              border: `1px solid ${ColorHex.BorderColor}`,
+              boxShadow: hasError ? `0px 5px 5px ${Utils.hexToRgba(ColorHex.RedFabri, 0.5)}` : '0px 5px 5px rgba(0, 0, 0, 0.3)',
+              border: hasError ? `1px solid ${Utils.hexToRgba(ColorHex.RedFabri, 0.5)}` : `1px solid ${ColorHex.BorderColor}`,
               position: 'relative',
               display: 'flex',
               alignItems: 'center',

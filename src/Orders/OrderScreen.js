@@ -329,10 +329,9 @@ class OrderScreen extends Component {
 
         <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
           <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon={faArrowRotateRight} onClickCallback={this.handleCheckOrders}/></div>
-          <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Editar Pedidos" icon={faPenToSquare} onClickCallback={this.handleEditMode}/></div>
           <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon={faSquarePlus} link="createOrder"/></div>
           <div class="flex-grow-1"style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
-          <div className="col-8"></div>
+          <div className="col-9"></div>
         </div>
 
         <div style={orderPanelStyling}>

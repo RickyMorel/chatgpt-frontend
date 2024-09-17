@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons';
+import Utils from '../Utils';
 
 class CustomDatePicker extends Component {
     constructor(props) {
@@ -21,7 +22,7 @@ class CustomDatePicker extends Component {
     };
 
     render() {
-        const { selected, onChange, width, height, includeButton = true } = this.props;
+        const { selected, onChange, width, height, hasError, includeButton = true } = this.props;
 
         const styling = {
             backgroundColor: ColorHex.White,
@@ -29,8 +30,8 @@ class CustomDatePicker extends Component {
             width: width ?? '700px',
             height: height ?? '75px',
             borderRadius: '10px',
-            boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
-            border: `1px solid ${ColorHex.BorderColor}`,
+            boxShadow: hasError ? `0px 5px 5px ${Utils.hexToRgba(ColorHex.RedFabri, 0.5)}` : '0px 5px 5px rgba(0, 0, 0, 0.3)',
+            border: hasError ? `1px solid ${Utils.hexToRgba(ColorHex.RedFabri, 0.5)}` : `1px solid ${ColorHex.BorderColor}`,
             position: 'relative',
             display: 'flex',
             alignItems: 'center',
@@ -48,8 +49,8 @@ class CustomDatePicker extends Component {
             width: height ?? '75px',
             height: height ?? '75px',
             borderRadius: '10px',
-            boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
-            border: `1px solid ${ColorHex.BorderColor}`,
+            boxShadow: hasError ? `0px 5px 5px ${Utils.hexToRgba(ColorHex.RedFabri, 0.5)}` : '0px 5px 5px rgba(0, 0, 0, 0.3)',
+            border: hasError ? `1px solid ${Utils.hexToRgba(ColorHex.RedFabri, 0.5)}` : `1px solid ${ColorHex.BorderColor}`,
             position: 'relative',
             display: 'flex',   
             alignItems: 'center', 

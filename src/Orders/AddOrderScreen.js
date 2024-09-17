@@ -26,10 +26,11 @@ class AddOrderScreen extends Component {
             clientNumber: orderData?.clientNumber ?? "",
             pointsUsed: orderData?.pointsUsed ?? 0,
             movil: orderData?.movil ?? "",
-            items: orderData?.items ?? [],
+            items: orderData?.items?.map(x => ({code: x.code, amount: x.amount})) ?? [],
             deliveryDate: orderData?.deliveryDate ?? new Date(),
             isCreateOrder: orderData == undefined,
-            orderState: orderData?.orderState ?? "CONFIRMED"
+            orderState: orderData?.orderState ?? "CONFIRMED",
+            fieldsWithErrors: []
         };
     }
 
@@ -50,7 +51,7 @@ class AddOrderScreen extends Component {
     
     fetchInventoryItemNames = async () => {
         try {
-        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
+        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getAllNamesWithCodes`);
         this.setState({
             inventoryItemCodes: response.data,
         });
@@ -96,6 +97,8 @@ class AddOrderScreen extends Component {
     }
 
     handleSave = async () => {
+        if(this.hasSaveErrors()) {return;}
+
         try {
             const orderDto = {
                 clientNumber: this.state.clientNumber,
@@ -118,6 +121,43 @@ class AddOrderScreen extends Component {
           } catch (error) {
             this.props.showPopup(error);
           }
+    }
+
+    handleSaveEdit = async () => {
+        const {clientNumber, pointsUsed, movil, items, deliveryDate} = this.state
+
+        if(this.hasSaveErrors()) {return;}
+
+        try {
+            const dto = { 
+                phoneNumber: clientNumber,
+                order: items, 
+                movil: movil, 
+                pointsUsed: pointsUsed,
+                deliveryDate: deliveryDate
+            }
+    
+            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, dto);
+            this.props.history.goBack()         
+          } catch (error) {
+            this.props.showPopup(error);
+          }
+    }
+
+    hasSaveErrors = () => {
+        const {clientNumber, pointsUsed, movil, items, deliveryDate, isCreateOrder} = this.state
+
+        let missingFields = []
+        if(!deliveryDate) { missingFields.push("deliveryDate");}
+        if(!movil || movil.length < 1) { missingFields.push("movil");}
+        if(isCreateOrder && items.length < 1) { missingFields.push("no items");}
+        if(isCreateOrder && (!clientNumber || clientNumber.length < 1)) { missingFields.push("clientNumber");}
+
+        this.setState({
+            fieldsWithErrors: missingFields
+        })
+
+        return missingFields.length > 0
     }
 
     handleClientChange = (value) => {
@@ -151,7 +191,6 @@ class AddOrderScreen extends Component {
     }
 
     handleItemChange = (itemCode, newCode = undefined, newAmount = undefined) => {
-        console.log("handleItemChange", itemCode, newCode, newAmount)
         let allItems = [...this.state.items]
 
         let itemToRemove = allItems.find(x => x.code == itemCode)
@@ -177,7 +216,9 @@ class AddOrderScreen extends Component {
             let i = 0
             while(allItems.find(x => x.code == this.state.inventoryItemCodes[i].code)) { i++}
 
-            allItems.push({code: this.state.inventoryItemCodes[i].code, amount: 1})
+            const wantedItem = this.state.inventoryItemCodes[i]
+
+            allItems.push({code: wantedItem.code, amount: 1})
         }
 
         this.setState({
@@ -186,7 +227,7 @@ class AddOrderScreen extends Component {
     }
 
     render() {
-        const { inventoryItemCodes, clientNumbers, movilObjs } = this.state
+        const { inventoryItemCodes, clientNumbers, movilObjs, isCreateOrder, clientNumber } = this.state
 
         const confirmedState = "CONFIRMED"
         const canceldState = "CANCELED"
@@ -243,27 +284,54 @@ class AddOrderScreen extends Component {
             {value: SURE, label: 'FALTA CONFIRMAR'},
             {value: confirmedState, label: 'Confirmado'},
             {value: canceldState, label: 'Cancelado'}
-          ]
-
+        ]
         
         const addOrderModalNew =             
         <div>
-           <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Crear Pedido</p>
+           <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{isCreateOrder ? 'Crear Pedido' : 'Editar Pedido'}</p>
            <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text="Agregar Pedido" classStyle="btnGreen" width="182px" height="45px" icon={faFloppyDisk} onClickCallback={this.handleSave}/></div>
+                <div class="flex-grow-1" style={{paddingRight: '25px'}}>
+                    {
+                        isCreateOrder ?
+                        <CustomButton text="Agregar Pedido" classStyle="btnGreen" width="182px" height="45px" icon={faFloppyDisk} onClickCallback={this.handleSave}/>
+                        :
+                        <CustomButton text="Guardar" classStyle="btnGreen" width="182px" height="45px" icon={faFloppyDisk} onClickCallback={this.handleSaveEdit}/>
+                    }
+                </div>
                 <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text="Cancelar Pedido" classStyle="btnRed" icon={faRectangleXmark} link="orders"/></div>
                 <div className="col-10"></div>
             </div>
+            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, marginTop: '20px', marginBottom: '-25px'}}>
+                {
+                    this.state.fieldsWithErrors.map(x => {
+                        if(x == 'deliveryDate') {return "*Falta fecha.\n"} 
+                        else if(x == 'movil') {return "*Falta movil.\n"} 
+                        else if(x == 'no items') {return "*Falta agregar items.\n"} 
+                        else if(x == 'clientNumber') {return "*Falta numero de cliente.\n"} 
+                    })
+                }
+            </p>
             <div className="row">
                 <div className="col-6">
                     <p style={headersStyle}>Numero de cliente *</p>
-                    <CustomSelect
-                        placeHolderText={"Ingresar el número de cliente......"}
-                        options={clientNumbersSelect}
-                        onChange={this.handleClientChange}
-                        value={this?.state?.clientNumber ? clientNumbersSelect?.find(x => x.value == this?.state?.clientNumber) : ""}
-                        isSearchable={true}
-                    />
+                    {
+                        isCreateOrder ?
+                        <CustomSelect
+                            placeHolderText={"Ingresar el número de cliente......"}
+                            options={clientNumbersSelect}
+                            onChange={this.handleClientChange}
+                            value={this?.state?.clientNumber ? clientNumbersSelect?.find(x => x.value == this?.state?.clientNumber) : ""}
+                            isSearchable={true}
+                            hasError={this.state.fieldsWithErrors.includes("clientNumber")}
+                        />
+                        :
+                        <CustomInput
+                            width='800px'
+                            height='75px'
+                            value={clientNumber}
+                            canEdit={false}
+                        />
+                    }
                 </div>
                 <div className="col-6">
                     <p style={headersStyle}>Movil *</p>
@@ -272,6 +340,7 @@ class AddOrderScreen extends Component {
                         onChange={this.handleMovilChange}
                         value={movilNames?.find(x => x.value == this?.state?.movil)}
                         isSearchable={true}
+                        hasError={this.state.fieldsWithErrors.includes("movil")}
                     />
                 </div>
             </div>
@@ -281,6 +350,7 @@ class AddOrderScreen extends Component {
                     <CustomDatePicker
                         selected={this.state.deliveryDate}
                         onChange={(date) => this.handleEditDate(date)}
+                        hasError={this.state.fieldsWithErrors.includes("deliveryDate")}
                     />    
                 </div>
                 <div className="col-6">
