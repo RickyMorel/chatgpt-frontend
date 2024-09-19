@@ -354,39 +354,12 @@ class AddOrderScreen extends Component {
                     />    
                 </div>
                 <div className="col-6">
-                    {
-                        !this.state.isCreateOrder ?
-                        <div className='row'>
-                            <div className="col-9">
-                                <p style={headersStyle}>Estado Del Pedido *</p>
-                                <CustomSelect
-                                    width='600px'
-                                    options={botStateOptions}
-                                    onChange={this.handleOrderStateChange}
-                                    value={botStateOptions.find(x => x.value == this.state.orderState) ?? botStateOptions[0]}
-                                    isSearchable={false}
-                                />
-                            </div>
-                            <div className="col-3">
-                                <p style={headersStyle}>Puntos</p>
-                                <CustomInput
-                                    placeHolderText="Ingresar puntos de descuento usados......"
-                                    dataType="number"
-                                    onChange={this.handlePointsChange}
-                                    width='150px'
-                                />
-                            </div>
-                        </div>
-                        :
-                        <>
-                            <p style={headersStyle}>Puntos</p>
-                            <CustomInput
-                                placeHolderText="Ingresar puntos de descuento usados......"
-                                dataType="number"
-                                onChange={this.handlePointsChange}
-                            />
-                        </>
-                    }
+                    <p style={headersStyle}>Puntos</p>
+                    <CustomInput
+                        placeHolderText="Ingresar puntos de descuento usados......"
+                        dataType="number"
+                        onChange={this.handlePointsChange}
+                    />
                 </div>
             </div>
 

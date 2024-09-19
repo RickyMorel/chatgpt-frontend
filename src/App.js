@@ -16,6 +16,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import AddOrderScreen from './Orders/AddOrderScreen';
 import InventoryEditItemScreen from './Inventory/InventoryEditItemScreen';
 import EditClientScreen from './BotBlocker/EditClientScreen';
+import ClientStatsScreen from './Stats/ClientStatsScreen';
 
 class App extends Component {
   constructor(props) {
@@ -78,6 +79,9 @@ class App extends Component {
             </Route>
             <Route exact path="/orders">
               <div style={{margin: '15px'}}><OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
+            </Route>
+            <Route exact path="/stats/clients">
+              <div style={{margin: '15px'}}><ClientStatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/problematicChats">
               <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>

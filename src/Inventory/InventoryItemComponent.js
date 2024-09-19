@@ -17,8 +17,6 @@ class InventoryItemComponent extends React.Component {
         const formattedNumber = new Intl.NumberFormat('es-PY', {
           style: 'currency',
           currency: 'PYG',
-          minimumFractionDigits: 3,
-          maximumFractionDigits: 3,
         }).format(number);
       
         return `${formattedNumber}`;

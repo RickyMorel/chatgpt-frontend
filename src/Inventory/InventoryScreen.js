@@ -84,9 +84,9 @@ class InventoryScreen extends Component {
                 filteredSelectedDayInventory: selectedInventoryItems,
                 promoItemCodes: response.data.dayInventories[0].promoItemCodes,
                 nextDayIndex: response.data.nextMessageDayIndex
-            }).then(x => {
-                this.handleDayTabClick(this.state.nextDayIndex) 
-            });
+            })
+
+            this.handleDayTabClick(response.data.nextMessageDayIndex, response.data.dayInventories)
 
         } catch (error) {}
     }
@@ -151,10 +151,8 @@ class InventoryScreen extends Component {
         }
     }
 
-    handleDayTabClick = async (selectedItem) => {
-        const selectedDayNumber = selectedItem.value
-        const allInventories = this.state.dayInventories
-        console.log("allInventories", allInventories, "selectedDayNumber", selectedDayNumber)
+    handleDayTabClick = async (selectedDayNumber, dayInventories = undefined) => {
+        const allInventories = dayInventories ?? this.state.dayInventories
         let selectedInventoryItems = {day: allInventories[selectedDayNumber].day , items: this.state.products.filter(x => allInventories[selectedDayNumber].itemIds.includes(x.code))}
 
         this.setState({
@@ -376,7 +374,7 @@ class InventoryScreen extends Component {
                             width='292px'
                             height='45px'
                             options={dayDropdownOptions}
-                            onChange={(value) => this.handleDayTabClick(value)}
+                            onChange={(value) => this.handleDayTabClick(value.value)}
                             value={dayDropdownOptions.find(x => x.value == selectedDayNumber)}
                             isSearchable={false}
                         />
@@ -387,7 +385,7 @@ class InventoryScreen extends Component {
                     <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
                         {
                             this.state.needsToSave ? 
-                            <CustomButton text="Guardar Cambios"  width="195px" height="45px" classStyle='btnGreen' icon={faFloppyDisk} onClickCallback={this.saveDailyInventories}/>
+                            <CustomButton text="Guardar Cambios"  width="195px" height="45px" classStyle='btnBlue-clicked' icon={faFloppyDisk} onClickCallback={this.saveDailyInventories}/>
                             :
                             <></>
                         }
