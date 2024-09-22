@@ -290,7 +290,6 @@ class OrderScreen extends Component {
       overflowY: 'scroll', 
       height: '55vh',
       width: '100%',
-      // overflowX: 'hidden',
       alignItems: 'center'
     }
 

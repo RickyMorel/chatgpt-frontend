@@ -17,8 +17,6 @@ class AddOrderScreen extends Component {
 
         const orderData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
 
-        console.log("orderData", orderData)
-    
         this.state = {
             clientNumbers: [],
             inventoryItemCodes: [],

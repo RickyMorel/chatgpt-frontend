@@ -4,6 +4,10 @@ import '../MultiSelect.css';
 import TimeBlock from './TimeBlock';
 import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material';
 import { Color, ColorHex } from '../Colors';
+import CssProperties from '../CssProperties';
+import StatCard from '../Searchbar/StatCard';
+import { faHouseChimney, faHouseChimneyUser, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import CustomButton from '../Searchbar/CustomButton';
 
 class DayLocationForm extends Component {
   constructor(props) {
@@ -311,9 +315,11 @@ class DayLocationForm extends Component {
       const selectedLocations = this.state.locations.find(x => x.day === dayIndex)?.locations ?? []
 
       return(
-        <div className={dayIndex == this.state.nextDayIndex ? `row ${Color.Third}` : `row`}>
-            <div class="col s3"><p class='text-bold'>{dayIndex == this.state.nextDayIndex ? `Hoy Mensajea => ${x}` : x}</p></div>
-            <div class="col s5">
+        <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
+            <div class="col-4">
+              <p class='text-bold'>{dayIndex == this.state.nextDayIndex ? `Hoy Mensajea => ${x}` : x}</p>
+            </div>
+            <div class="col-4">
               {
                 this.state.isEditingLocations == true ?
                 <input type="text" maxLength={18} placeholder='Mañana' value={time} onChange={(e) => this.handleTimeChange(x, e.target.value)}/>
@@ -321,7 +327,7 @@ class DayLocationForm extends Component {
                 <p>{time == "" ? "Elejir Tiempo" : time}</p>
               }
             </div>
-            <div class="col s4">
+            <div class="col-4">
               {
                 this.state.isEditingLocations == true ?
                 <FormControl style={{ width: '100%' }}>
@@ -357,67 +363,127 @@ class DayLocationForm extends Component {
 
     const timeBlocks = this.state.timeSets.map(x => <li><TimeBlock isEditing={this.state.isEditingLocations} id={x.id} set={x.set} changeTimesCallback={this.handleChangeProcessTimes}/></li>)
 
+    const timesScrollHtml = 
+      <div style={{ alignItems: 'center', width: '100%', marginTop: '25px'}}>
+           <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
+            <div style={headerStyle} className='col-4'>Dia de Mensaje</div>
+            <div style={headerStyle} className='col-4'>Tiempo de Entrega</div>
+            <div style={headerStyle} className='col-4'>Zonas de Entrega</div>
+           </div>
+
+           <div style={scrollStyle}>
+              {dayLocationsHtml}
+           </div>
+      </div>
+
     return (
-      <div className={`card bordered ${Color.Background}`}>
-        <div className="card-content">
-          <nav>
-            <div className={`nav-wrapper ${Color.Background}`}>
-              <ul id="nav-mobile" className="valign-wrapper" style={{ display: "flex", justifyContent: "space-between" }}>
-                <li className='black-text' style={textStyle}>Tiempo en el que envia los mensajes:</li>
-                {timeBlocks}
-                {
-                  this.state.isEditingLocations ? 
-                  <div className='row'>
-                    <div className="col s6">
-                      <button onClick={this.handleAddTimeSet} className={`waves-effect waves-light btn ${Color.Fifth}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
-                        <i className="material-icons" style={{ fontSize: '18px' }}>add_circle_outline</i>  
-                      </button>
-                    </div>
-                    <div className='col s6'>
-                      {
-                        this.state.timeSets.length > 0 ?
-                        <button onClick={this.handleRemoveTimeSet} className={`waves-effect waves-light btn ${Color.First}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
-                          <i className="material-icons" style={{ fontSize: '18px' }}>remove_circle_outline</i>
-                        </button>
-                        :
-                        <div></div>
-                      }
-                    </div>
-                  </div>
-                  : 
-                  <div></div>
-                }
-                {
-                  this.state.isEditingLocations ? 
-                  <div></div>
-                  :
-                  <a style={textStyle} className={`waves-effect waves-light btn ${this.state?.canMessageTommorrowsClients ? Color.Fifth : Color.First}`} onClick={this.handleSendMessages}>Enviar Mensajes Ahora</a>
-                }
-              </ul>
-            </div>
-          </nav>
-          <br />
-          <br />
-          <h6 className="center-align"><strong>Tiempos de entrega</strong></h6>
-          <form className="container">
-            <hr />
-            <div className="row">
-              <div className="col s4"><strong>Día de Mensaje</strong></div>
-              <div className="col s4"><strong>Día de entrega</strong></div>
-              <div className="col s4"><strong>Zona de entrega</strong></div>
-            </div>
-            {dayLocationsHtml}
-            <hr />
-            <br />
-            <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleEditLocations}>
-              <i className="material-icons left">{this.state.isEditingLocations ? "save" : "edit"}</i>
-              {this.state.isEditingLocations ? "Save" : "Edit"}
-            </button>
-          </form>
+      <div>
+        <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Tiempos & Lugares</p>
+        
+        <div style={{display: 'flex'}}>
+            <div class="flex-grow-1"><StatCard title="Semana de:" amountFunction={() => `Sep 15 - Sep 21`}/></div>
+            <div className="col-11"></div>
+        </div>
+
+        <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
+          <div class="flex-grow-1"><CustomButton text="Editar Tiempos & Mensajes" icon={faPenToSquare} onClickCallback={this.handleCheckOrders}/></div>
+          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Ver Barrios & Moviles" icon={faHouseChimneyUser} link="createOrder"/></div>
+          <div className="col-10"></div>
+        </div>
+
+        <div style={orderPanelStyling}>
+          {timesScrollHtml}
         </div>
       </div>
+      // <div className={`card bordered ${Color.Background}`}>
+      //   <div className="card-content">
+      //     <nav>
+      //       <div className={`nav-wrapper ${Color.Background}`}>
+      //         <ul id="nav-mobile" className="valign-wrapper" style={{ display: "flex", justifyContent: "space-between" }}>
+      //           <li className='black-text' style={textStyle}>Tiempo en el que envia los mensajes:</li>
+      //           {timeBlocks}
+      //           {
+      //             this.state.isEditingLocations ? 
+      //             <div className='row'>
+      //               <div className="col s6">
+      //                 <button onClick={this.handleAddTimeSet} className={`waves-effect waves-light btn ${Color.Fifth}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
+      //                   <i className="material-icons" style={{ fontSize: '18px' }}>add_circle_outline</i>  
+      //                 </button>
+      //               </div>
+      //               <div className='col s6'>
+      //                 {
+      //                   this.state.timeSets.length > 0 ?
+      //                   <button onClick={this.handleRemoveTimeSet} className={`waves-effect waves-light btn ${Color.First}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
+      //                     <i className="material-icons" style={{ fontSize: '18px' }}>remove_circle_outline</i>
+      //                   </button>
+      //                   :
+      //                   <div></div>
+      //                 }
+      //               </div>
+      //             </div>
+      //             : 
+      //             <div></div>
+      //           }
+      //           {
+      //             this.state.isEditingLocations ? 
+      //             <div></div>
+      //             :
+      //             <a style={textStyle} className={`waves-effect waves-light btn ${this.state?.canMessageTommorrowsClients ? Color.Fifth : Color.First}`} onClick={this.handleSendMessages}>Enviar Mensajes Ahora</a>
+      //           }
+      //         </ul>
+      //       </div>
+      //     </nav>
+      //     <br />
+      //     <br />
+      //     <h6 className="center-align"><strong>Tiempos de entrega</strong></h6>
+      //     <form className="container">
+      //       <hr />
+      //       <div className="row">
+      //         <div className="col s4"><strong>Día de Mensaje</strong></div>
+      //         <div className="col s4"><strong>Día de entrega</strong></div>
+      //         <div className="col s4"><strong>Zona de entrega</strong></div>
+      //       </div>
+      //       {dayLocationsHtml}
+      //       <hr />
+      //       <br />
+      //       <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleEditLocations}>
+      //         <i className="material-icons left">{this.state.isEditingLocations ? "save" : "edit"}</i>
+      //         {this.state.isEditingLocations ? "Save" : "Edit"}
+      //       </button>
+      //     </form>
+      //   </div>
+      // </div>
     );
   }
+}
+
+const orderPanelStyling = {
+  width: '100%',
+  height: '70vh',
+  marginTop: '10px',
+  marginTop: '25px',
+  padding: '25px',
+  boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+  border: `1px solid ${ColorHex.BorderColor}`,
+  borderRadius: '10px',
+  backgroundColor: ColorHex.White
+}
+
+const headerStyle = {
+  textAlign: 'center',
+  color: ColorHex.TextBody,
+  ...CssProperties.SmallHeaderTextStyle
+}
+
+const scrollStyle = {
+  borderRadius: '10px',
+  backgroundColor: ColorHex.Background,
+  padding: '10px',
+  boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
+  overflowY: 'scroll', 
+  height: '55vh',
+  width: '100%',
+  alignItems: 'center'
 }
 
 export default DayLocationForm;

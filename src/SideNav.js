@@ -86,7 +86,7 @@ function SideNav(props)  {
     {icon: faCartShopping, nameText: "Pedidos", link: "/orders"},
     {icon: faUserGroup, nameText: "Clientes", link: "/blockChats"},
     {icon: faClipboardList, nameText: "Inventario", link: "/inventory"},
-    {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
+    // {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
     {icon: faClock, nameText: "Tiempos y Lugares", link: "/dayLocation"},
     {icon: faCloud, nameText: "Cargar Datos", link: "/"},
   ]
