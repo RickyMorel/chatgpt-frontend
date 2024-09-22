@@ -8,6 +8,8 @@ import CssProperties from '../CssProperties';
 import StatCard from '../Searchbar/StatCard';
 import { faHouseChimney, faHouseChimneyUser, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import CustomButton from '../Searchbar/CustomButton';
+import CustomInput from '../Searchbar/CustomInput';
+import { faFloppyDisk, faRectangleXmark } from '@fortawesome/free-regular-svg-icons';
 
 class DayLocationForm extends Component {
   constructor(props) {
@@ -155,10 +157,8 @@ class DayLocationForm extends Component {
     });
   };
 
-  handleSubmit = async (e, isEdting) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
-
-    if(isEdting) {return}
 
     if(this.state.locations.length != 7) {this.props.showPopup(new Error("No se lleno los 7 dias")); return}
     if(this.state.locations.includes(x => x.time == "" || x.time == undefined))
@@ -255,8 +255,6 @@ class DayLocationForm extends Component {
         isEditingLocations: isEdting
       })
     }
-
-    this.handleSubmit(e, isEdting)
   };
 
   isTime1Bigger(time1, time2) {
@@ -292,7 +290,9 @@ class DayLocationForm extends Component {
     const dayLocationsHtml = this.state.days.map(x => {
       const dayIndex = this.state.days.indexOf(x)
       const locations = this.state.locations.find(x => x.day == dayIndex) ? this.state.locations.find(x => x.day == dayIndex).locations : []
-      const time = this.state.locations.find(x => x.day == dayIndex)?.time ? this.state.locations.find(x => x.day == dayIndex).time : ""
+      const time = this.state?.locations?.find(x => x.day == dayIndex)?.time ? this.state?.locations?.find(x => x.day == dayIndex)?.time : ""
+
+      console.log("time", time)
       let locationsString = ""
 
       locations?.forEach(location => {
@@ -315,48 +315,55 @@ class DayLocationForm extends Component {
       const selectedLocations = this.state.locations.find(x => x.day === dayIndex)?.locations ?? []
 
       return(
-        <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
-            <div class="col-4">
-              <p class='text-bold'>{dayIndex == this.state.nextDayIndex ? `Hoy Mensajea => ${x}` : x}</p>
-            </div>
-            <div class="col-4">
-              {
-                this.state.isEditingLocations == true ?
-                <input type="text" maxLength={18} placeholder='Mañana' value={time} onChange={(e) => this.handleTimeChange(x, e.target.value)}/>
-                :
-                <p>{time == "" ? "Elejir Tiempo" : time}</p>
-              }
-            </div>
-            <div class="col-4">
-              {
-                this.state.isEditingLocations == true ?
-                <FormControl style={{ width: '100%' }}>
-                    <Select
-                        labelId="locations-label"
-                        multiple
-                        value={selectedLocations}
-                        onChange={(e) => this.handleLocationChange(e, x, null)}
-                        renderValue={(selected) => selected.join(', ')}
-                    >
-                        {orderedLocations.map((location) => (
-                            <MenuItem 
-                                key={location} 
-                                value={location} 
-                                style={{ 
-                                    fontWeight: selectedLocations?.includes(location) ? 'bold' : 'normal', 
-                                    color: selectedLocations?.includes(location) ? 'blue' : 'black',
-                                    backgroundColor: selectedLocations?.includes(location) ? ColorHex.Third : 'white'
-                                }}
-                            >
-                                {location}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                :
-                <p>{finalLocationsString == "" ? "-" : finalLocationsString}</p>
-              }
-            </div>
+        <div style={{ alignItems: 'center', width: '98%', display: 'flex', justifyContent: 'space-between'}}>
+          <div className="col-4 d-flex justify-content-center align-items-center">
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>
+                  {dayIndex == this.state.nextDayIndex ? `Hoy Mensajea => ${x}` : x}
+              </p>
+          </div>
+          <div className="col-4 d-flex justify-content-center align-items-center">
+              {this.state.isEditingLocations == true ? (
+                  <CustomInput
+                    maxLength={18}
+                    placeholder='Mañana'
+                    value={time}
+                    onChange={(itemValue) => this.handleTimeChange(x, itemValue)}
+                    width="90%"
+                  />
+              ) : (
+                  <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{time == "" ? "Elejir Tiempo" : time}</p>
+              )}
+          </div>
+          <div className="col-4 d-flex justify-content-center align-items-center">
+              {this.state.isEditingLocations == true ? (
+                  <FormControl style={{ width: '90%' }}>
+                      <Select
+                          labelId="locations-label"
+                          multiple
+                          value={selectedLocations}
+                          onChange={(e) => this.handleLocationChange(e, x, null)}
+                          renderValue={(selected) => selected.join(', ')}
+                          style={{backgroundColor: ColorHex.White, borderRadius: '10px', height: '75px'}}
+                      >
+                          {orderedLocations.map((location) => (
+                              <MenuItem
+                                  key={location}
+                                  value={location}
+                                  style={{
+                                      fontWeight: selectedLocations?.includes(location) ? 'bold' : 'normal',
+                                      color: selectedLocations?.includes(location) ? 'blue' : 'black',
+                                      backgroundColor: selectedLocations?.includes(location) ? ColorHex.Third : 'white',
+                                  }}
+                              >
+                                  {location}
+                              </MenuItem>
+                          ))}
+                      </Select>
+                  </FormControl>
+              ) : (
+                  <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{finalLocationsString == "" ? "-" : finalLocationsString}</p>
+              )}
+          </div>
         </div>
       )
     })
@@ -386,8 +393,18 @@ class DayLocationForm extends Component {
         </div>
 
         <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
-          <div class="flex-grow-1"><CustomButton text="Editar Tiempos & Mensajes" icon={faPenToSquare} onClickCallback={this.handleCheckOrders}/></div>
-          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Ver Barrios & Moviles" icon={faHouseChimneyUser} link="createOrder"/></div>
+          {
+            this.state.isEditingLocations ?
+            <>
+              <div class="flex-grow-1"><CustomButton text="Guardar Cambios" classStyle="btnGreen" width="182px" height="45px" icon={faFloppyDisk} onClickCallback={this.handleSubmit}/></div>
+              <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Cancelar Cambios" classStyle="btnRed" icon={faRectangleXmark} onClickCallback={() => window.location.reload()}/></div>
+            </>
+            :
+            <>
+              <div class="flex-grow-1"><CustomButton text="Editar Tiempos & Mensajes" icon={faPenToSquare} onClickCallback={this.handleEditLocations}/></div>
+              <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Ver Barrios & Moviles" icon={faHouseChimneyUser} link="createOrder"/></div>
+            </>
+          }
           <div className="col-10"></div>
         </div>
 
