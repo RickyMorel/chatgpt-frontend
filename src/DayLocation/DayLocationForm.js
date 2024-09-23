@@ -10,6 +10,7 @@ import { faHouseChimney, faHouseChimneyUser, faPenToSquare } from '@fortawesome/
 import CustomButton from '../Searchbar/CustomButton';
 import CustomInput from '../Searchbar/CustomInput';
 import { faFloppyDisk, faRectangleXmark } from '@fortawesome/free-regular-svg-icons';
+import Utils from '../Utils';
 
 class DayLocationForm extends Component {
   constructor(props) {
@@ -300,25 +301,13 @@ class DayLocationForm extends Component {
       });
 
       const finalLocationsString = locationsString.substring(0, locationsString.length-2)
-
-      const selectStyle = {
-        width: '100%',
-        height: '60px',
-        border: 'none',
-        outline: 'none',
-        appearance: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
-        display: 'block' 
-      };
-
       const selectedLocations = this.state.locations.find(x => x.day === dayIndex)?.locations ?? []
 
       return(
         <div style={{ alignItems: 'center', width: '98%', display: 'flex', justifyContent: 'space-between'}}>
           <div className="col-4 d-flex justify-content-center align-items-center">
               <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>
-                  {dayIndex == this.state.nextDayIndex ? `Hoy Mensajea => ${x}` : x}
+                  {dayIndex == this.state.nextDayIndex ? `${x} (Dia de mensajes)` : x}
               </p>
           </div>
           <div className="col-4 d-flex justify-content-center align-items-center">
@@ -368,7 +357,7 @@ class DayLocationForm extends Component {
       )
     })
 
-    const timeBlocks = this.state.timeSets.map(x => <li><TimeBlock isEditing={this.state.isEditingLocations} id={x.id} set={x.set} changeTimesCallback={this.handleChangeProcessTimes}/></li>)
+    const timeBlocks = this.state.timeSets.map(x => <TimeBlock isEditing={this.state.isEditingLocations} id={x.id} set={x.set} changeTimesCallback={this.handleChangeProcessTimes}/>)
 
     const timesScrollHtml = 
       <div style={{ alignItems: 'center', width: '100%', marginTop: '25px'}}>
@@ -388,7 +377,7 @@ class DayLocationForm extends Component {
         <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Tiempos & Lugares</p>
         
         <div style={{display: 'flex'}}>
-            <div class="flex-grow-1"><StatCard title="Semana de:" amountFunction={() => `Sep 15 - Sep 21`}/></div>
+            <div class="flex-grow-1"><StatCard title="Semana de:" amountFunction={() => `${Utils.formatDate(Utils.getWeekRange().startOfWeek)} - ${Utils.formatDate(Utils.getWeekRange().endOfWeek)}`}/></div>
             <div className="col-11"></div>
         </div>
 
@@ -408,7 +397,16 @@ class DayLocationForm extends Component {
           <div className="col-10"></div>
         </div>
 
-        <div style={orderPanelStyling}>
+        <div style={{...orderPanelStyling, height: '75px'}}>
+          <div style={{display: 'flex'}}>
+            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>Horarios de Envio de Mensajes:</p>
+            {/* {timeBlocks} */}
+            <TimeBlock isEditing={this.state.isEditingLocations} id={1} set={{startTime: "00:00", endTime: "00:00"}} changeTimesCallback={this.handleChangeProcessTimes}/>
+            <TimeBlock isEditing={this.state.isEditingLocations} id={1} set={{startTime: "00:00", endTime: "00:00"}} changeTimesCallback={this.handleChangeProcessTimes}/>
+          </div>
+        </div>
+
+        <div style={{...orderPanelStyling, height: '70vh'}}>
           {timesScrollHtml}
         </div>
       </div>
@@ -476,7 +474,6 @@ class DayLocationForm extends Component {
 
 const orderPanelStyling = {
   width: '100%',
-  height: '70vh',
   marginTop: '10px',
   marginTop: '25px',
   padding: '25px',

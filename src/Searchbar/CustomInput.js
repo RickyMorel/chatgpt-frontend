@@ -37,7 +37,7 @@ class CustomInput extends Component {
     };
 
     render() {
-        const { placeHolderText, dataType, onChange, width, height, hasError, canEdit = true } = this.props;
+        const { placeHolderText, dataType, onChange, width, height, hasError, noPadding = false, canEdit = true } = this.props;
 
         const styling = {
             backgroundColor: canEdit ? ColorHex.White : ColorHex.Background,
@@ -51,8 +51,8 @@ class CustomInput extends Component {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingLeft: '15px',
-            paddingRight: '15px',
+            paddingLeft: noPadding ? '15px' : '0px',
+            paddingRight: noPadding ? '15px' : '0px',
             textAlign: 'center',
             outline: 'none',
             ...CssProperties.SmallHeaderTextStyle,

@@ -37,7 +37,37 @@ class Utils {
         }
         
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
+    static getWeekRange() {
+      const today = new Date();
+      
+      // Get the current day of the week (0 - Sunday, 6 - Saturday)
+      const dayOfWeek = today.getDay();
+  
+      // Calculate the difference to the start of the week (Sunday)
+      const diffToStartOfWeek = dayOfWeek; // Sunday is 0, so no need to add 1
+      
+      // Calculate the difference to the end of the week (Saturday)
+      const diffToEndOfWeek = 6 - dayOfWeek; // Saturday is 6
+  
+      // Get the start and end dates
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - diffToStartOfWeek);
+  
+      const endOfWeek = new Date(today);
+      endOfWeek.setDate(today.getDate() + diffToEndOfWeek);
+  
+      return {
+          startOfWeek,
+          endOfWeek
       };
+  }
+
+  static formatDate(date) {
+    const options = { month: 'short', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options).replace(",", " -");
+  }
 }
 
 export default Utils

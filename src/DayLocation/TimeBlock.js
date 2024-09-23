@@ -1,5 +1,8 @@
 import React, { Component, createRef } from 'react';
 import '../MultiSelect.css';
+import CssProperties from '../CssProperties';
+import { ColorHex } from '../Colors';
+import CustomInput from '../Searchbar/CustomInput';
 
 class TimeBlock extends Component {
   constructor(props) {
@@ -37,29 +40,19 @@ class TimeBlock extends Component {
     const textStyle = {
       "margin-left": "5%"
     };
-    const textStyle2 = {
-      "margin-left": "50%",
-      "marginRight": "50%" 
-    };
 
     return (
-        <div>
+        <div style={{width: '216px', height: '50px', marginLeft: '25px'}}>
             {
             this.props.isEditing ? 
-            <div className='row'>
-                <div className='col s5'><input value={this.state?.startTime} style={textStyle} type="time" onChange={(e) => this.handleChangeProcessTimes(e, 1)}/></div>
-                <div className="col s1 black-text"><h5>-</h5></div>
-                <div className='col s5'><input value={this.state?.endTime} style={textStyle} type="time" onChange={(e) => this.handleChangeProcessTimes(e, 2)}/></div>
+            <div style={{display: 'flex', marginTop: '-5px'}}>
+                <CustomInput value={this.state?.startTime} style={textStyle} noPadding={true} width='125px' height='40px' dataType="time" onChange={(e) => this.handleChangeProcessTimes(e, 1)}/>
+                <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>-</p>
+                <CustomInput value={this.state?.endTime} style={textStyle} noPadding={true} width='105px' height='40px' dataType="time" onChange={(e) => this.handleChangeProcessTimes(e, 2)}/>
             </div>   
             : 
-            // <div>
-            //     <p>{"__:__?"}</p>
-            //     {/* <p>{this.state?.endTime ?? "__:__?"}</p> */}
-            // </div>
-            <div className='row'>
-                <div className='col s5 black-text'>{this.state?.startTime ?? "__:__?"}</div>
-                <div className='col s1 black-text'>-</div>
-                <div className='col s5 black-text'>{this.state?.endTime ?? "__:__?"}</div>
+            <div style={{display: 'flex'}}>
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{this.state?.startTime ?? "__:__?"}-{this.state?.endTime ?? "__:__?"}</p>
             </div>
             }
         </div>
