@@ -9,7 +9,7 @@ import StatCard from '../Searchbar/StatCard';
 import { faHouseChimney, faHouseChimneyUser, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import CustomButton from '../Searchbar/CustomButton';
 import CustomInput from '../Searchbar/CustomInput';
-import { faFloppyDisk, faRectangleXmark } from '@fortawesome/free-regular-svg-icons';
+import { faFloppyDisk, faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 import Utils from '../Utils';
 
 class DayLocationForm extends Component {
@@ -124,17 +124,18 @@ class DayLocationForm extends Component {
   handleAddTimeSet = () => {
     let newTimeSets = [...this.state.timeSets]
 
-    newTimeSets.push({id: this.state.timeSets.length - 1, set: {startTime: "00:00", endTime: "00:00"}})
+    newTimeSets.push({id: this.state.timeSets.length + 1, set: {startTime: "00:00", endTime: "00:00"}})
 
     this.setState({
-      timeSets: newTimeSets
+      timeSets: newTimeSets,
+      isEditingLocations: true
     })
   }
 
-  handleRemoveTimeSet = () => {
+  handleRemoveTimeSet = (idToRemove) => {
     let newTimeSets = [...this.state.timeSets]
 
-    newTimeSets.pop()
+    newTimeSets = newTimeSets.filter(x => x.id != idToRemove)
 
     this.setState({
       timeSets: newTimeSets
@@ -221,7 +222,7 @@ class DayLocationForm extends Component {
   }
 
   handleChangeProcessTimes = (id, timeSet) => {
-    console.log("timeSet", timeSet)
+    console.log("timeSet", id, timeSet)
     let newTimeSets = [...this.state.timeSets]
 
     let prevTimeIndex = newTimeSets.indexOf(x => x.id != id)
@@ -320,7 +321,7 @@ class DayLocationForm extends Component {
                     width="90%"
                   />
               ) : (
-                  <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{time == "" ? "Elejir Tiempo" : time}</p>
+                <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{time == "" ? "Elejir Tiempo" : time}</p>
               )}
           </div>
           <div className="col-4 d-flex justify-content-center align-items-center">
@@ -357,7 +358,7 @@ class DayLocationForm extends Component {
       )
     })
 
-    const timeBlocks = this.state.timeSets.map(x => <TimeBlock isEditing={this.state.isEditingLocations} id={x.id} set={x.set} changeTimesCallback={this.handleChangeProcessTimes}/>)
+    const timeBlocks = this.state.timeSets.map(x => <TimeBlock isEditing={this.state.isEditingLocations} id={x.id} set={x.set} changeTimesCallback={this.handleChangeProcessTimes} removeTimeCallback={this.handleRemoveTimeSet}/>)
 
     const timesScrollHtml = 
       <div style={{ alignItems: 'center', width: '100%', marginTop: '25px'}}>
@@ -398,13 +399,17 @@ class DayLocationForm extends Component {
         </div>
 
         <div style={{...orderPanelStyling, height: '75px'}}>
-          <div style={{display: 'flex'}}>
-            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>Horarios de Envio de Mensajes:</p>
-            {/* {timeBlocks} */}
-            <TimeBlock isEditing={this.state.isEditingLocations} id={1} set={{startTime: "00:00", endTime: "00:00"}} changeTimesCallback={this.handleChangeProcessTimes}/>
-            <TimeBlock isEditing={this.state.isEditingLocations} id={1} set={{startTime: "00:00", endTime: "00:00"}} changeTimesCallback={this.handleChangeProcessTimes}/>
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <div style={{display: 'flex', flexGrow: 1, alignItems: 'center'}}>
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>Horarios de Envio de Mensajes:</p>
+              {timeBlocks}
+            </div>
+            <div style={{marginTop: '-20px'}}>
+              <CustomButton width='186px' height="45px" text="Agregar Horario" icon={faSquarePlus} onClickCallback={this.handleAddTimeSet} />
+            </div>
           </div>
         </div>
+
 
         <div style={{...orderPanelStyling, height: '70vh'}}>
           {timesScrollHtml}

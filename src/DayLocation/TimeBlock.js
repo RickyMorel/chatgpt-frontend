@@ -3,6 +3,8 @@ import '../MultiSelect.css';
 import CssProperties from '../CssProperties';
 import { ColorHex } from '../Colors';
 import CustomInput from '../Searchbar/CustomInput';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import CustomButton from '../Searchbar/CustomButton';
 
 class TimeBlock extends Component {
   constructor(props) {
@@ -23,36 +25,37 @@ class TimeBlock extends Component {
     })
   }
 
-  handleChangeProcessTimes = (e, processTimeId) => {
+  handleChangeProcessTimes = (value, processTimeId) => {
     if(processTimeId == 1) {
       this.setState({
-        startTime: e.target.value
-      }, () => this.props.changeTimesCallback(this.state.id, {startTime: e.target.value, endTime: this.state.endTime}))
+        startTime: value
+      }, () => this.props.changeTimesCallback(this.state.id, {startTime: value, endTime: this.state.endTime}))
     }
     else if(processTimeId == 2) {
       this.setState({
-        endTime: e.target.value
-      }, () => this.props.changeTimesCallback(this.state.id, {startTime: this.state.startTime, endTime: e.target.value}))
+        endTime: value
+      }, () => this.props.changeTimesCallback(this.state.id, {startTime: this.state.startTime, endTime: value}))
     }
   }
 
   render() {
-    const textStyle = {
-      "margin-left": "5%"
-    };
+    const { removeTimeCallback } = this.props
 
     return (
-        <div style={{width: '216px', height: '50px', marginLeft: '25px'}}>
+        <div style={{width: this.props.isEditing ? '356px' : '156px', height: '50px', marginLeft: '25px'}}>
             {
             this.props.isEditing ? 
             <div style={{display: 'flex', marginTop: '-5px'}}>
-                <CustomInput value={this.state?.startTime} style={textStyle} noPadding={true} width='125px' height='40px' dataType="time" onChange={(e) => this.handleChangeProcessTimes(e, 1)}/>
+                <CustomInput value={this?.state?.startTime} noPadding={true} width='150px' height='40px' dataType="time" onChange={(value) => this.handleChangeProcessTimes(value, 1)}/>
                 <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>-</p>
-                <CustomInput value={this.state?.endTime} style={textStyle} noPadding={true} width='105px' height='40px' dataType="time" onChange={(e) => this.handleChangeProcessTimes(e, 2)}/>
+                <CustomInput value={this?.state?.endTime} noPadding={true} width='150px' height='40px' dataType="time" onChange={(value) => this.handleChangeProcessTimes(value, 2)}/>
+                <CustomButton width='40px' height="40px" iconSize={25} icon={faTrash} onClickCallback={() => removeTimeCallback(this.state.id)}/>
             </div>   
             : 
             <div style={{display: 'flex'}}>
-              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{this.state?.startTime ?? "__:__?"}-{this.state?.endTime ?? "__:__?"}</p>
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginRight: '10px'}}>{this.state?.startTime ?? "__:__?"}</p>
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginRight: '10px'}}>-</p>
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{this.state?.endTime ?? "__:__?"}</p>
             </div>
             }
         </div>
