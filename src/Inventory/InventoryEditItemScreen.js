@@ -1,14 +1,17 @@
+import { faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { Component } from 'react';
 import "react-datepicker/dist/react-datepicker.css";
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
+import { storage } from '../firebaseConfig';
 import CustomButton from '../Searchbar/CustomButton';
+import CustomFileInput from '../Searchbar/CustomFileInput';
 import CustomInput from '../Searchbar/CustomInput';
 import CustomSelect from '../Searchbar/CustomSelect';
 import RemovableItem from '../Searchbar/RemovableItem';
-import { faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 
 class InventoryEditItemScreen extends Component {
     constructor(props) {
@@ -27,14 +30,13 @@ class InventoryEditItemScreen extends Component {
             },
             newTagInput: '',
             isCreateItem: true,
-            fieldsWithErrors: []
+            fieldsWithErrors: [],
+            selectedImage: null
         };
     }
 
     componentDidMount() {
         const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
-
-        console.log("itemData", itemData)
 
         this.setState({
             itemToEdit: itemData ? {...itemData} : initialItemToEditState,
@@ -62,6 +64,25 @@ class InventoryEditItemScreen extends Component {
                 products: response.data,
             });
         } catch (error) {}
+    };
+
+    uploadImageToFirebase = async (imageUri) => {
+        const response = await fetch(imageUri);
+        let blob = await response.blob();
+
+        const storageRef = ref(storage, `chabot-product-images/${this.state.itemToEdit.name}.jpg`);
+
+        try {
+            const snapshot = await uploadBytes(storageRef, blob)
+    
+            const downloadURL = await getDownloadURL(snapshot.ref);
+
+            blob = null;
+    
+            return downloadURL;
+        } catch(err) {
+            console.log("error", err)
+        }
     };
 
     getAllTags = (products) => {
@@ -94,14 +115,26 @@ class InventoryEditItemScreen extends Component {
         })
     }
 
+    handleImageChange = (selectedImage) => {
+        this.setState({ selectedImage: selectedImage});
+      };
+
     handleSave = async () => {
-        const itemToEdit = this.state.itemToEdit
+        this.props.setIsLoading(true)
+
+        let itemToEdit = this.state.itemToEdit
 
         try {
             if(this.state.isCreateItem) {
                 let newItem = {...itemToEdit}
                 newItem.code = itemToEdit.name
                 newItem.amount = 20
+
+                console.log("this.state.selectedImage", this.state.selectedImage)
+                if(this.state.selectedImage) {
+                    const imageLink = await this.uploadImageToFirebase(this.state.selectedImage)
+                    newItem.imageLink = imageLink
+                }
 
                 let missingFields = []
                 if(!newItem.name || newItem.name.length < 1) { missingFields.push("name");}
@@ -118,6 +151,10 @@ class InventoryEditItemScreen extends Component {
                 
                 const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/inventory/addItems`, [newItem]);
             } else {
+                if(this.state.selectedImage) {
+                    const imageLink = await this.uploadImageToFirebase(this.state.selectedImage)
+                    itemToEdit.imageLink = imageLink
+                }
                 const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/inventory/updateItem`, itemToEdit);
             }
             this.props.history.goBack()
@@ -125,6 +162,8 @@ class InventoryEditItemScreen extends Component {
             console.log("ERROR", error)
             this.props.showPopup(new Error("Ya existe un item con este nombre!"));
           }
+
+        this.props.setIsLoading(false)
     }
 
     handleStringChange = (name, value) => {
@@ -211,8 +250,10 @@ class InventoryEditItemScreen extends Component {
                         {this.formInput("Nombre del item *", "Ingresar nombre de item......", "name")}
                         {this.formInput("Descripcion del item *", "Ingresar descripcion de item......", "description")}
                         {this.formInput("Precio del item *", "Ingresar precio de item......", "price", "number")}
-                        {this.formInput("URL De Imagen *", "Ingresar URL del imagen......", "imageLink")}
-                        <div style={{...blockStyle, height: '305px'}}>
+                        <p style={{...headersStyle, marginBottom: '-25px'}}>Imagen *</p>
+                        <CustomFileInput imageURL={this.state?.itemToEdit?.imageLink} onChange={this.handleImageChange}/>
+                        {/* {this.formInput("URL De Imagen *", "Ingresar URL del imagen......", "imageLink")} */}
+                        {/* <div style={{...blockStyle, height: '305px'}}>
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'center', 
@@ -226,7 +267,7 @@ class InventoryEditItemScreen extends Component {
                                     <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody}}>Imagen No Encontrado</p>
                                 }
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="col-6">
                         <p style={headersStyle}>Agregar Nuevas Etiquetas</p>

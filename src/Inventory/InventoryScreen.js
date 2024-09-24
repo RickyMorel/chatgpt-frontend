@@ -70,7 +70,6 @@ class InventoryScreen extends Component {
             this.setState({
                 productReccomendations: response.data,
             });
-            console.log("productReccomendations",response.data)
         } catch (error) {}
     };
 

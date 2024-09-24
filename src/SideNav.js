@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Sidenav } from 'rsuite';
 import { ColorHex } from './Colors';
 import CssProperties from './CssProperties';
-import firebase from "./firebaseConfig";
+import { firestore } from './firebaseConfig';
 import './SideNav.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
@@ -31,7 +31,7 @@ function SideNav(props)  {
         return;
     }
 
-    const ref = firebase.collection('globalConfig').doc(String(props.botNumber));
+    const ref = firestore.collection('globalConfig').doc(String(props.botNumber));
 
     ref.get()
       .then((doc) => {

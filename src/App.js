@@ -1,21 +1,20 @@
-import React, { Component } from 'react';
-import { Helmet } from 'react-helmet';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import MainMenu from './MainMenu';
-import InventoryScreen from './Inventory/InventoryScreen';
-import Navbar from './Navbar';
-import SideNav from './SideNav';
-import BlockChatScreen from './BotBlocker/BlockChatScreen';
-import OrderScreen from './Orders/OrderScreen';
-import { Color, ColorHex } from './Colors';
-import DayLocationForm from './DayLocation/DayLocationForm';
-import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
-import LoadSpinner from './LoadSpinner';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import AddOrderScreen from './Orders/AddOrderScreen';
-import InventoryEditItemScreen from './Inventory/InventoryEditItemScreen';
+import React, { Component } from 'react';
+import { Helmet } from 'react-helmet';
+import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import BlockChatScreen from './BotBlocker/BlockChatScreen';
 import EditClientScreen from './BotBlocker/EditClientScreen';
+import { ColorHex } from './Colors';
+import DayLocationForm from './DayLocation/DayLocationForm';
+import InventoryEditItemScreen from './Inventory/InventoryEditItemScreen';
+import InventoryScreen from './Inventory/InventoryScreen';
+import LoadSpinner from './LoadSpinner';
+import MainMenu from './MainMenu';
+import AddOrderScreen from './Orders/AddOrderScreen';
+import OrderScreen from './Orders/OrderScreen';
+import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
+import SideNav from './SideNav';
 import ClientStatsScreen from './Stats/ClientStatsScreen';
 
 class App extends Component {
@@ -53,8 +52,6 @@ class App extends Component {
   }
 
   render() {
-    // console.log("this.props.showPopup", this.props.showPopup, " this.props.showPopup_2_Buttons", this.props.showPopup_2_Buttons)
-    console.log("this.props", this.props)
     return (
     <Router>
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
