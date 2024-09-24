@@ -29,8 +29,8 @@ class InventoryScreen extends Component {
           itemToEdit: null,
           addedTags: [],
           productReccomendations: [],
-          autoPromo: false,
-          selectedDayNumber: 0
+          selectedDayNumber: 0,
+          hasShownPromoPopup: false
         };
     }
 
@@ -70,6 +70,7 @@ class InventoryScreen extends Component {
             this.setState({
                 productReccomendations: response.data,
             });
+            console.log("productReccomendations",response.data)
         } catch (error) {}
     };
 
@@ -209,7 +210,21 @@ class InventoryScreen extends Component {
         })
     }
 
-    handleSelectPromoItem = (item) => {
+    handleSelectPromoItem = (item, hasAutoPromo = false) => {
+        let reccomendedItems = this.state.productReccomendations.find(x => x.itemCode == item.code)?.reccomendedItemCodes
+        
+        if(!this.state.hasShownPromoPopup) {
+            this.props.showPopup_2_Buttons(
+                "Promociones Recomendados",
+                `Elegiste poner “${item.name}” de promoción. Recomendamos poner los siguientes items en promoción tambien.`,
+                "Te gustaria poner estos items de promoción?",
+                [item.name, ...reccomendedItems.map(x => this.state.products.find(y => y.code == x).name)].slice(0, 3),
+                () => this.handleSelectPromoItem(item, true),
+            )
+
+            this.setState({ hasShownPromoPopup: true })
+        }
+
         let newPromoItems = [...this.state.promoItemCodes]
 
         if(newPromoItems.includes(item.code) == false) {newPromoItems.unshift(item.code)}
@@ -219,9 +234,7 @@ class InventoryScreen extends Component {
             newPromoItems.splice(removeIndex, 1);
         }
 
-        if(this.state.autoPromo == true) {
-            let reccomendedItems = this.state.productReccomendations.find(x => x.itemCode == item.code)?.reccomendedItemCodes
-
+        if(hasAutoPromo == true) {
             newPromoItems = []
             newPromoItems = [item.code, ...reccomendedItems]
         }
@@ -347,11 +360,6 @@ class InventoryScreen extends Component {
             showPopup={this.props.showPopup}
             isCreateItem={this.state.itemToEdit == null}
         />      
-            
-        const navbarStyle = {
-            display: 'flex',
-            justifyContent: 'center',
-        };
 
         const dayDropdownOptions = [
             {value: 0, label: 0 == this.state.nextDayIndex ? `Lunes (Pendiente)` : 'Lunes'},
@@ -390,10 +398,7 @@ class InventoryScreen extends Component {
                             <></>
                         }
                     </div>
-                    <div className={this.state.needsToSave ? "col-5" : 'col-6'}></div>
-                    <div className="col-3" style={{marginLeft: '50px'}}>
-                        <CustomToggle text="Auto Promo" explinationText="Al activar Auto Promo, se elegirán los mejores artículos para ponerlos en promoción" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange}/>
-                    </div>
+                    <div className={this.state.needsToSave ? "col-8" : 'col-9'}></div>
                 </div>
 
                 <div className='row' style={{paddingTop: '25px'}}>

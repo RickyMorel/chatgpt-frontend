@@ -415,64 +415,6 @@ class DayLocationForm extends Component {
           {timesScrollHtml}
         </div>
       </div>
-      // <div className={`card bordered ${Color.Background}`}>
-      //   <div className="card-content">
-      //     <nav>
-      //       <div className={`nav-wrapper ${Color.Background}`}>
-      //         <ul id="nav-mobile" className="valign-wrapper" style={{ display: "flex", justifyContent: "space-between" }}>
-      //           <li className='black-text' style={textStyle}>Tiempo en el que envia los mensajes:</li>
-      //           {timeBlocks}
-      //           {
-      //             this.state.isEditingLocations ? 
-      //             <div className='row'>
-      //               <div className="col s6">
-      //                 <button onClick={this.handleAddTimeSet} className={`waves-effect waves-light btn ${Color.Fifth}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
-      //                   <i className="material-icons" style={{ fontSize: '18px' }}>add_circle_outline</i>  
-      //                 </button>
-      //               </div>
-      //               <div className='col s6'>
-      //                 {
-      //                   this.state.timeSets.length > 0 ?
-      //                   <button onClick={this.handleRemoveTimeSet} className={`waves-effect waves-light btn ${Color.First}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
-      //                     <i className="material-icons" style={{ fontSize: '18px' }}>remove_circle_outline</i>
-      //                   </button>
-      //                   :
-      //                   <div></div>
-      //                 }
-      //               </div>
-      //             </div>
-      //             : 
-      //             <div></div>
-      //           }
-      //           {
-      //             this.state.isEditingLocations ? 
-      //             <div></div>
-      //             :
-      //             <a style={textStyle} className={`waves-effect waves-light btn ${this.state?.canMessageTommorrowsClients ? Color.Fifth : Color.First}`} onClick={this.handleSendMessages}>Enviar Mensajes Ahora</a>
-      //           }
-      //         </ul>
-      //       </div>
-      //     </nav>
-      //     <br />
-      //     <br />
-      //     <h6 className="center-align"><strong>Tiempos de entrega</strong></h6>
-      //     <form className="container">
-      //       <hr />
-      //       <div className="row">
-      //         <div className="col s4"><strong>Día de Mensaje</strong></div>
-      //         <div className="col s4"><strong>Día de entrega</strong></div>
-      //         <div className="col s4"><strong>Zona de entrega</strong></div>
-      //       </div>
-      //       {dayLocationsHtml}
-      //       <hr />
-      //       <br />
-      //       <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleEditLocations}>
-      //         <i className="material-icons left">{this.state.isEditingLocations ? "save" : "edit"}</i>
-      //         {this.state.isEditingLocations ? "Save" : "Edit"}
-      //       </button>
-      //     </form>
-      //   </div>
-      // </div>
     );
   }
 }

@@ -53,6 +53,8 @@ class App extends Component {
   }
 
   render() {
+    // console.log("this.props.showPopup", this.props.showPopup, " this.props.showPopup_2_Buttons", this.props.showPopup_2_Buttons)
+    console.log("this.props", this.props)
     return (
     <Router>
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
@@ -69,7 +71,7 @@ class App extends Component {
               <div style={{margin: '15px'}}><MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/inventory">
-              <div style={{margin: '15px'}}><InventoryScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
+              <div style={{margin: '15px'}}><InventoryScreen showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/dayLocation">
               <div style={{margin: '15px'}}><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
