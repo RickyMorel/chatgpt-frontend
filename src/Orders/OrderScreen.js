@@ -51,6 +51,7 @@ class OrderScreen extends Component {
         orders: response.data,
         filteredOrders: response.data,
       })
+      console.log("response orderScreen", response.data)
     } catch (error) {
 
     }

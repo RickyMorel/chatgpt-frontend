@@ -64,9 +64,9 @@ class Utils {
       };
   }
 
-  static formatDate(date) {
+  static formatDateShort(date) {
     const options = { month: 'short', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options).replace(",", " -");
+    return date?.toLocaleDateString('en-US', options).replace(",", " -");
   }
 }
 

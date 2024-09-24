@@ -378,7 +378,7 @@ class DayLocationForm extends Component {
         <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Tiempos & Lugares</p>
         
         <div style={{display: 'flex'}}>
-            <div class="flex-grow-1"><StatCard title="Semana de:" amountFunction={() => `${Utils.formatDate(Utils.getWeekRange().startOfWeek)} - ${Utils.formatDate(Utils.getWeekRange().endOfWeek)}`}/></div>
+            <div class="flex-grow-1"><StatCard title="Semana de:" amountFunction={() => `${Utils.formatDateShort(Utils.getWeekRange().startOfWeek)} - ${Utils.formatDateShort(Utils.getWeekRange().endOfWeek)}`}/></div>
             <div className="col-11"></div>
         </div>
 
