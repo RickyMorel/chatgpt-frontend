@@ -392,7 +392,7 @@ class DayLocationForm extends Component {
             :
             <>
               <div class="flex-grow-1"><CustomButton text="Editar Tiempos & Mensajes" icon={faPenToSquare} onClickCallback={this.handleEditLocations}/></div>
-              <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Ver Barrios & Moviles" icon={faHouseChimneyUser} link="createOrder"/></div>
+              <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton disabled={true} text="Ver Barrios & Moviles" icon={faHouseChimneyUser}/></div>
             </>
           }
           <div className="col-10"></div>
