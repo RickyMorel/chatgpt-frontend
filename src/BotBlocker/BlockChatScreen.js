@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import ClientBlockComponent from './ClientBlockComponent';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
 import PaginatedScrollView from './PaginatedScrollView';
+import CssProperties from '../CssProperties';
+import StatCard from '../Searchbar/StatCard';
+import CustomButton from '../Searchbar/CustomButton';
+import CustomToggle from '../Searchbar/CustomToggle';
+import SearchBar from '../Searchbar/Searchbar';
+import CustomSelect from '../Searchbar/CustomSelect';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 
 class BlockChatScreen extends Component {
   constructor(props) {
@@ -19,7 +26,9 @@ class BlockChatScreen extends Component {
       clientLocations: [],
       pageNumber: 1,
       pageSize: 15,
-      clientsToMessageTommorrow: 0
+      clientsToMessageTommorrow: 0,
+      selectedClientFilter: 1,
+      canMessageTommorrowsClients: false
     };
   }
 
@@ -34,6 +43,7 @@ class BlockChatScreen extends Component {
     await this.fetchClientData();
     await this.fetchGlobalData()
     await this.fetchAllClientLocations()
+    await this.GetCanMessageTommorrowsClients()
 
     this.props.setIsLoading(false)
   }
@@ -102,6 +112,22 @@ class BlockChatScreen extends Component {
     }
   };
 
+  GetCanMessageTommorrowsClients = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/canMessageTommorrowsClients`);
+
+      console.log("canMessageTommorrowsClients", response.data)
+
+      this.setState({
+        canMessageTommorrowsClients: response.data
+      })
+    } catch(error) {
+      this.setState({
+        canMessageTommorrowsClients: false
+      })
+    }
+  }
+
   tryFetchSearchedClients = async () => {
     //Don't call search endpoint if the searcher still brings a few clients
     if(this.state.filteredClients.length > 5) {return;}
@@ -133,12 +159,47 @@ class BlockChatScreen extends Component {
     }
   };
 
-  handleSearchInputChange = (event) => {
-    const searchInput = event.target.value;
-    this.setState({ searchInput }, () => {
+  handleBlockCallback = (isBlocked) => {
+    let newAmount = this.state.clientsToMessageTommorrow
+
+    if(isBlocked) { newAmount-- }
+    else { newAmount++ }
+    
+    this.setState({
+      clientsToMessageTommorrow: newAmount
+    });
+  }
+
+  handleSearchInputChange = (value) => {
+    this.setState({ searchInput: value }, () => {
       this.filterClients();
     })
   };
+
+  handleSendMessages = async () => {
+    if(this.state.canMessageTommorrowsClients == false) {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/canMessageTommorrowsClients`);
+      } catch(error) {
+        this.props.showPopup(new Error(error.response.data.message))
+      }
+      return;
+    }
+    try {
+      this.setState({
+        canMessageTommorrowsClients: false
+      })
+      const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/messageTommorrowsClients`);
+    } catch (error) {
+      this.props.showPopup(new Error(error.response.data.message))
+    }
+  }
+
+  handleClientFilter = (value) => {
+    this.setState({
+      selectedClientFilter: value
+    })
+  }
 
   handleGlobalBlock = async (event) => {
     try {
@@ -202,7 +263,7 @@ class BlockChatScreen extends Component {
 
   render() {
     const { modalIsOpen, closeModalFunc } = this.props;
-    const { loading, error, filteredClients, isGloballyBlocked, nextDayIndex, dayLocations } = this.state;
+    const { loading, error, filteredClients, isGloballyBlocked, nextDayIndex, dayLocations, selectedClientFilter } = this.state;
     
     const tomorrowsDayLocationIndex = dayLocations.findIndex(x => x.day == nextDayIndex)
 
@@ -229,52 +290,122 @@ class BlockChatScreen extends Component {
       let chatIsBlocked = this.state.clientIsBlockedStateList.find(y => y.client.phoneNumber == x.phoneNumber).isBlocked
       const willMessageTommorrow = dayLocations[tomorrowsDayLocationIndex]?.locations?.find(location => location == x.address)
 
-      return <ClientBlockComponent key={x.id} {...x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {orderedLocations}
-        showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}/>
-  });
+      return <ClientBlockComponent key={x.id} client={x} willMessageTommorrow={willMessageTommorrow} chatIsBlocked={chatIsBlocked} isGloballyBlocked={isGloballyBlocked} allClientLocations = {orderedLocations}
+        showPopup={this.props.showPopup} clientRegisterBlockedStateFunc={this.clientRegisterBlockedStateFunc} tomorrowsDayLocationIndex={tomorrowsDayLocationIndex} dayLocations={dayLocations}
+        handleBlockCallback={this.handleBlockCallback}/>
+    });
+
+    const filterClientOptions = [
+      {value: 1, label: 'Todos los clientes'},
+      {value: 2, label: 'Clientes a Mensajear'},
+      {value: 3, label: 'Clientes no Mensajeado'},
+    ]
 
     return (
-      <div className={`card bordered ${Color.Background}`}>
-        <div className="card-content">
-        <div className="row">
-            <div className="col s3">
-              <span className="card-title">Bloquear Chat</span>
+      <div>
+        <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Clientes</p>
+
+        <div style={{display: 'flex'}}>
+            <div class="flex-grow-1"><StatCard title="Clientes a Mensajear" amountColor={ColorHex.TextBody} amountFunction={() => this.state.clientsToMessageTommorrow}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Barrios a Mensajear" amountColor={ColorHex.TextBody} amountFunction={() => dayLocations[tomorrowsDayLocationIndex]?.locations.length}/></div>
+            <div className="col-10"></div>
+        </div>
+
+        <div style={{display: 'flex', width: '100%', paddingTop: '25px', justifyContent: 'flex-start', alignItems: 'center'}}>
+          <div style={{flexGrow: 0}}>
+            <CustomButton text="Enviar Mensajes" classStyle={this.state?.canMessageTommorrowsClients ? `btnBlue` : 'btnGrey-clicked'} icon={faPaperPlane} onClickCallback={this.handleSendMessages}/>
+          </div>
+          <div style={{flexGrow: 0, marginLeft: '45px'}}><CustomToggle text="Bloquear Chat Bot" explinationText="Bloquea envio de mensajes a todos los clientes. SOLO EMERGENCIAS " onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/></div>
+        </div>
+
+        <div style={orderPanelStyling}>
+          <div className='row'>
+            <div className="col-10">
+              <SearchBar width='100%' height='45px' itemList={this.state.products} searchText="Buscar Clientes..." OnSearchCallback={this.handleSearchInputChange}/>
             </div>
-            <div className="col s3">
-              <span className="">Clientes a mensajear: </span>
-              {
-              <span className="bold green-text">{this.state.clientsToMessageTommorrow}</span>
-              }
-            </div>
-            <div className="col s4">
-              <label className='small-text'>Bloquear Chatbot</label>
-              <div class="switch">
-                <label>
-                  No
-                  <input type="checkbox" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/>
-                  <span class="lever"></span>
-                  Si
-                </label>
-              </div>
-            </div>
-            <div className="col s2">
-              <label className='right'>Resetear</label>
-              <a className={`waves-effect waves-light btn-small right ${Color.Fifths}`} onClick={this.handleClearAllBlocks}>
-                <i className="material-icons">autorenew</i>
-              </a>
+            <div className="col-2">
+              <CustomSelect
+                width='100%'
+                height='45px'
+                options={filterClientOptions}
+                onChange={(value) => this.handleClientFilter(value)}
+                value={filterClientOptions.find(x => x.value == selectedClientFilter)}
+                isSearchable={false}
+              />
             </div>
           </div>
-          <input
-            type="text"
-            placeholder="Buscar clientes..."
-            value={this.state.searchInput}
-            onChange={this.handleSearchInputChange}
-          />
-          <PaginatedScrollView clientBlocks={clientBlocks} fetchMoreData={this.fetchClientData} pageSize={this.state.pageSize}/>
+          <div style={{ alignItems: 'center', width: '100%', marginTop: '25px'}}>
+            <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
+              <div style={headerStyle} className='col-3'>Nombre del Cliente</div>
+              <div style={headerStyle} className='col-3'>Ubicacion</div>
+              <div style={headerStyle} className='col-3'>Numero de Telefono</div>
+              <div style={headerStyle} className='col-2'>Cliente a Mensajear</div>
+              <div style={headerStyle} className='col-1'></div>
+            </div>
+
+            <PaginatedScrollView clientBlocks={clientBlocks} fetchMoreData={this.fetchClientData} pageSize={this.state.pageSize}/>
+          </div>
         </div>
       </div>
+      // <div className={`card bordered ${Color.Background}`}>
+      //   <div className="card-content">
+      //   <div className="row">
+      //       <div className="col s3">
+      //         <span className="card-title">Bloquear Chat</span>
+      //       </div>
+      //       <div className="col s3">
+      //         <span className="">Clientes a mensajear: </span>
+      //         {
+      //         <span className="bold green-text">{this.state.clientsToMessageTommorrow}</span>
+      //         }
+      //       </div>
+      //       <div className="col s4">
+      //         <label className='small-text'>Bloquear Chatbot</label>
+      //         <div class="switch">
+      //           <label>
+      //             No
+      //             <input type="checkbox" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/>
+      //             <span class="lever"></span>
+      //             Si
+      //           </label>
+      //         </div>
+      //       </div>
+      //       <div className="col s2">
+      //         <label className='right'>Resetear</label>
+      //         <a className={`waves-effect waves-light btn-small right ${Color.Fifths}`} onClick={this.handleClearAllBlocks}>
+      //           <i className="material-icons">autorenew</i>
+      //         </a>
+      //       </div>
+      //     </div>
+      //     <input
+      //       type="text"
+      //       placeholder="Buscar clientes..."
+      //       value={this.state.searchInput}
+      //       onChange={this.handleSearchInputChange}
+      //     />
+      //     <PaginatedScrollView clientBlocks={clientBlocks} fetchMoreData={this.fetchClientData} pageSize={this.state.pageSize}/>
+      //   </div>
+      // </div>
     );
   }
+}
+
+const headerStyle = {
+  textAlign: 'center',
+  color: ColorHex.TextBody,
+  ...CssProperties.BodyTextStyle
+}
+
+const orderPanelStyling = {
+  width: '100%',
+  height: '70vh',
+  marginTop: '10px',
+  marginTop: '25px',
+  padding: '25px',
+  boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+  border: `1px solid ${ColorHex.BorderColor}`,
+  borderRadius: '10px',
+  backgroundColor: ColorHex.White
 }
 
 export default BlockChatScreen;

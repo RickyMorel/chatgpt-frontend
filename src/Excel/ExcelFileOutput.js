@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import { Color } from '../Colors';
+import CustomButton from '../Searchbar/CustomButton';
+import { faCloudArrowDown} from '@fortawesome/free-solid-svg-icons';
 
 class ExcelFileOutput extends Component {
   state = {
@@ -13,7 +15,6 @@ class ExcelFileOutput extends Component {
   fetchOrderData = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
-      console.log("fetchOrderData", response)
       this.setState({ orders: response.data });
     } catch (error) {
       this.setState({ error: error });
@@ -61,12 +62,7 @@ class ExcelFileOutput extends Component {
 
   render() {
     return (
-      <div>
-        <button className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleDownload}>
-          <i className="material-icons left">cloud_download</i>
-          Descargar pedidos
-        </button>
-      </div>
+      <CustomButton text="Descargar Pedidos" icon={faCloudArrowDown} onClickCallback={this.handleDownload}/>
     );
   }
 }

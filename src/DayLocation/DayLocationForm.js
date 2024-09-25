@@ -1,10 +1,16 @@
 import React, { Component, createRef } from 'react';
 import axios from 'axios';
-import 'materialize-css/dist/css/materialize.min.css';
 import '../MultiSelect.css';
 import TimeBlock from './TimeBlock';
 import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material';
 import { Color, ColorHex } from '../Colors';
+import CssProperties from '../CssProperties';
+import StatCard from '../Searchbar/StatCard';
+import { faHouseChimney, faHouseChimneyUser, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import CustomButton from '../Searchbar/CustomButton';
+import CustomInput from '../Searchbar/CustomInput';
+import { faFloppyDisk, faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
+import Utils from '../Utils';
 
 class DayLocationForm extends Component {
   constructor(props) {
@@ -118,17 +124,18 @@ class DayLocationForm extends Component {
   handleAddTimeSet = () => {
     let newTimeSets = [...this.state.timeSets]
 
-    newTimeSets.push({id: this.state.timeSets.length - 1, set: {startTime: "00:00", endTime: "00:00"}})
+    newTimeSets.push({id: this.state.timeSets.length + 1, set: {startTime: "00:00", endTime: "00:00"}})
 
     this.setState({
-      timeSets: newTimeSets
+      timeSets: newTimeSets,
+      isEditingLocations: true
     })
   }
 
-  handleRemoveTimeSet = () => {
+  handleRemoveTimeSet = (idToRemove) => {
     let newTimeSets = [...this.state.timeSets]
 
-    newTimeSets.pop()
+    newTimeSets = newTimeSets.filter(x => x.id != idToRemove)
 
     this.setState({
       timeSets: newTimeSets
@@ -152,10 +159,8 @@ class DayLocationForm extends Component {
     });
   };
 
-  handleSubmit = async (e, isEdting) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
-
-    if(isEdting) {return}
 
     if(this.state.locations.length != 7) {this.props.showPopup(new Error("No se lleno los 7 dias")); return}
     if(this.state.locations.includes(x => x.time == "" || x.time == undefined))
@@ -211,16 +216,13 @@ class DayLocationForm extends Component {
         canMessageTommorrowsClients: false
       })
       const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/messageTommorrowsClients`);
-      console.log("handleSendMessages", response)
-      return null
     } catch (error) {
-      console.log("handleSendMessages ERROR", error)
       this.props.showPopup(new Error(error.response.data.message))
     }
   }
 
   handleChangeProcessTimes = (id, timeSet) => {
-    console.log("timeSet", timeSet)
+    console.log("timeSet", id, timeSet)
     let newTimeSets = [...this.state.timeSets]
 
     let prevTimeIndex = newTimeSets.indexOf(x => x.id != id)
@@ -255,8 +257,6 @@ class DayLocationForm extends Component {
         isEditingLocations: isEdting
       })
     }
-
-    this.handleSubmit(e, isEdting)
   };
 
   isTime1Bigger(time1, time2) {
@@ -292,7 +292,9 @@ class DayLocationForm extends Component {
     const dayLocationsHtml = this.state.days.map(x => {
       const dayIndex = this.state.days.indexOf(x)
       const locations = this.state.locations.find(x => x.day == dayIndex) ? this.state.locations.find(x => x.day == dayIndex).locations : []
-      const time = this.state.locations.find(x => x.day == dayIndex)?.time ? this.state.locations.find(x => x.day == dayIndex).time : ""
+      const time = this.state?.locations?.find(x => x.day == dayIndex)?.time ? this.state?.locations?.find(x => x.day == dayIndex)?.time : ""
+
+      console.log("time", time)
       let locationsString = ""
 
       locations?.forEach(location => {
@@ -300,128 +302,149 @@ class DayLocationForm extends Component {
       });
 
       const finalLocationsString = locationsString.substring(0, locationsString.length-2)
-
-      const selectStyle = {
-        width: '100%',
-        height: '60px',
-        border: 'none',
-        outline: 'none',
-        appearance: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
-        display: 'block' 
-      };
-
       const selectedLocations = this.state.locations.find(x => x.day === dayIndex)?.locations ?? []
 
       return(
-        <div className={dayIndex == this.state.nextDayIndex ? `row ${Color.Third}` : `row`}>
-            <div class="col s3"><p class='text-bold'>{dayIndex == this.state.nextDayIndex ? `Hoy Mensajea => ${x}` : x}</p></div>
-            <div class="col s5">
-              {
-                this.state.isEditingLocations == true ?
-                <input type="text" maxLength={18} placeholder='Mañana' value={time} onChange={(e) => this.handleTimeChange(x, e.target.value)}/>
-                :
-                <p>{time == "" ? "Elejir Tiempo" : time}</p>
-              }
-            </div>
-            <div class="col s4">
-              {
-                this.state.isEditingLocations == true ?
-                <FormControl style={{ width: '100%' }}>
-                    <Select
-                        labelId="locations-label"
-                        multiple
-                        value={selectedLocations}
-                        onChange={(e) => this.handleLocationChange(e, x, null)}
-                        renderValue={(selected) => selected.join(', ')}
-                    >
-                        {orderedLocations.map((location) => (
-                            <MenuItem 
-                                key={location} 
-                                value={location} 
-                                style={{ 
-                                    fontWeight: selectedLocations?.includes(location) ? 'bold' : 'normal', 
-                                    color: selectedLocations?.includes(location) ? 'blue' : 'black',
-                                    backgroundColor: selectedLocations?.includes(location) ? ColorHex.Third : 'white'
-                                }}
-                            >
-                                {location}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                :
-                <p>{finalLocationsString == "" ? "-" : finalLocationsString}</p>
-              }
-            </div>
+        <div style={{ alignItems: 'center', width: '98%', display: 'flex', justifyContent: 'space-between'}}>
+          <div className="col-4 d-flex justify-content-center align-items-center">
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>
+                  {dayIndex == this.state.nextDayIndex ? `${x} (Dia de mensajes)` : x}
+              </p>
+          </div>
+          <div className="col-4 d-flex justify-content-center align-items-center">
+              {this.state.isEditingLocations == true ? (
+                  <CustomInput
+                    maxLength={18}
+                    placeholder='Mañana'
+                    value={time}
+                    onChange={(itemValue) => this.handleTimeChange(x, itemValue)}
+                    width="90%"
+                  />
+              ) : (
+                <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{time == "" ? "Elejir Tiempo" : time}</p>
+              )}
+          </div>
+          <div className="col-4 d-flex justify-content-center align-items-center">
+              {this.state.isEditingLocations == true ? (
+                  <FormControl style={{ width: '90%' }}>
+                      <Select
+                          labelId="locations-label"
+                          multiple
+                          value={selectedLocations}
+                          onChange={(e) => this.handleLocationChange(e, x, null)}
+                          renderValue={(selected) => selected.join(', ')}
+                          style={{backgroundColor: ColorHex.White, borderRadius: '10px', height: '75px'}}
+                      >
+                          {orderedLocations.map((location) => (
+                              <MenuItem
+                                  key={location}
+                                  value={location}
+                                  style={{
+                                      fontWeight: selectedLocations?.includes(location) ? 'bold' : 'normal',
+                                      color: selectedLocations?.includes(location) ? 'blue' : 'black',
+                                      backgroundColor: selectedLocations?.includes(location) ? ColorHex.Third : 'white',
+                                  }}
+                              >
+                                  {location}
+                              </MenuItem>
+                          ))}
+                      </Select>
+                  </FormControl>
+              ) : (
+                  <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{finalLocationsString == "" ? "-" : finalLocationsString}</p>
+              )}
+          </div>
         </div>
       )
     })
 
-    const timeBlocks = this.state.timeSets.map(x => <li><TimeBlock isEditing={this.state.isEditingLocations} id={x.id} set={x.set} changeTimesCallback={this.handleChangeProcessTimes}/></li>)
+    const timeBlocks = this.state.timeSets.map(x => <TimeBlock isEditing={this.state.isEditingLocations} id={x.id} set={x.set} changeTimesCallback={this.handleChangeProcessTimes} removeTimeCallback={this.handleRemoveTimeSet}/>)
+
+    const timesScrollHtml = 
+      <div style={{ alignItems: 'center', width: '100%', marginTop: '25px'}}>
+           <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
+            <div style={headerStyle} className='col-4'>Dia de Mensaje</div>
+            <div style={headerStyle} className='col-4'>Tiempo de Entrega</div>
+            <div style={headerStyle} className='col-4'>Zonas de Entrega</div>
+           </div>
+
+           <div style={scrollStyle}>
+              {dayLocationsHtml}
+           </div>
+      </div>
 
     return (
-      <div className={`card bordered ${Color.Background}`}>
-        <div className="card-content">
-          <nav>
-            <div className={`nav-wrapper ${Color.Background}`}>
-              <ul id="nav-mobile" className="valign-wrapper" style={{ display: "flex", justifyContent: "space-between" }}>
-                <li className='black-text' style={textStyle}>Tiempo en el que envia los mensajes:</li>
-                {timeBlocks}
-                {
-                  this.state.isEditingLocations ? 
-                  <div className='row'>
-                    <div className="col s6">
-                      <button onClick={this.handleAddTimeSet} className={`waves-effect waves-light btn ${Color.Fifth}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
-                        <i className="material-icons" style={{ fontSize: '18px' }}>add_circle_outline</i>  
-                      </button>
-                    </div>
-                    <div className='col s6'>
-                      {
-                        this.state.timeSets.length > 0 ?
-                        <button onClick={this.handleRemoveTimeSet} className={`waves-effect waves-light btn ${Color.First}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
-                          <i className="material-icons" style={{ fontSize: '18px' }}>remove_circle_outline</i>
-                        </button>
-                        :
-                        <div></div>
-                      }
-                    </div>
-                  </div>
-                  : 
-                  <div></div>
-                }
-                {
-                  this.state.isEditingLocations ? 
-                  <div></div>
-                  :
-                  <a style={textStyle} className={`waves-effect waves-light btn ${this.state?.canMessageTommorrowsClients ? Color.Fifth : Color.First}`} onClick={this.handleSendMessages}>Enviar Mensajes Ahora</a>
-                }
-              </ul>
+      <div>
+        <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Tiempos & Lugares</p>
+        
+        <div style={{display: 'flex'}}>
+            <div class="flex-grow-1"><StatCard title="Semana de:" amountFunction={() => `${Utils.formatDateShort(Utils.getWeekRange().startOfWeek)} - ${Utils.formatDateShort(Utils.getWeekRange().endOfWeek)}`}/></div>
+            <div className="col-11"></div>
+        </div>
+
+        <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
+          {
+            this.state.isEditingLocations ?
+            <>
+              <div class="flex-grow-1"><CustomButton text="Guardar Cambios" classStyle="btnGreen" width="182px" height="45px" icon={faFloppyDisk} onClickCallback={this.handleSubmit}/></div>
+              <div class="flex-grow-1" style={{paddingLeft: '25px'}}><CustomButton text="Cancelar Cambios" classStyle="btnRed" icon={faRectangleXmark} onClickCallback={() => window.location.reload()}/></div>
+            </>
+            :
+            <>
+              <div class="flex-grow-1"><CustomButton text="Editar Tiempos & Mensajes" icon={faPenToSquare} onClickCallback={this.handleEditLocations}/></div>
+              <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton disabled={true} text="Ver Barrios & Moviles" icon={faHouseChimneyUser}/></div>
+            </>
+          }
+          <div className="col-10"></div>
+        </div>
+
+        <div style={{...orderPanelStyling, height: '75px'}}>
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <div style={{display: 'flex', flexGrow: 1, alignItems: 'center'}}>
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>Horarios de Envio de Mensajes:</p>
+              {timeBlocks}
             </div>
-          </nav>
-          <br />
-          <br />
-          <h6 className="center-align"><strong>Tiempos de entrega</strong></h6>
-          <form className="container">
-            <hr />
-            <div className="row">
-              <div className="col s4"><strong>Día de Mensaje</strong></div>
-              <div className="col s4"><strong>Día de entrega</strong></div>
-              <div className="col s4"><strong>Zona de entrega</strong></div>
+            <div style={{marginTop: '-20px'}}>
+              <CustomButton width='186px' height="45px" text="Agregar Horario" icon={faSquarePlus} onClickCallback={this.handleAddTimeSet} />
             </div>
-            {dayLocationsHtml}
-            <hr />
-            <br />
-            <button className={`waves-effect waves-light btn ${Color.Button_1}`} onClick={this.handleEditLocations}>
-              <i className="material-icons left">{this.state.isEditingLocations ? "save" : "edit"}</i>
-              {this.state.isEditingLocations ? "Save" : "Edit"}
-            </button>
-          </form>
+          </div>
+        </div>
+
+
+        <div style={{...orderPanelStyling, height: '70vh'}}>
+          {timesScrollHtml}
         </div>
       </div>
     );
   }
+}
+
+const orderPanelStyling = {
+  width: '100%',
+  marginTop: '10px',
+  marginTop: '25px',
+  padding: '25px',
+  boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+  border: `1px solid ${ColorHex.BorderColor}`,
+  borderRadius: '10px',
+  backgroundColor: ColorHex.White
+}
+
+const headerStyle = {
+  textAlign: 'center',
+  color: ColorHex.TextBody,
+  ...CssProperties.SmallHeaderTextStyle
+}
+
+const scrollStyle = {
+  borderRadius: '10px',
+  backgroundColor: ColorHex.Background,
+  padding: '10px',
+  boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
+  overflowY: 'scroll', 
+  height: '55vh',
+  width: '100%',
+  alignItems: 'center'
 }
 
 export default DayLocationForm;

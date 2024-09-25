@@ -6,9 +6,68 @@ class Utils {
         const day = String(newDate.getDate()).padStart(2, '0');
 
         const formattedDate = `${day}-${month}-${year}`;
-        console.log("formattedDate", formattedDate)
         return formattedDate
     }
+
+    static getCutName(name, maxCharacterLength = 25) {
+        let itemName = name
+    
+        if(itemName?.length > maxCharacterLength) {
+            itemName = itemName.slice(0, maxCharacterLength) + "..."
+        }
+
+        return itemName
+    }
+
+    static hexToRgba(hex, alpha) {
+        let r = 0, g = 0, b = 0;
+
+        // 3 digits
+        if (hex.length === 4) {
+          r = parseInt(hex[1] + hex[1], 16);
+          g = parseInt(hex[2] + hex[2], 16);
+          b = parseInt(hex[3] + hex[3], 16);
+        }
+
+        // 6 digits
+        else if (hex.length === 7) {
+          r = parseInt(hex[1] + hex[2], 16);
+          g = parseInt(hex[3] + hex[4], 16);
+          b = parseInt(hex[5] + hex[6], 16);
+        }
+        
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
+    static getWeekRange() {
+      const today = new Date();
+      
+      // Get the current day of the week (0 - Sunday, 6 - Saturday)
+      const dayOfWeek = today.getDay();
+  
+      // Calculate the difference to the start of the week (Sunday)
+      const diffToStartOfWeek = dayOfWeek; // Sunday is 0, so no need to add 1
+      
+      // Calculate the difference to the end of the week (Saturday)
+      const diffToEndOfWeek = 6 - dayOfWeek; // Saturday is 6
+  
+      // Get the start and end dates
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - diffToStartOfWeek);
+  
+      const endOfWeek = new Date(today);
+      endOfWeek.setDate(today.getDate() + diffToEndOfWeek);
+  
+      return {
+          startOfWeek,
+          endOfWeek
+      };
+  }
+
+  static formatDateShort(date) {
+    const options = { month: 'short', day: 'numeric' };
+    return date?.toLocaleDateString('en-US', options).replace(",", " -");
+  }
 }
 
 export default Utils

@@ -1,10 +1,17 @@
 import axios from 'axios';
 import React, { Component } from 'react';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
 import OrderComponent from './OrderComponent';
 import ExcelFileOutput from '../Excel/ExcelFileOutput';
-import M from 'materialize-css/dist/js/materialize.min.js';
 import AddOrderModal from './AddOrderModal';
+import CssProperties from '../CssProperties';
+import SearchBar from '../Searchbar/Searchbar';
+import Dropdown from '../Searchbar/Dropdown';
+import CustomButton from '../Searchbar/CustomButton';
+import './ScrollView.css'
+import StatCard from '../Searchbar/StatCard';
+import { faPenToSquare, faArrowRotateRight} from '@fortawesome/free-solid-svg-icons';
+import { faFloppyDisk, faRectangleXmark, faSquarePlus} from '@fortawesome/free-regular-svg-icons';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -24,44 +31,43 @@ class OrderScreen extends Component {
         addOrderModelOpen: false,
       };
       this.orderRefs = [];
+      this.CONFIRMED = "CONFIRMED"
+      this.CANCELED = "CANCELED"
+      this.NOT_IN_INVENTORY = "NOT_IN_INVENTORY"
   }
 
   componentDidMount() {
     this.fetchOrderData();
     this.fetchMovilData();
-    this.fetchClientData();
     this.fetchInventoryItemNames();
   }
 
-  componentDidUpdate() {
-    this.addCollapsibleListeners(this.state.filteredOrders)
-  }
+  fetchOrderData = async () => {
+    this.props.setIsLoading(true)
 
-  addCollapsibleListeners(filteredOrders) {
-    const collapsibleElem = document.querySelectorAll('.collapsible');
-    const instances = M.Collapsible.init(collapsibleElem, {
-      // Override the default behavior
-      onOpenEnd: function(el) {
-          el.classList.add('active');
-      },
-      onCloseEnd: function(el) {
-          el.classList.remove('active');
-      }
-  });
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
+      this.setState({
+        orders: response.data,
+        filteredOrders: response.data,
+      })
+      console.log("response orderScreen", response.data)
+    } catch (error) {
 
-    const headers = document.querySelectorAll(`.collapsible-header`);
-    headers.forEach((header, index) => {
-      header.addEventListener('click', (e) => this.openCollapsible(e, index, filteredOrders[index].phoneNumber));
-    });
-  }
+    }
 
-  openCollapsible = (event, index, phonNumber) => {
-    event.stopImmediatePropagation();
-    event.preventDefault();
-    const collapsibleElem = document.querySelector('.collapsible');
-    const collapsibleInstance = M.Collapsible.getInstance(collapsibleElem);
-    collapsibleInstance.open(index); // Opens the specific collapsible item
-    this.handleHeaderClick(phonNumber, index)
+    this.props.setIsLoading(false)
+  };
+
+  fetchInventoryItemNames = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
+      this.setState({
+        inventoryItemNamesWithCodes: response.data,
+      });
+    } catch (error) {
+
+    }
   };
 
   fetchMovilData = async () => {
@@ -77,58 +83,20 @@ class OrderScreen extends Component {
     this.props.setIsLoading(false)
   };
 
-  fetchOrderData = async () => {
-    this.props.setIsLoading(true)
-
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
-      this.addCollapsibleListeners(response.data)
-      this.setState({
-        orders: response.data,
-        filteredOrders: response.data,
-      })
-      console.log("response orders", response)
-    } catch (error) {
-
-    }
-
-    this.props.setIsLoading(false)
-  };
-
   addNewOrder = (order) => {
     let orders = [...this.state.orders]
     let filteredOrders = [...this.state.filteredOrders]
-
-    console.log("orders", orders)
-    console.log("order", order)
 
     orders = orders.filter(x => x.phoneNumber != order.phoneNumber)
     filteredOrders = filteredOrders.filter(x => x.phoneNumber != order.phoneNumber)
     orders.push(order)
     filteredOrders.push(order)
 
-    console.log("orders after filter", orders)
-
     this.setState({
       orders: orders,
       filteredOrders: filteredOrders,
     })
   }
-
-  fetchClientData = async () => {
-    this.props.setIsLoading(true)
-
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/phoneNumbers`);
-      this.setState({
-        clientNumbers: response.data,
-      })
-    } catch (error) {
-
-    }
-
-    this.props.setIsLoading(false)
-  };
 
   handleCheckOrders = async () => {
     this.props.setIsLoading(true, "Creando pedidos, puede tardar hasta unos minutos...")
@@ -156,7 +124,6 @@ class OrderScreen extends Component {
 
     if(isEditing == false) {
       if(this.state.currentSaveCallback != undefined) {
-        console.log("SAVE")
         this.state.currentSaveCallback()
       }
     }
@@ -172,23 +139,6 @@ class OrderScreen extends Component {
     }
   }
 
-  fetchInventoryItemNames = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
-      this.setState({
-        inventoryItemNamesWithCodes: response.data,
-      });
-    } catch (error) {
-
-    }
-  };
-
-  updateTotalSales = () => {
-    this.setState({
-      updateTotalSalesFlag: !this.state.updateTotalSalesFlag
-    })
-  }
-
   handleSearchInputChange = (event) => {
     const searchInput = event.target.value;
     this.setState({ searchInput }, () => {
@@ -202,8 +152,14 @@ class OrderScreen extends Component {
     })
   }
 
-  filterOrders = () => {
-    const { orders, searchInput } = this.state;
+  updateTotalSales = () => {
+    this.setState({
+      updateTotalSalesFlag: !this.state.updateTotalSalesFlag
+    })
+  }
+
+  filterOrders = (searchInput) => {
+    const { orders } = this.state;
 
     const filteredOrders = orders.filter(order =>
         order.name.toLowerCase().includes(searchInput.toLowerCase()) ||
@@ -212,7 +168,13 @@ class OrderScreen extends Component {
     );
 
     this.setState({ filteredOrders: filteredOrders });
-  };
+  }; 
+
+  closeAllDropdowns = (openDropdownId) => {
+    // this.orderRefs.forEach(orderElement => {
+    //     orderElement.closeDropdown(openDropdownId)
+    // });
+  }
 
   render() {
     const { filteredOrders } = this.state;
@@ -235,6 +197,7 @@ class OrderScreen extends Component {
                 inventoryItemNamesWithCodes={this.state.inventoryItemNamesWithCodes} 
                 updateTotalSalesCallback={this.updateTotalSales}
                 showPopup={this.props.showPopup}
+                closeAllDropdownsCallback={this.closeAllDropdowns}
               />
     });
 
@@ -242,7 +205,7 @@ class OrderScreen extends Component {
 
     this?.state?.orders?.forEach(order => {
       for(const item of order.order) {
-        if(item.botState != "CONFIRMED") {continue;}
+        if(item.botState != this.CONFIRMED) {continue;}
 
         totalSales += (item.price * item.amount)
       }
@@ -259,38 +222,129 @@ class OrderScreen extends Component {
         addNewOrderCallback={this.addNewOrder}
     />  
 
-    return (
-      <div className={`card bordered ${Color.Background}`}>
-        {addOrderModal}
-        <div className="card-content">
-          <div style={{"display": "flex", "justify-content": "space-between", "width": "100%"}}>
-            <span className="card-title" style={{ width: '75%'  }}>Pedidos Recibidos</span>
-            <h6 className='green-text'>Total Vendido: ₲{totalSales.toLocaleString()}</h6>
-            <button onClick={this.handleEditMode}  className={`waves-effect waves-light btn ${Color.Fifth}`}>
-              <i className={`${this.state.isEditing ? "orange-text" : "white-text"} material-icons`}>{this.state.isEditing ? "save" : "edit"}</i>
-            </button>
-            <button onClick={this.handleOpenModal} className={`waves-effect waves-light btn ${Color.Fifth}`}>
-              <i className={`material-icons`}>add_circle_outline</i>
-            </button>
-          </div>
-          <input
-            type="text"
-            placeholder="Buscar pedidos..."
-            value={this.state.searchInput}
-            onChange={this.handleSearchInputChange}
-          />
-          <ul class="collapsible expandable" style={{ overflowY: 'scroll', height: '60vh', "overflow-x": "hidden" }}>
-            {orderBlocks}
-          </ul>
+    const ordersPanel =         
+    <div className={`card bordered ${Color.Background}`}>
+      {addOrderModal}
+      <div className="card-content">
+        <div style={{"display": "flex", "justify-content": "space-between", "width": "100%"}}>
+          <span className="card-title" style={{ width: '75%'  }}>Pedidos Recibidos</span>
+          <h6 className='green-text'>Total Vendido: ₲{totalSales.toLocaleString()}</h6>
+          <button onClick={this.handleEditMode}  className={`waves-effect waves-light btn ${Color.Fifth}`}>
+            <i className={`${this.state.isEditing ? "orange-text" : "white-text"} material-icons`}>{this.state.isEditing ? "save" : "edit"}</i>
+          </button>
+          <button onClick={this.handleOpenModal} className={`waves-effect waves-light btn ${Color.Fifth}`}>
+            <i className={`material-icons`}>add_circle_outline</i>
+          </button>
         </div>
-        <div className="card-action">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <ExcelFileOutput />
-            <button className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleCheckOrders}>
-              <i className="material-icons left">autorenew</i>
-              Revisar Pedidos
-            </button>
+        <input
+          type="text"
+          placeholder="Buscar pedidos..."
+          value={this.state.searchInput}
+          onChange={this.handleSearchInputChange}
+        />
+        <ul class="collapsible expandable" style={{ overflowY: 'scroll', height: '60vh', "overflow-x": "hidden" }}>
+          {orderBlocks}
+        </ul>
+      </div>
+      <div className="card-action">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <ExcelFileOutput />
+          <button className={`waves-effect waves-light btn ${Color.Fifth}`} onClick={this.handleCheckOrders}>
+            <i className="material-icons left">autorenew</i>
+            Revisar Pedidos
+          </button>
+        </div>
+      </div>
+    </div>
+
+    const orderPanelStyling = {
+      width: '100%',
+      height: '70vh',
+      marginTop: '10px',
+      marginTop: '25px',
+      padding: '25px',
+      boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+      border: `1px solid ${ColorHex.BorderColor}`,
+      borderRadius: '10px',
+      backgroundColor: ColorHex.White
+    }
+
+    const dropdownItems = [
+      {name: "Todos Pedidos", value: this.state?.orders},
+      {name: "Pedidos Confirmados", value: this.state?.orders?.filter(x => x.orderState == this.CONFIRMED)},
+      {name: "Pedidos Pendientes", value: this.state?.orders?.filter(x => x.orderState != this.CONFIRMED && x.orderState != this.CANCELED && x.order.find(x => x.botState == this.NOT_IN_INVENTORY) == undefined)},
+      {name: "Pedidos Con Errores", value: this.state?.orders?.filter(x => x.order.find(x => x.botState == this.NOT_IN_INVENTORY) != undefined)},
+      {name: "Pedidos Cancelados", value: this.state?.orders?.filter(x => x.orderState == this.CANCELED)},
+    ]
+
+    const headerStyle = {
+      textAlign: 'center',
+      color: ColorHex.TextBody,
+      ...CssProperties.BodyTextStyle
+    }
+
+    const scrollStyle = {
+      borderRadius: '10px',
+      backgroundColor: ColorHex.Background,
+      padding: '10px',
+      boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
+      overflowY: 'scroll', 
+      height: '55vh',
+      width: '100%',
+      alignItems: 'center'
+    }
+
+    const ordersList = 
+      <div style={{ alignItems: 'center', width: '100%', marginTop: '25px'}}>
+           <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
+            <div style={headerStyle} className='col-2'>Nombre del Cliente</div>
+            <div style={headerStyle} className='col-2'>Numero del Cliente</div>
+            <div style={headerStyle} className='col-2'>Cantidad Items</div>
+            <div style={headerStyle} className='col-1'>Fecha</div>
+            <div style={headerStyle} className='col-2'>Estado del Pedido</div>
+            <div style={headerStyle} className='col-1'>Movil</div>
+            <div style={headerStyle} className='col-1'>Editar Pedido</div>
+            <div style={headerStyle} className='col-1'></div>
+           </div>
+
+           <div style={scrollStyle}>
+            {orderBlocks}
+           </div>
+      </div>
+
+    return (
+      <div>
+        {addOrderModal}
+        <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Pedidos</p>
+        
+        <div style={{display: 'flex'}}>
+            <div class="flex-grow-1"><StatCard title="Pedidos Total" amountColor={ColorHex.TextBody} amountFunction={() => dropdownItems[0]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Pedidos Confirmados" amountColor={ColorHex.GreenFabri} amountFunction={() => dropdownItems[1]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Pedidos Pendientes" amountColor={ColorHex.OrangeFabri} amountFunction={() => dropdownItems[2]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Pedidos Con Errores" amountColor={ColorHex.RedFabri} amountFunction={() => dropdownItems[3]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Pedidos Cancelados" amountColor={ColorHex.TextBody} amountFunction={() => dropdownItems[4]?.value?.length ?? 0}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Ventas" amountColor={ColorHex.GreenFabri} amountFunction={() => `₲${totalSales.toLocaleString()}`}/></div>
+            <div className="col-5"></div>
+        </div>
+
+        <div style={{display: 'flex', width: '100%', paddingTop: '25px'}}>
+          <div class="flex-grow-1"><CustomButton text="Revisar Pedidos" icon={faArrowRotateRight} onClickCallback={this.handleCheckOrders}/></div>
+          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><CustomButton text="Crear Pedido" icon={faSquarePlus} link="createOrder"/></div>
+          <div class="flex-grow-1"style={{paddingLeft: '25px'}}><ExcelFileOutput/></div>
+          <div className="col-9"></div>
+        </div>
+
+        <div style={orderPanelStyling}>
+          <div style={{display: 'flex'}}>
+            <div class="flex-grow-3">
+              <SearchBar searchText="Buscar Nro/Cliente/Pedido..." OnSearchCallback={this.filterOrders}/>
+            </div>
+            <div class="flex-grow-3" style={{paddingLeft: '25px'}}>
+              <Dropdown dropdownItems={dropdownItems} handleChangeCallback={(selectedObj) => this.setState({filteredOrders: selectedObj.value})}/>
+            </div>
           </div>
+
+          {ordersList}
         </div>
       </div>
     );

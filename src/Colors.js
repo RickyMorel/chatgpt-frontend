@@ -1,7 +1,6 @@
 export class Color{
     static First = "red darken-4"
     static Second = "grey darken-3"
-    static SideNav = "grey darken-1"
     static Third = "teal lighten-4"
     static Button_1 = "teal lighten-3"
     static Fifth = "teal darken-2"
@@ -13,8 +12,17 @@ export class ColorHex {
     static Second = "#424242"
     static Third = "#b2dfdb"
     static Fifth = "#00796b"
-    static Background = "#E9EBE3"
     static Green = "#4c967d"
     static Red = "#b0001b"
     static Orange = "#b0001b"
+    
+    static Background = "#E6E6E6"
+    static White = "#F8F8F8"
+    static GreyFabri = "#A8A8A8"
+    static GreenFabri = "#00CC14"
+    static OrangeFabri = "#F7BF44"
+    static BlueFabri = "#4680FF"
+    static RedFabri = "#F74444"
+    static TextBody = "#606060"
+    static BorderColor = "#B3B3B3"
 }

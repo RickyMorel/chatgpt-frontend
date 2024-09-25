@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import { ColorHex } from '../Colors';
 
 const spawnPopup = (isOpen, popup, style) => {
   return (
@@ -38,17 +39,22 @@ const mediumStyle = {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   content: {
-    border: 'none',
-    borderRadius: '0',
+    border: `1px solid ${ColorHex.BorderColor}`,
+    borderRadius: '15px',
+    padding: '15px',
+    backgroundColor: ColorHex.White,
+    boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+    width: '593px',  
+    height: 'auto', 
+    background: 'transparent',
     top: '50%',
     left: '50%',
     right: 'auto',
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
-    width: '40%',  
-    height: '60%', 
-    background: 'transparent',
+    overflowX: 'hidden',
+    overflowY: 'hidden',
   },
   overlay: {zIndex: 1000}
 };

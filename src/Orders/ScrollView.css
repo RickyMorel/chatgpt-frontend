@@ -1,0 +1,21 @@
+.table-container {
+    max-height: 300px; /* Adjust height as needed */
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+
+  /* Fix the header */
+  thead th {
+    position: sticky;
+    top: 0;
+    background-color: white; /* Background color of the header */
+    z-index: 1000;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Add some padding and styles to table rows */
+  td {
+    padding: 10px;
+    vertical-align: middle;
+  }

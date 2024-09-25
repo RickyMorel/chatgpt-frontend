@@ -1,24 +1,57 @@
-/* SideNav.css */
-.sidenav {
-    height: 100%;
-    width: 250px;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #111;
-    padding-top: 20px;
-  }
-  
-  .sidenav a {
-    padding: 15px 20px;
-    text-decoration: none;
-    font-size: 18px;
-    color: #818181;
-    display: block;
-  }
-  
-  .sidenav a:hover {
-    color: #f1f1f1;
-  }
+/* Hover */
+.nav-item:hover {
+  background-color: #A8A8A8;
+}
+
+.btnRed:hover {
+  background-color: #F74444;
+}
+
+.btnGreen:hover {
+  background-color: #00CC14;
+}
+
+.btnBlue:hover {
+  background-color: #4680FF;
+}
+
+.btnRed:hover *,
+.btnGreen:hover *,
+.btnBlue:hover *,
+.nav-item:hover * {
+  color: #ffffff;
+}
+
+.btnRed *, 
+.btnGreen *, 
+.btnBlue *, 
+.nav-item * {
+  color: #606060
+}
+
+.btnRed, 
+.btnGreen, 
+.btnBlue, 
+.nav-item {
+  background-color: #ffffff
+}
+
+/* Clicked */
+.btnRed-clicked *, 
+.btnGreen-clicked *, 
+.btnBlue-clicked * {
+  color: #ffffff;
+}
+
+.btnBlue-clicked {
+  background-color: #4680FF;
+}
+
+.btnGrey-clicked {
+  background-color: #B3B3B3;
+}
+
+.btnRed-clicked {
+  background-color: #F74444;
+}
   

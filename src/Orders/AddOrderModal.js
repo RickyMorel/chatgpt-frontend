@@ -5,8 +5,11 @@ import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import Modal from 'react-modal';
 import Select from 'react-select';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
 import { PopupStyle } from '../Popups/PopupManager';
+import CssProperties from '../CssProperties';
+import CustomSelect from '../Searchbar/CustomSelect';
+import CustomDatePicker from '../Searchbar/CustomDatePicker';
 
 class AddOrderModal extends Component {
     constructor(props) {
@@ -227,7 +230,46 @@ class AddOrderModal extends Component {
             </div>
         </Modal>
 
-        return (addOrderModal)
+        const headersStyle = {
+            ...CssProperties.MediumHeadetTextStyle,
+            color: ColorHex.TextBody, 
+            marginTop: '25px'
+        }
+
+        
+        const addOrderModalNew =             
+        <Modal
+            isOpen={isOpen}
+            onRequestClose={closeCallback}
+            contentLabel="Example Modal"
+            style={PopupStyle.Medium}
+        >
+           <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Crear Pedido</p>
+           <hr style={{marginTop: '-15px'}}/>
+           <p style={headersStyle}>Numero de cliente</p>
+           <CustomSelect
+                placeHolderText={"Ingresar el número de cliente......"}
+                options={clientNumbersSelect}
+                onChange={this.handleClientChange}
+                value={clientNumbersSelect?.find(x => x.value == this?.state?.clientNumber)}
+                isSearchable={true}
+            />
+            <p style={headersStyle}>Movil</p>
+           <CustomSelect placeHolderText={"Ingresar movil......"}
+                options={movilNames}
+                onChange={this.handleMovilChange}
+                value={movilNames?.find(x => x.value == this?.state?.movil)}
+                isSearchable={true}
+            />
+            <p style={headersStyle}>Fecha de Entrega</p>     
+            <CustomDatePicker
+                selected={this.state.deliveryDate}
+                onChange={(date) => this.handleEditDate(date)}
+            />    
+        </Modal>
+
+
+        return (addOrderModalNew)
     }
 }
 

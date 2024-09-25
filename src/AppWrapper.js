@@ -3,10 +3,10 @@ import { usePopup } from './Popups/PopupProvider';
 import App from './App';
 
 const AppWrapper = () => {
-  const { showPopup } = usePopup();
+  const { showPopup, showPopup_2_Buttons } = usePopup();
 
   return (
-    <App showPopup={showPopup} />
+    <App showPopup={showPopup} showPopup_2_Buttons={showPopup_2_Buttons}/>
   );
 };
 

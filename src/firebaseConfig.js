@@ -1,5 +1,6 @@
 import firebase from 'firebase/compat/app'
 import 'firebase/compat/firestore'
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB_GeaQ091OEgoi3pQURwpLNBB1r0JJMyc",
@@ -10,9 +11,12 @@ const firebaseConfig = {
     messagingSenderId: "1052201920246",
     appId: "1:1052201920246:web:31dd35d7e1d16ec7beeed7",
     measurementId: "G-9CVWYCRLQQ"
-  };
+};
 
-  firebase.initializeApp(firebaseConfig)
-  const firestore = firebase.firestore()
+const firebaseApp = firebase.initializeApp(firebaseConfig)
 
-  export default firestore
+const firestore = firebase.firestore()
+
+const storage = getStorage(firebaseApp);
+
+export { firestore, storage };

@@ -1,10 +1,15 @@
 
 import axios from 'axios';
 import React, { Component } from 'react';
-import { Color } from '../Colors';
+import { Color, ColorHex } from '../Colors';
 import SearchBar from '../Searchbar/Searchbar';
 import InventoryEditItemModal from './InventoryEditItemModal';
 import InventoryItemComponent from './InventoryItemComponent';
+import CssProperties from '../CssProperties';
+import CustomSelect from '../Searchbar/CustomSelect';
+import CustomButton from '../Searchbar/CustomButton';
+import CustomToggle from '../Searchbar/CustomToggle';
+import { faFloppyDisk, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -24,7 +29,8 @@ class InventoryScreen extends Component {
           itemToEdit: null,
           addedTags: [],
           productReccomendations: [],
-          autoPromo: true
+          selectedDayNumber: 0,
+          hasShownPromoPopup: false
         };
     }
 
@@ -78,9 +84,9 @@ class InventoryScreen extends Component {
                 filteredSelectedDayInventory: selectedInventoryItems,
                 promoItemCodes: response.data.dayInventories[0].promoItemCodes,
                 nextDayIndex: response.data.nextMessageDayIndex
-            }).then(x => {
-                this.handleDayTabClick(this.state.nextDayIndex) 
-            });
+            })
+
+            this.handleDayTabClick(response.data.nextMessageDayIndex, response.data.dayInventories)
 
         } catch (error) {}
     }
@@ -145,11 +151,12 @@ class InventoryScreen extends Component {
         }
     }
 
-    handleDayTabClick = async (selectedDayNumber) => {
-        const allInventories = this.state.dayInventories
+    handleDayTabClick = async (selectedDayNumber, dayInventories = undefined) => {
+        const allInventories = dayInventories ?? this.state.dayInventories
         let selectedInventoryItems = {day: allInventories[selectedDayNumber].day , items: this.state.products.filter(x => allInventories[selectedDayNumber].itemIds.includes(x.code))}
 
         this.setState({
+            selectedDayNumber: selectedDayNumber,
             selectedDayInventory: selectedInventoryItems,
             filteredSelectedDayInventory: selectedInventoryItems,
             promoItemCodes: allInventories[selectedDayNumber].promoItemCodes
@@ -178,16 +185,22 @@ class InventoryScreen extends Component {
         })
     }
 
-    handleSearch = (filteredList) => {
-        this.setState({
-          filteredProducts: filteredList
-        })
-    }
+    handleSearch = (searchText, isDailyInventory) => {
+        const filteredItems = this.state.products.filter(item =>
+            item.name.toLowerCase().includes(searchText.toLowerCase())
+        );
 
-    handleDailyInventorySearch = (filteredList) => {
-        this.setState({
-          filteredSelectedDayInventory: {day: this.state.selectedDayInventory.day, items: filteredList}
-        })
+        if(isDailyInventory) {
+            this.setState({
+                filteredSelectedDayInventory: {day: this.state.selectedDayInventory.day, items: filteredItems}
+            })
+        }
+        else {
+            this.setState({
+              filteredProducts: filteredItems
+            })
+        }
+
     }
 
     handleAutoPromoChange = (e) => {
@@ -196,7 +209,21 @@ class InventoryScreen extends Component {
         })
     }
 
-    handleSelectPromoItem = (item) => {
+    handleSelectPromoItem = (item, hasAutoPromo = false) => {
+        let reccomendedItems = this.state.productReccomendations.find(x => x.itemCode == item.code)?.reccomendedItemCodes
+        
+        if(!this.state.hasShownPromoPopup) {
+            this.props.showPopup_2_Buttons(
+                "Promociones Recomendados",
+                `Elegiste poner “${item.name}” de promoción. Recomendamos poner los siguientes items en promoción tambien.`,
+                "Te gustaria poner estos items de promoción?",
+                [item.name, ...reccomendedItems.map(x => this.state.products.find(y => y.code == x).name)].slice(0, 3),
+                () => this.handleSelectPromoItem(item, true),
+            )
+
+            this.setState({ hasShownPromoPopup: true })
+        }
+
         let newPromoItems = [...this.state.promoItemCodes]
 
         if(newPromoItems.includes(item.code) == false) {newPromoItems.unshift(item.code)}
@@ -206,9 +233,7 @@ class InventoryScreen extends Component {
             newPromoItems.splice(removeIndex, 1);
         }
 
-        if(this.state.autoPromo == true) {
-            let reccomendedItems = this.state.productReccomendations.find(x => x.itemCode == item.code)?.reccomendedItemCodes
-
+        if(hasAutoPromo == true) {
             newPromoItems = []
             newPromoItems = [item.code, ...reccomendedItems]
         }
@@ -273,7 +298,7 @@ class InventoryScreen extends Component {
     }
 
     render() {
-        const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory} = this.state
+        const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory, selectedDayNumber} = this.state
 
         const orderedFilteredProducts = filteredProducts?.sort((a, b) => this.sortByName(a, b, "name"))
         const allProductsList = orderedFilteredProducts?.map(x => {
@@ -334,81 +359,106 @@ class InventoryScreen extends Component {
             showPopup={this.props.showPopup}
             isCreateItem={this.state.itemToEdit == null}
         />      
-            
-        const navbarStyle = {
-            display: 'flex',
-            justifyContent: 'center',
-        };
+
+        const dayDropdownOptions = [
+            {value: 0, label: 0 == this.state.nextDayIndex ? `Lunes (Pendiente)` : 'Lunes'},
+            {value: 1, label: 1 == this.state.nextDayIndex ? `Martes (Pendiente)` : 'Martes'},
+            {value: 2, label: 2 == this.state.nextDayIndex ? `Miercoles (Pendiente)` : 'Miercoles'},
+            {value: 3, label: 3 == this.state.nextDayIndex ? `Jueves (Pendiente)` : 'Jueves'},
+            {value: 4, label: 4 == this.state.nextDayIndex ? `Viernes (Pendiente)` : 'Viernes'},
+            {value: 5, label: 5 == this.state.nextDayIndex ? `Sabado (Pendiente)` : 'Sabado'},
+            {value: 6, label: 6 == this.state.nextDayIndex ? `Domingo (Pendiente)` : 'Domingo'},
+        ]
 
         return (
-            <div className={`card bordered ${Color.Background}`}>
+            <div>
                 {editItemModal}
-                <div className="card-content">
-                    <nav className="transparent z-depth-0">
-                        <div class="nav-wrapper">
-                        <div className="nav-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
-                            <div style={{ position: 'absolute', left: 0, display: 'flex', alignItems: 'center' }}>
-                                <div className="switch" style={{ paddingRight: '20px' }}>
-                                    <label><input type="checkbox" checked={this.state.autoPromo} onChange={this.handleAutoPromoChange} /><span className="lever"></span>Auto Promo</label>
+                <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{`Inventario de ${dayDropdownOptions.find(x => x.value == selectedDayNumber).label}`}</p>
+
+                <div style={{display: 'flex'}}>
+                    <div class="flex-grow-1">
+                        <CustomSelect
+                            width='292px'
+                            height='45px'
+                            options={dayDropdownOptions}
+                            onChange={(value) => this.handleDayTabClick(value.value)}
+                            value={dayDropdownOptions.find(x => x.value == selectedDayNumber)}
+                            isSearchable={false}
+                        />
+                    </div>
+                    <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
+                        <CustomButton text="Crear Item"  width="175px" height="45px" icon={faSquarePlus} link="createItem"/>
+                    </div>
+                    <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
+                        {
+                            this.state.needsToSave ? 
+                            <CustomButton text="Guardar Cambios"  width="195px" height="45px" classStyle='btnBlue-clicked' icon={faFloppyDisk} onClickCallback={this.saveDailyInventories}/>
+                            :
+                            <></>
+                        }
+                    </div>
+                    <div className={this.state.needsToSave ? "col-8" : 'col-9'}></div>
+                </div>
+
+                <div className='row' style={{paddingTop: '25px'}}>
+                    <div className='col-6'>
+                        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>Items Disponible para Cargar</p>
+                        <div style={inventoryPanelStyling}>
+                            <SearchBar width='100%' height='45px' itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={(value) => this.handleSearch(value, false)}/>
+                            <div style={scrollPanelStyle}>
+                                <div style={scrollStyle}>
+                                    {allProductsList}
                                 </div>
                             </div>
-                            <ul style={{ ...navbarStyle, margin: 0 }}>
-                                <li onClick={() => this.handleDayTabClick(0)} className={`${0 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 0 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{0 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Lunes</a>
-                                </li>
-                                <li onClick={() => this.handleDayTabClick(1)} className={`${1 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 1 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{1 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Martes</a>
-                                </li>
-                                <li onClick={() => this.handleDayTabClick(2)} className={`${2 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 2 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{2 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Miercoles</a>
-                                </li>
-                                <li onClick={() => this.handleDayTabClick(3)} className={`${3 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 3 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{3 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Jueves</a>
-                                </li>
-                                <li onClick={() => this.handleDayTabClick(4)} className={`${4 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 4 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{4 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Viernes</a>
-                                </li>
-                                <li onClick={() => this.handleDayTabClick(5)} className={`${5 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 5 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{5 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Sabado</a>
-                                </li>
-                                <li onClick={() => this.handleDayTabClick(6)} className={`${6 == this.state.nextDayIndex ? Color.Third : ``} z-depth-${selectedDayInventory?.day == 6 ? "1" : "0"}`}>
-                                    <a className={`grey-text text-darken-2`}>{6 == this.state.nextDayIndex ? `Hoy Mensajea => ` : ``}Domingo</a>
-                                </li>
-                            </ul>
-                            <div style={{ position: 'absolute', right: 0, display: 'flex', alignItems: 'center' }}>
-                                <button onClick={this.handleOpenCreateItem} className={`waves-effect waves-light btn-small right ${Color.Fifth}`} style={{ padding: '12px 12px', fontSize: '14px', display: 'flex', alignItems: 'center' }}>
-                                    <i className="material-icons" style={{ fontSize: '18px' }}>add_circle_outline</i>
-                                </button>
-                                {
-                                    this.state?.needsToSave == true ?
-                                    <div style={{ marginLeft: '20px' }} className={`waves-effect waves-light btn ${Color.First}`} onClick={this.saveDailyInventories}>Guardar</div>
-                                    :
-                                    <div></div>
-                                }
-                            </div>
                         </div>
-                        </div>
-                    </nav>
-                    <div className='row'>
-                        <div className='col s6'>
-                            <h6 className='center'>Todos los Artículos</h6>
-                            <SearchBar itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={this.handleSearch}/>
-                            <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
-                                {allProductsList}
-                            </div>
-                        </div>
-                        <div className='col s6'>
-                            <h6 className='center'>Artículos Cargados</h6>
-                            {this.state.products && (<SearchBar itemList={selectedDayInventory?.items} searchText="Buscar Productos..." OnSearchCallback={this.handleDailyInventorySearch}/>)}
-                            <div style={{ overflowY: 'scroll', height: '63vh', "overflow-x": "hidden" }}>
-                                {selectedDayProductsList}
+                    </div>
+                        <div className='col-6'>
+                            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{`Items en el Inventario de ${dayDropdownOptions.find(x => x.value == selectedDayNumber).label}`}</p>
+                            <div style={inventoryPanelStyling}>
+                                <SearchBar width='100%' height='45px' itemList={selectedDayInventory?.items} searchText="Buscar Productos..." OnSearchCallback={(value) => this.handleSearch(value, true)}/>
+                                <div style={scrollPanelStyle}>
+                                    <div style={scrollStyle}>
+                                        {selectedDayProductsList}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
         );
     }
+}
+
+const scrollStyle = {
+    overflowY: 'scroll', 
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    overflowX: 'hidden'
+  }
+
+const scrollPanelStyle = {
+    borderRadius: '10px',
+    backgroundColor: ColorHex.Background,
+    padding: '10px',
+    marginTop: '20px',
+    boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
+    height: '90%',
+    width: '100%',
+    alignItems: 'center',
+    paddingTop: '10px'
+  }
+
+const inventoryPanelStyling = {
+    width: '100%',
+    height: '70vh',
+    marginTop: '10px',
+    marginTop: '25px',
+    padding: '25px',
+    boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+    border: `1px solid ${ColorHex.BorderColor}`,
+    borderRadius: '10px',
+    backgroundColor: ColorHex.White
 }
 
 export default InventoryScreen;

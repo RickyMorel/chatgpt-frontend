@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Color } from '../Colors';
-import firebase from "../firebaseConfig";
+import { firestore } from '../firebaseConfig';
 import ProblematicChatComponent from './ProblematicChatComponent';
 
 const ProblematicChatsScreen = (props) => {
@@ -21,7 +21,7 @@ const ProblematicChatsScreen = (props) => {
         }
     
         try {
-            const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate');
+            const ref = firestore.collection(String(props.botNumber)).orderBy('createdDate');
             ref.onSnapshot(querySnapshot => {
                 let chats = [];
                 querySnapshot.forEach(doc => {

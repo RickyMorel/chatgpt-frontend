@@ -1,14 +1,19 @@
-import React, { Component, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Sidenav, Nav } from 'rsuite';
-import { Color, ColorHex } from './Colors';
-import { useLocation } from 'react-router-dom'
-import useSound from 'use-sound';
-import firebase from "./firebaseConfig";
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Sidenav } from 'rsuite';
+import { ColorHex } from './Colors';
+import CssProperties from './CssProperties';
+import { firestore } from './firebaseConfig';
+import './SideNav.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartShopping, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
   const [playSound, setPlaySound] = useState(false);
+  const [messageCount, setMessageCount] = useState(0);
+  const [totalClientsToMessage, setTotalClientsToMessage] = useState(0);
   let fetchSoundCount = 0
 
   useEffect(() => {
@@ -22,21 +27,39 @@ function SideNav(props)  {
   }, [playSound]);
 
   const fetchChatData = async () => {
-      // if (!props.botNumber) {
-      //     return;
-      // }
+    if (!props.botNumber) {
+        return;
+    }
 
-      // const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate')
-      // ref.onSnapshot(query => {
-      //   let chats = []
-      //   query.forEach(doc => {
-      //       chats.push(doc.data())
-      //   }) 
+    const ref = firestore.collection('globalConfig').doc(String(props.botNumber));
 
-      //   handleSoundPlay(chats)
-      //   //PLAY AUDIO HERE
-      // })
-  };
+    ref.get()
+      .then((doc) => {
+        const response = doc.data()
+        setMessageCount(response.messageCount)
+        setTotalClientsToMessage(response.totalClientsToMessage)
+      })
+      .catch((error) => {
+        console.error('Error getting document:', error);
+      });
+  }
+
+  // const fetchChatData = async () => {
+  //     // if (!props.botNumber) {
+  //     //     return;
+  //     // }
+
+  //     // const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate')
+  //     // ref.onSnapshot(query => {
+  //     //   let chats = []
+  //     //   query.forEach(doc => {
+  //     //       chats.push(doc.data())
+  //     //   }) 
+
+  //     //   handleSoundPlay(chats)
+  //     //   //PLAY AUDIO HERE
+  //     // })
+  // };
 
   const handleSoundPlay = (chats) => {
     fetchSoundCount = fetchSoundCount + 1
@@ -59,65 +82,67 @@ function SideNav(props)  {
     if(currentPath == "/problematicChats") { setHasNewProblematicChat(false); }
   };
 
+  const navBarButton = [
+    {icon: faCartShopping, nameText: "Pedidos", link: "/orders"},
+    {icon: faUserGroup, nameText: "Clientes", link: "/blockChats"},
+    {icon: faClipboardList, nameText: "Inventario", link: "/inventory"},
+    // {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
+    {icon: faClock, nameText: "Tiempos y Lugares", link: "/dayLocation"},
+    {icon: faCloud, nameText: "Cargar Datos", link: "/"},
+  ]
+
+  const navBarButtonHtmls = navBarButton.map(x => {
+    const navBarButtonStyle = GetNavButtonStyle(x.link)
+
+    return (
+    <Link to={x.link} style={navBarButtonStyle} className='nav-item rounded'>
+      <FontAwesomeIcon icon={x.icon} style={{ fontSize: '25px' }}/>
+      <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px', marginTop: '15px'}}>{x.nameText}</p>
+    </Link>
+    )
+  })
+
   return (
-    <Sidenav >
-      <Sidenav.Body>
-        <Nav>
-          <Nav.Item className={GetNavItemColor('/')} active={true}>
-            <Link to="/">
-              <i className="material-icons left">cloud</i>
-              Cargar Datos
-            </Link>
-          </Nav.Item>
-          <Nav.Item className={GetNavItemColor('/blockChats')}>
-            <Link to="/blockChats">
-              <i className="material-icons left">contacts</i>
-              Clientes
-            </Link>
-          </Nav.Item>
-          <Nav.Item className={GetNavItemColor('/inventory')}>
-            <Link to="/inventory">
-                <i className="material-icons left">local_mall</i>
-                Inventario
-            </Link>
-          </Nav.Item>
-          <Nav.Item className={GetNavItemColor('/orders')}>
-            <Link to="/orders">
-              <i className="material-icons left">shopping_cart</i>
-              Ver Pedidos
-            </Link>
-          </Nav.Item>
-          <Nav.Item className={GetNavItemColor('/dayLocation')}>
-            <Link to="/dayLocation">
-              <i className="material-icons left">access_time</i>
-              Ver Tiempos y Lugares
-            </Link>
-          </Nav.Item>     
-          <Nav.Item className={GetNavItemColor('/problematicChats')} onClick={() => handleNavItemClick('/problematicChats')}>
-            <Link to="/problematicChats">
-              <div className="row">
-                <div className="col s1">
-                  <i className="material-icons left">call</i>
-                </div>
-                <div className="col s9">
-                  Atención Especial
-                </div>
-                <div className="col s2">
-                  {hasNewProblematicChat == true ? <i style={{ color: ColorHex.First }} className={`material-icons flicker`}>brightness_1</i> : <div></div>}
-                </div>
-              </div>
-            </Link>
-          </Nav.Item>      
-        </Nav>
+    <Sidenav>
+      <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>
+        <div className="d-flex flex-column p-3" style={{ height: '100vh' }}>
+          <div className="text-center p-3">
+            <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '24px' }} />
+          </div>
+          <hr className='border border-dark'/>
+          {navBarButtonHtmls}
+          <div className="mt-auto">
+            <div className="card rounded" style={{ height: '72px', width: '216px', boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.5)', border:`1px solid ${ColorHex.BorderColor}`, backgroundColor: ColorHex.White}}>
+              <p className='text-center' style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }}>Mensajes Enviados</p>
+              <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-16px'}}>{`${messageCount}/${totalClientsToMessage}`}</p>
+            </div>
+            <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }} className='text-center'>Chat bot AI</p>
+          </div>
+        </div>
       </Sidenav.Body>
     </Sidenav>
   );
 };
 
-function GetNavItemColor(navPath) {
+function GetNavButtonStyle(navPath) {
   const currentPath = useLocation().pathname;
 
-  return navPath == currentPath ? Color.Fifth : Color.SideNav
-}
+  let navBarButtonStyle = {
+    display: 'flex',
+    width: '100%',
+    height: '45px',
+    marginTop: '10px',
+    alignItems: 'center',
+    paddingLeft: '10px',
+    paddingRight: '10px',
+    textAlign: 'center',
+    textDecoration: 'none', 
+    color: 'inherit',
+    boxShadow: navPath == currentPath ? '0px 5px 5px rgba(0, 0, 0, 0.5)' : '0px 0px 0px rgba(0, 0, 0, 0.5)',
+    border: navPath == currentPath ? `1px solid ${ColorHex.BorderColor}` : '0px'
+  }
+
+  return navBarButtonStyle
+}  
 
 export default SideNav;
