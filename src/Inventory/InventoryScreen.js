@@ -10,6 +10,7 @@ import CustomSelect from '../Searchbar/CustomSelect';
 import CustomButton from '../Searchbar/CustomButton';
 import CustomToggle from '../Searchbar/CustomToggle';
 import { faFloppyDisk, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
+import { ToastContainer, toast } from 'react-toastify';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -224,6 +225,23 @@ class InventoryScreen extends Component {
             this.setState({ hasShownPromoPopup: true })
         }
 
+        if(this.state.promoItemCodes.includes(item.code)) {
+            console.log("CALLING TOAST")
+            toast.success("Siempre debe haber tres productos especiales marcados. Seleccione otros para reemplazar los actualmente marcados", {
+                style: {
+                    backgroundColor: '#4680FF',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    padding: '10px',
+                },
+                progressStyle: {
+                    backgroundColor: '#fff',
+                },
+                autoClose: 5000,
+                icon: false
+            });
+        }
+
         let newPromoItems = [...this.state.promoItemCodes]
 
         if(newPromoItems.includes(item.code) == false) {newPromoItems.unshift(item.code)}
@@ -372,6 +390,7 @@ class InventoryScreen extends Component {
 
         return (
             <div>
+                <ToastContainer />
                 {editItemModal}
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{`Inventario de ${dayDropdownOptions.find(x => x.value == selectedDayNumber).label}`}</p>
 
