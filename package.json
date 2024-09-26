@@ -32,6 +32,7 @@
     "react-select": "^5.8.0",
     "react-time-picker": "^7.0.0",
     "react-toastify": "^10.0.5",
+    "recharts": "^2.12.7",
     "rsuite": "^5.52.0",
     "use-sound": "^4.0.1",
     "web-vitals": "^2.1.4",

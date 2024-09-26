@@ -79,7 +79,7 @@ class App extends Component {
             <Route exact path="/orders">
               <div style={{margin: '15px'}}><OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
-            <Route exact path="/stats/clients">
+            <Route exact path="/stats">
               <div style={{margin: '15px'}}><ClientStatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/problematicChats">

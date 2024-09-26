@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
+import CustomBarChart from '../Searchbar/CustomBarChart'
 
 class ClientStatsScreen extends Component {
   render() {
     return (
-      <div>ClientStatsScreen</div>
+      <div>
+        <CustomBarChart/>
+      </div>
     )
   }
 }
