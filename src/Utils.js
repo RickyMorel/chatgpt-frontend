@@ -19,6 +19,15 @@ class Utils {
         return itemName
     }
 
+    static getWeekName = (dayIndex) => {
+      const weekNames = [
+        "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado",
+        "Domingo"
+      ];
+
+      return weekNames[dayIndex]
+    }
+
     static hexToRgba(hex, alpha) {
         let r = 0, g = 0, b = 0;
 

@@ -1,20 +1,41 @@
 import React, { Component } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Utils from '../Utils';
+import CssProperties from '../CssProperties';
+import { ColorHex } from '../Colors';
 
 class CustomBarChart extends Component {
-  // Custom Tooltip Component to format totalSold for display
   CustomTooltip = ({ active, payload, label }) => {
+    if(!label) {return;}
+
+    const [day, month, year] = label?.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    const dayOfWeekIndex = date.getDay(); 
+
     if (active && payload && payload.length) {
       return (
-        <div className="custom-tooltip">
-          <p className="label">{`Date: ${label}`}</p>
-          <p className="intro">{`Total Sold: ${Utils.formatPrice(payload[0].value)}`}</p>
+        <div style={orderAmountCardStyling}>
+          <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginBottom: '-8px'}}>{`${Utils.getWeekName(dayOfWeekIndex)}, ${label}`}</p>
+          <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.GreenFabri, textAlign: 'center', marginBottom: '-8px'}}>{`${Utils.formatPrice(payload[0].value)}`}</p>
         </div>
       );
     }
   
     return null;
+  };
+
+  getBarColor = (dateStr) => {
+    const [day, month, year] = dateStr.split("-").map(Number);
+    const date = new Date(year, month - 1, day); // Month is zero-indexed
+    const dayOfWeekIndex = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+
+    if (dayOfWeekIndex == 0) return '#EB9771'; 
+    else if (dayOfWeekIndex == 1) return '#7176EB'; 
+    else if (dayOfWeekIndex == 2) return '#EBBA70'; 
+    else if (dayOfWeekIndex == 3) return '#71B6EB'; 
+    else if (dayOfWeekIndex == 4) return '#968A7A'; 
+    else if (dayOfWeekIndex == 5) return '#6B5E58'; 
+    else if (dayOfWeekIndex == 6) return '#82ca9d'; 
   };
 
   render() {
@@ -50,27 +71,36 @@ class CustomBarChart extends Component {
       return dateA - dateB;
     });
 
-    // Keep totalSold as a number for the chart
-    const formattedTotalSoldPerDay = totalSoldPerDay.map(x => ({
-      date: x.date,
-      totalSold: x.totalSold  // Keep it as a number for chart rendering
-    }));
-
     console.log("totalSoldPerDay", totalSoldPerDay);
 
     return (
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={formattedTotalSoldPerDay} margin={{ top: 20, right: 30, left: 50, bottom: 5 }}>
+        <BarChart data={totalSoldPerDay} margin={{ top: 20, right: 30, left: 50, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
           <YAxis tickFormatter={(value) => Utils.formatPrice(value)} />
           <Tooltip content={<this.CustomTooltip />} />
           <Legend />
-          <Bar dataKey="totalSold" fill="#82ca9d" />
+          <Bar 
+            dataKey="totalSold" 
+            fill={(data) => this.getBarColor(data.date)} // Dynamically set color
+            shape={(props) => <rect {...props} fill={this.getBarColor(props.payload.date)} />} // Set the color of the individual bars
+        />
         </BarChart>
       </ResponsiveContainer>
     );
   }
+}
+
+const orderAmountCardStyling = {
+  width: 'auto',
+  height: 'auto',
+  alignItems: 'center',
+  padding: '10px',
+  boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+  border: `1px solid ${ColorHex.BorderColor}`,
+  borderRadius: '12px',
+  backgroundColor: ColorHex.White
 }
 
 export default CustomBarChart;
