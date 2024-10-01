@@ -8,14 +8,17 @@ class CustomBarChart extends Component {
   CustomTooltip = ({ active, payload, label }) => {
     if(!label) {return;}
 
+    console.log("payload", payload)
+
     const [day, month, year] = label?.split("-").map(Number);
-    const date = new Date(year, month - 1, day);
+    const date = new Date(year, month - 1, day - 1);
     const dayOfWeekIndex = date.getDay(); 
 
     if (active && payload && payload.length) {
       return (
         <div style={orderAmountCardStyling}>
           <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginBottom: '-8px'}}>{`${Utils.getWeekName(dayOfWeekIndex)}, ${label}`}</p>
+          <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginBottom: '-8px'}}>{`Pedidos: ${payload[0].payload.orderAmount}`}</p>
           <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.GreenFabri, textAlign: 'center', marginBottom: '-8px'}}>{`${Utils.formatPrice(payload[0].value)}`}</p>
         </div>
       );
@@ -39,25 +42,28 @@ class CustomBarChart extends Component {
   };
 
   render() {
-    const { orderHistory } = this.props;
+    const { orderHistory, selectedMonthIndex } = this.props;
 
     let totalSoldPerDay = [];
 
     // Process the order history data
     for (const order of orderHistory) {
       const date = order?.deliveryDate ?? order?.creationDate;
-      const orderDate = `${new Date(date).getDate()}-${new Date(date).getMonth()}-${new Date(date).getFullYear()}`;
+      const orderDate = `${new Date(date).getDate()}-${new Date(date).getMonth() + 1}-${new Date(date).getFullYear()}`;
+
+      if(new Date(date).getMonth() != selectedMonthIndex) { continue; }
 
       const dateFound = totalSoldPerDay.find(x => x.date === orderDate);
 
       if (!dateFound) {
-        totalSoldPerDay.push({ date: orderDate, totalSold: order.totalSold });
+        totalSoldPerDay.push({ date: orderDate, totalSold: order.totalSold, orderAmount: 1 });
         continue;
       }
 
       // Update the total sold for the found date
       let newTotal = { ...dateFound };
       newTotal.totalSold += order.totalSold;
+      newTotal.orderAmount += 1
 
       // Remove the old entry and add the updated one
       totalSoldPerDay = totalSoldPerDay.filter(x => x.date !== dateFound.date);
@@ -71,10 +77,8 @@ class CustomBarChart extends Component {
       return dateA - dateB;
     });
 
-    console.log("totalSoldPerDay", totalSoldPerDay);
-
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={300} style={barChartStyling}>
         <BarChart data={totalSoldPerDay} margin={{ top: 20, right: 30, left: 50, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" />
@@ -83,6 +87,7 @@ class CustomBarChart extends Component {
           <Legend />
           <Bar 
             dataKey="totalSold" 
+            name="Total Vendido"
             fill={(data) => this.getBarColor(data.date)} // Dynamically set color
             shape={(props) => <rect {...props} fill={this.getBarColor(props.payload.date)} />} // Set the color of the individual bars
         />
@@ -101,6 +106,16 @@ const orderAmountCardStyling = {
   border: `1px solid ${ColorHex.BorderColor}`,
   borderRadius: '12px',
   backgroundColor: ColorHex.White
+}
+
+const barChartStyling = {
+  width: 'auto',
+  height: 'auto',
+  alignItems: 'center',
+  boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+  border: `1px solid ${ColorHex.BorderColor}`,
+  borderRadius: '12px',
+  backgroundColor: ColorHex.White,
 }
 
 export default CustomBarChart;
