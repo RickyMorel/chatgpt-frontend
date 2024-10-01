@@ -58,6 +58,16 @@ class Utils {
              date1.getDate() === date2.getDate();
     }
 
+    static getDayIndex(date) {
+      const dayIndex = new Date().getDay()
+
+      let translatedMondayDayIndex = dayIndex - 1
+
+      if(translatedMondayDayIndex == -1) {translatedMondayDayIndex = 6}
+
+      return translatedMondayDayIndex
+    }
+
     static getWeekRange() {
       const today = new Date();
       

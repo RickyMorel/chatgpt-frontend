@@ -83,6 +83,9 @@ class App extends Component {
             <Route exact path="/stats">
               <div style={{margin: '15px'}}><KPIStatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
+            <Route exact path="/stats/clients">
+              <div style={{margin: '15px'}}><ClientStatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
+            </Route>
             <Route exact path="/problematicChats">
               <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>

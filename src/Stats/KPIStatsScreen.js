@@ -5,6 +5,8 @@ import CssProperties from '../CssProperties';
 import { ColorHex } from '../Colors';
 import Utils from '../Utils';
 import CustomSelect from '../Searchbar/CustomSelect';
+import CustomButton from '../Searchbar/CustomButton';
+import { faAddressCard } from '@fortawesome/free-solid-svg-icons';
 
 const monthNames = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -20,7 +22,7 @@ class KPIStatsScreen  extends Component {
       orderHistories: [],
       products: [],
       mostSoldFoods: [],
-      selectedMonth: monthNames[new Date().getMonth()]
+      selectedMonth: monthNames[new Date().getMonth()],
     }
   }
 
@@ -98,7 +100,8 @@ class KPIStatsScreen  extends Component {
     return (
       <div>
         <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Estadisticas</p>
-        <div style={{display: 'flex', marginBottom: '10px'}}>
+        <div style={{display: 'flex', gap: '25px', marginBottom: '25px'}}>
+          <CustomButton text="Estadisticas Clientes"  width="225px" height="45px" icon={faAddressCard} link="stats/clients"/>
           <CustomSelect
             width='292px'
             height='45px'
