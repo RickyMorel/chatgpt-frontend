@@ -6,7 +6,7 @@ import CssProperties from './CssProperties';
 import { firestore } from './firebaseConfig';
 import './SideNav.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faChartSimple, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 
 function SideNav(props)  {
@@ -86,8 +86,9 @@ function SideNav(props)  {
     {icon: faCartShopping, nameText: "Pedidos", link: "/orders"},
     {icon: faUserGroup, nameText: "Clientes", link: "/blockChats"},
     {icon: faClipboardList, nameText: "Inventario", link: "/inventory"},
-    // {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
     {icon: faClock, nameText: "Tiempos y Lugares", link: "/dayLocation"},
+    // {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
+    {icon: faChartSimple, nameText: "Estadisticas", link: "/stats"},
     {icon: faCloud, nameText: "Cargar Datos", link: "/"},
   ]
 

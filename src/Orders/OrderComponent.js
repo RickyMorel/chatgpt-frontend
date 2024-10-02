@@ -30,6 +30,8 @@ class OrderComponent extends React.Component {
   componentDidMount() {
     const selectedMovil = this?.props?.movilObjs?.find(x => x.van == this.props.movil) ?? ""
 
+    console.log("this.props.deliveryDate", this.props.deliveryDate, "this.props.creationDate", this.props.creationDate)
+
     this.setState({
       checked: this.props.checkedBySalesPerson,
       order: [...this.props.order],
@@ -160,8 +162,6 @@ class OrderComponent extends React.Component {
 
   render() {
     const { orderNumber , name, phoneNumber, inventoryItemNamesWithCodes, isEditing, pointsUsed, currentOpenOrder } = this.props;
-    console.log("PROPSSSSSSS", this.props)
-    //const { isEditing } = this.state;
 
     const onlyVendorConfirmed = "CONFIRMADO SOLO POR VENDEDOR"
     const noLongerWantedItem = "CLIENTE NO QUIERE"

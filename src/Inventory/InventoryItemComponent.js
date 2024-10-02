@@ -6,22 +6,6 @@ import Utils from '../Utils';
 import { faMinus, faPenToSquare, faPlus, faTag } from '@fortawesome/free-solid-svg-icons';
 
 class InventoryItemComponent extends React.Component {
-
-    formatPrice = (numberString) => {
-        const number = parseFloat(numberString);
-      
-        if (isNaN(number)) {
-          return 'Invalid number';
-        }
-      
-        const formattedNumber = new Intl.NumberFormat('es-PY', {
-          style: 'currency',
-          currency: 'PYG',
-        }).format(number);
-      
-        return `${formattedNumber}`;
-    };
-
     render() {
         const { item, isInDailyInventory, isPromoItem, handleClickCallback, handleSelectPromoItemCallback, handleEditItemCallback, reccomendations } = this.props;
 
@@ -34,7 +18,7 @@ class InventoryItemComponent extends React.Component {
                 <p style={{...CssProperties.BodyTextStyle, color: ColorHex.RedFabri, textAlign: 'center'}}>{item.imageLink == " " ? "Sin Imagen" : ""}</p>
             </div>
             <div className="col-2">
-                <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginTop: '12px'}}>{this.formatPrice(item.price)}</p>
+                <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginTop: '12px'}}>{Utils.formatPrice(item.price)}</p>
             </div>
             <div className="col-1">
                 <CustomButton iconSize="25px" width='40px' height="40px" icon={faPenToSquare} link="createItem" linkData={item}/>

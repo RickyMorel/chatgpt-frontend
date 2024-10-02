@@ -210,7 +210,6 @@ class AddOrderModal extends Component {
                                     locale={es}
                                 />                                           
                             </div>
-                            {/* <input type="date" id="date" value={Utils.formatDate(this.state.deliveryDate)} style={{display: 'block' }} onChange={this.handleEditDate}/> */}
                             <div className="row">
                                 <div className="col s11">
                                     <span>{`Pedido:`}</span>

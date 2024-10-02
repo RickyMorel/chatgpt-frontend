@@ -19,6 +19,15 @@ class Utils {
         return itemName
     }
 
+    static getWeekName = (dayIndex) => {
+      const weekNames = [
+        "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado",
+        "Domingo"
+      ];
+
+      return weekNames[dayIndex]
+    }
+
     static hexToRgba(hex, alpha) {
         let r = 0, g = 0, b = 0;
 
@@ -38,6 +47,26 @@ class Utils {
         
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     };
+
+    static areSameDay(date1, date2) {
+      if (!(date1 instanceof Date) || !(date2 instanceof Date)) {
+          throw new Error('Both arguments must be Date objects.');
+      }
+  
+      return date1.getFullYear() === date2.getFullYear() &&
+             date1.getMonth() === date2.getMonth() &&
+             date1.getDate() === date2.getDate();
+    }
+
+    static getDayIndex(date) {
+      const dayIndex = date.getDay()
+
+      let translatedMondayDayIndex = dayIndex - 1
+
+      if(translatedMondayDayIndex == -1) {translatedMondayDayIndex = 6}
+
+      return translatedMondayDayIndex
+    }
 
     static getWeekRange() {
       const today = new Date();
@@ -68,6 +97,21 @@ class Utils {
     const options = { month: 'short', day: 'numeric' };
     return date?.toLocaleDateString('en-US', options).replace(",", " -");
   }
+
+  static formatPrice = (numberString) => {
+    const number = parseFloat(numberString);
+  
+    if (isNaN(number)) {
+      return 'Invalid number';
+    }
+  
+    const formattedNumber = new Intl.NumberFormat('es-PY', {
+      style: 'currency',
+      currency: 'PYG',
+    }).format(number);
+  
+    return `${formattedNumber}`;
+};
 }
 
 export default Utils

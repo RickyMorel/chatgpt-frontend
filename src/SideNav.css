@@ -51,6 +51,10 @@
   background-color: #B3B3B3;
 }
 
+.btnGreen-clicked {
+  background-color: #00CC14;
+}
+
 .btnRed-clicked {
   background-color: #F74444;
 }

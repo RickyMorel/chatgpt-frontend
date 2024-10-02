@@ -16,6 +16,7 @@ import OrderScreen from './Orders/OrderScreen';
 import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
 import SideNav from './SideNav';
 import ClientStatsScreen from './Stats/ClientStatsScreen';
+import KPIStatsScreen from './Stats/KPIStatsScreen';
 
 class App extends Component {
   constructor(props) {
@@ -78,6 +79,9 @@ class App extends Component {
             </Route>
             <Route exact path="/orders">
               <div style={{margin: '15px'}}><OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
+            </Route>
+            <Route exact path="/stats">
+              <div style={{margin: '15px'}}><KPIStatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/stats/clients">
               <div style={{margin: '15px'}}><ClientStatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
