@@ -1,4 +1,4 @@
-import React, { Component, useRef } from 'react';
+import React, { Component } from 'react';
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
 import { es } from 'date-fns/locale';
@@ -22,7 +22,7 @@ class CustomDatePicker extends Component {
     };
 
     render() {
-        const { selected, onChange, width, height, hasError, includeButton = true } = this.props;
+        const { selected, onChange, width, height, hasError, iconSize, maxDate, minDate, includeButton = true} = this.props;
 
         const styling = {
             backgroundColor: ColorHex.White,
@@ -41,9 +41,9 @@ class CustomDatePicker extends Component {
             textAlign: 'left',
             outline: 'none',
             ...CssProperties.SmallHeaderTextStyle,
-          };
+        };
 
-          const dateButtonStyle = {
+        const dateButtonStyle = {
             backgroundColor: ColorHex.White,
             fontColor: ColorHex.TextBody,
             width: height ?? '75px',
@@ -54,13 +54,13 @@ class CustomDatePicker extends Component {
             position: 'relative',
             display: 'flex',   
             alignItems: 'center', 
-            justifyContent: 'space-between', 
+            justifyContent: 'center', 
             paddingLeft: '15px',
             paddingRight: '15px',
             color: ColorHex.TextBody,
             textAlign: 'center',
             outline: 'none',
-          }
+        };
 
         const datePicker = 
         <DatePicker
@@ -69,10 +69,12 @@ class CustomDatePicker extends Component {
             selected={selected}
             onChange={onChange}
             locale={es}
+            maxDate={maxDate} // Set the max selectable date
+            minDate={minDate}
             customInput={<input style={styling} />}
             popperPlacement="bottom-start"
             ref={this.datePickerRef}
-        /> 
+        />;
 
         const html = 
         includeButton ? 
@@ -82,12 +84,12 @@ class CustomDatePicker extends Component {
                 </div>
                 <div className="flex-grow-1">
                     <button onClick={this.handleOpenDatePicker} style={dateButtonStyle}>
-                        <FontAwesomeIcon icon={faCalendarDays} style={{ fontSize: '40px' }}/>
+                        <FontAwesomeIcon icon={faCalendarDays} style={{ fontSize: iconSize ?? '40px' }}/>
                     </button>
                 </div>
             </div>
         : 
-        datePicker
+        datePicker;
 
         return html;
     }

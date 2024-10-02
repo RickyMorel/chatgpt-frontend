@@ -59,7 +59,7 @@ class Utils {
     }
 
     static getDayIndex(date) {
-      const dayIndex = new Date().getDay()
+      const dayIndex = date.getDay()
 
       let translatedMondayDayIndex = dayIndex - 1
 
