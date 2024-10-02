@@ -89,7 +89,7 @@ class KPIStatsScreen  extends Component {
     
     finalArray.sort((a, b) => b.count - a.count);
     
-    let topNItems = finalArray.slice(0, 6);
+    let topNItems = finalArray.slice(0, 12);
     
     this.setState({mostSoldFoods: topNItems})
   }
@@ -114,29 +114,36 @@ class KPIStatsScreen  extends Component {
         <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody, marginBottom: '-5px'}}>Ventas diarias de {this.state.selectedMonth}</p>
         <CustomBarChart orderHistory={this.state.orderHistories} selectedMonthIndex={monthNames.indexOf(this.state.selectedMonth)}/>
         <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody, marginBottom: '-10px', marginTop: '15px'}}>Productos Mas Vendidos</p>
-        <div style={{display: 'flex', gap: '25px'}}>
-          {
-            this.state.mostSoldFoods.map(x => {
-              let wantedProduct = this.state?.products.find(y => y.code == x.code)
-              return (
-              <div style={orderAmountCardStyling}>
-                <div class="text-center">
-                  <img style={{ maxWidth: '100%', maxHeight: '100%' }} src={wantedProduct?.imageLink} />
-                  <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '1px'}}>{Utils.getCutName(wantedProduct?.name, 30)}</p>
-                  <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-12px'}}>{x.count} veces vendidas</p>
-                  <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-12px'}}>{x.amountSold} unidades vendidas</p>
-                </div> 
-              </div>
-            )})
-          }
+        <div style={{ display: 'flex', gap: '10px', overflowX: 'scroll', scrollBehavior: 'smooth', padding: '10px 0',width: '85vw', justifySelf: 'center'}}>
+  {
+    this.state.mostSoldFoods.map(x => {
+      let wantedProduct = this.state?.products.find(y => y.code === x.code);
+      return (
+        <div style={orderAmountCardStyling} className='text-center'>
+          <img style={{ width: '100%', height: 'auto'}} src={wantedProduct?.imageLink} />
+
+          <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '1px'}}>
+            {Utils.getCutName(wantedProduct?.name, 30)}
+          </p>
+          <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-12px'}}>
+            {x.count} veces vendidas
+          </p>
+          <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-12px'}}>
+            {x.amountSold} unidades vendidas
+          </p>
         </div>
+      );
+    })
+  }
+</div>
       </div>
     )
   }
 }
 
 const orderAmountCardStyling = {
-  width: 'auto',
+  flex: '0 0 auto',
+  width: '280px',  // Slightly reduced for better fitting
   height: 'auto',
   marginTop: '10px',
   alignItems: 'center',

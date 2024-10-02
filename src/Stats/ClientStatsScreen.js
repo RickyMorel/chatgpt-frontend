@@ -89,7 +89,7 @@ class ClientStatsScreen extends Component {
     // console.log("missedClients", missedClients)
     return (
       <div>
-        <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Clientes que no pidieron</p>
+        <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Clientes frecuentes que no pidieron</p>
         <div style={orderPanelStyling}>
           <div style={{display: 'flex', marginBottom: '25px'}}>
             <CustomDatePicker
