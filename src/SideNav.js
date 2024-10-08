@@ -117,7 +117,10 @@ function SideNav(props)  {
               <p className='text-center' style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }}>Mensajes Enviados</p>
               <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-16px'}}>{`${messageCount}/${totalClientsToMessage}`}</p>
             </div>
-            <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }} className='text-center'>Chat bot AI</p>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              <img src='./images/icon.jpg' alt="Logo" className="img-fluid" style={{ width: '25px', height: "25px", marginTop: '7px', marginRight: '3px' }} />
+              <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }} className='text-center'>WhatsBot</p>
+            </div>
           </div>
         </div>
       </Sidenav.Body>
@@ -140,7 +143,8 @@ function GetNavButtonStyle(navPath) {
     textDecoration: 'none', 
     color: 'inherit',
     boxShadow: navPath == currentPath ? '0px 5px 5px rgba(0, 0, 0, 0.5)' : '0px 0px 0px rgba(0, 0, 0, 0.5)',
-    border: navPath == currentPath ? `1px solid ${ColorHex.BorderColor}` : '0px'
+    border: navPath == currentPath ? `1px solid ${ColorHex.BorderColor}` : '0px',
+    borderLeft: navPath == currentPath ? `5px solid ${ColorHex.GreenDark_1}` : '0px'
   }
 
   return navBarButtonStyle

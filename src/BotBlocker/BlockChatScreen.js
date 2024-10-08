@@ -315,7 +315,7 @@ class BlockChatScreen extends Component {
           <div style={{flexGrow: 0}}>
             <CustomButton text="Enviar Mensajes" classStyle={this.state?.canMessageTommorrowsClients ? `btnBlue` : 'btnGrey-clicked'} icon={faPaperPlane} onClickCallback={this.handleSendMessages}/>
           </div>
-          <div style={{flexGrow: 0, marginLeft: '45px'}}><CustomToggle text="Bloquear Chat Bot" explinationText="Bloquea envio de mensajes a todos los clientes. SOLO EMERGENCIAS " onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/></div>
+          <div style={{flexGrow: 0, marginLeft: '45px'}}><CustomToggle text="Bloquear WhatsBot" explinationText="Bloquea envio de mensajes a todos los clientes. SOLO EMERGENCIAS " onChange={this.handleGlobalBlock} value={this.state.isGloballyBlocked}/></div>
         </div>
 
         <div style={orderPanelStyling}>
@@ -347,45 +347,6 @@ class BlockChatScreen extends Component {
           </div>
         </div>
       </div>
-      // <div className={`card bordered ${Color.Background}`}>
-      //   <div className="card-content">
-      //   <div className="row">
-      //       <div className="col s3">
-      //         <span className="card-title">Bloquear Chat</span>
-      //       </div>
-      //       <div className="col s3">
-      //         <span className="">Clientes a mensajear: </span>
-      //         {
-      //         <span className="bold green-text">{this.state.clientsToMessageTommorrow}</span>
-      //         }
-      //       </div>
-      //       <div className="col s4">
-      //         <label className='small-text'>Bloquear Chatbot</label>
-      //         <div class="switch">
-      //           <label>
-      //             No
-      //             <input type="checkbox" onChange={this.handleGlobalBlock} checked={this.state.isGloballyBlocked}/>
-      //             <span class="lever"></span>
-      //             Si
-      //           </label>
-      //         </div>
-      //       </div>
-      //       <div className="col s2">
-      //         <label className='right'>Resetear</label>
-      //         <a className={`waves-effect waves-light btn-small right ${Color.Fifths}`} onClick={this.handleClearAllBlocks}>
-      //           <i className="material-icons">autorenew</i>
-      //         </a>
-      //       </div>
-      //     </div>
-      //     <input
-      //       type="text"
-      //       placeholder="Buscar clientes..."
-      //       value={this.state.searchInput}
-      //       onChange={this.handleSearchInputChange}
-      //     />
-      //     <PaginatedScrollView clientBlocks={clientBlocks} fetchMoreData={this.fetchClientData} pageSize={this.state.pageSize}/>
-      //   </div>
-      // </div>
     );
   }
 }

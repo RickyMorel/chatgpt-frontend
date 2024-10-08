@@ -406,7 +406,7 @@ class InventoryScreen extends Component {
                         />
                     </div>
                     <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
-                        <CustomButton text="Crear Item"  width="175px" height="45px" icon={faSquarePlus} link="createItem"/>
+                        <CustomButton classStyle={`btnGreen`} text="Crear Item"  width="175px" height="45px" icon={faSquarePlus} link="createItem"/>
                     </div>
                     <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
                         {
