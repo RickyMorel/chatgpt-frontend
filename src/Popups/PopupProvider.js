@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 import SuccessfulPopup from './SuccessfulPopup';
 import { PopupStyle, spawnPopup } from './PopupManager';
+import TwoButtonsPopup from './TwoButtonsPopup';
 
 const PopupContext = createContext();
 
@@ -17,7 +18,7 @@ export const PopupProvider = ({ children }) => {
   const showPopup_2_Buttons = (title, description_1, description_2, bulletPoints, btn1Callback, btn2Callback = undefined) => {
     const closePopupFunc = () => setCurrentPopup(null);
     const popupHtml = 
-    <SuccessfulPopup 
+    <TwoButtonsPopup 
       closeFunc={closePopupFunc} 
       title={title} 
       description_1={description_1}
