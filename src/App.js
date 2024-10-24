@@ -17,6 +17,7 @@ import ProblematicChatsScreen from './ProblematicChats/ProblematicChatsScreen';
 import SideNav from './SideNav';
 import ClientStatsScreen from './Stats/ClientStatsScreen';
 import KPIStatsScreen from './Stats/KPIStatsScreen';
+import QrCodeScreen from './qrCodeScreen';
 
 class App extends Component {
   constructor(props) {
@@ -26,11 +27,13 @@ class App extends Component {
       modalIsOpen: 0,
       isLoading: false,
       loaderMessge: "",
-      botNumber: ""
+      botNumber: "",
+      instanceStatus: "authenticateda"
     };
   }
   
   componentDidMount() {
+    // this.GetInstanceStatus()
     this.GetBotNumber()
   }
 
@@ -39,6 +42,18 @@ class App extends Component {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config/botNumber`);
       this.setState({
         botNumber: response.data,
+      })
+    } catch (error) {
+      this.props.showPopup(new Error(error.response.data.message))
+    }
+  };
+
+  GetInstanceStatus = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/whatsapp/getInstanceStatus`);
+      console.log("response", response)
+      this.setState({
+        instanceStatus: response.data.accountStatus.status,
       })
     } catch (error) {
       this.props.showPopup(new Error(error.response.data.message))
@@ -55,6 +70,7 @@ class App extends Component {
   render() {
     return (
     <Router>
+      {this.state.instanceStatus != "authenticated" ? <QrCodeScreen/> : <></>}
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
       <div className="row">
         <div className="col-auto">
