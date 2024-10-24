@@ -58,7 +58,6 @@ class App extends Component {
         botNumber: response.data,
       })
     } catch (error) {
-      this.props.showPopup(new Error(error.response.data.message))
     }
   };
 
@@ -71,7 +70,6 @@ class App extends Component {
         instanceStatus: response.data.accountStatus.status,
       })
     } catch (error) {
-      this.props.showPopup(new Error(error.response.data.message))
     }
   };
 
