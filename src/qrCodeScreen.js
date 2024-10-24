@@ -16,8 +16,8 @@ class QrCodeScreen extends Component {
 
   componentDidMount() {
     this.GetInstanceQR()
-    
-    this.intervalId = setInterval(this.GetInstanceQR, 45000);
+
+    this.intervalId = setInterval(this.GetInstanceQR, 15000);
   }
 
   GetInstanceQR = async () => {
