@@ -28,13 +28,27 @@ class App extends Component {
       isLoading: false,
       loaderMessge: "",
       botNumber: "",
-      instanceStatus: "authenticateda"
+      instanceStatus: "a",
     };
+
+    this.intervalId = null
   }
   
   componentDidMount() {
-    // this.GetInstanceStatus()
+    this.GetInstanceStatus()
+    //Get the instance status every second until y link whatsapp
+    this.intervalId = setInterval(this.GetInstanceStatus, 2000);
+
     this.GetBotNumber()
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalId);
+  }
+
+  componentDidUpdate() {
+    console.log("this.state.instanceStatu", this.state.instanceStatus)
+    if(this.state.instanceStatus == "authenticated") {clearInterval(this.intervalId);}
   }
 
   GetBotNumber = async () => {
@@ -51,7 +65,8 @@ class App extends Component {
   GetInstanceStatus = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/whatsapp/getInstanceStatus`);
-      console.log("response", response)
+      console.log("GetInstanceStatus", response)
+
       this.setState({
         instanceStatus: response.data.accountStatus.status,
       })
@@ -70,7 +85,7 @@ class App extends Component {
   render() {
     return (
     <Router>
-      {this.state.instanceStatus != "authenticated" ? <QrCodeScreen/> : <></>}
+      {this.state.instanceStatus != "authenticated" && this.state.instanceStatus != "a" ? <QrCodeScreen status={this.state.instanceStatus}/> : <></>}
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
       <div className="row">
         <div className="col-auto">
