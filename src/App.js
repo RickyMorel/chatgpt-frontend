@@ -18,6 +18,7 @@ import SideNav from './SideNav';
 import ClientStatsScreen from './Stats/ClientStatsScreen';
 import KPIStatsScreen from './Stats/KPIStatsScreen';
 import QrCodeScreen from './qrCodeScreen';
+import LoginScreen from './Login/LoginScreen';
 
 class App extends Component {
   constructor(props) {
@@ -81,14 +82,22 @@ class App extends Component {
   }
 
   render() {
+    const currentPath = window.location.pathname;
+    console.log("currentPath", currentPath)
+
     return (
     <Router>
       {this.state.instanceStatus != "authenticated" && this.state.instanceStatus != "a" ? <QrCodeScreen status={this.state.instanceStatus}/> : <></>}
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
       <div className="row">
-        <div className="col-auto">
-          <SideNav botNumber={this.state.botNumber} style={{ height: '100vh', width: '236px'}}/>
-        </div>
+        {
+          currentPath != "/login" ?
+          <div className="col-auto">
+            <SideNav botNumber={this.state.botNumber} style={{ height: '100vh', width: '236px'}}/>
+          </div>
+          :
+          <></>
+        }
         <div className="col">
           <Helmet>
             <style>{`body { background-color: ${ColorHex.Background}; }`}</style>
@@ -117,6 +126,9 @@ class App extends Component {
             </Route>
             <Route exact path="/problematicChats">
               <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
+            </Route>
+            <Route exact path="/login">
+              <div style={{margin: '15px'}}><LoginScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
             <Route exact path="/createItem" 
               render={(props) => (

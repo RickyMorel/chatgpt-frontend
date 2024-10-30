@@ -118,7 +118,7 @@ function SideNav(props)  {
               <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-16px'}}>{`${messageCount}/${totalClientsToMessage}`}</p>
             </div>
             <div style={{display: 'flex', justifyContent: 'center'}}>
-              <img src='./images/icon.jpg' alt="Logo" className="img-fluid" style={{ width: '25px', height: "25px", marginTop: '7px', marginRight: '3px' }} />
+              <img src='./images/icon.png' alt="Logo" className="img-fluid" style={{ width: '25px', height: "25px", marginTop: '7px', marginRight: '3px' }} />
               <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }} className='text-center'>WhatsBot</p>
             </div>
           </div>
