@@ -11,6 +11,7 @@ import { faClock } from '@fortawesome/free-regular-svg-icons';
 import CustomButton from './Searchbar/CustomButton';
 import { useHistory  } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import Utils from './Utils';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
@@ -22,6 +23,8 @@ function SideNav(props)  {
 
   useEffect(() => {
     if(window.token && window.token.length > 0) { return; }
+
+    if(Utils.loginExemptPaths.includes(history.location.pathname)) { return; }
 
     history.push('/');
   }, []);

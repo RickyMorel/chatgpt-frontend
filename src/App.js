@@ -20,6 +20,8 @@ import KPIStatsScreen from './Stats/KPIStatsScreen';
 import QrCodeScreen from './qrCodeScreen';
 import LoginScreen from './Login/LoginScreen';
 import Cookies from 'js-cookie';
+import ClientOrderPlacingScreen from './ClientOrderPlacing/ClientOrderPlacingScreen';
+import Utils from './Utils';
 
 class App extends Component {
   constructor(props) {
@@ -104,7 +106,7 @@ class App extends Component {
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
       <div className="row">
         {
-          currentPath == "/" ?
+          Utils.loginExemptPaths.includes(currentPath) ?
           <></>
           :
           <div className="col-auto">
@@ -142,6 +144,9 @@ class App extends Component {
             </Route>
             <Route exact path="/">
               <div style={{margin: '15px'}}><LoginScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
+            </Route>
+            <Route exact path="/clientOrderPlacing">
+              <div style={{margin: '15px'}}><ClientOrderPlacingScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
             <Route exact path="/createItem" 
               render={(props) => (

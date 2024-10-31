@@ -1,4 +1,9 @@
 class Utils {
+    static loginExemptPaths = [
+      "/",
+      "/clientOrderPlacing"
+    ]
+
     static formatDate(date) {
         const newDate = new Date(date);
         const year = newDate.getFullYear();
