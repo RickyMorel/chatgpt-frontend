@@ -6,15 +6,26 @@ import CssProperties from './CssProperties';
 import { firestore } from './firebaseConfig';
 import './SideNav.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping, faChartSimple, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faCartShopping, faChartSimple, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
+import CustomButton from './Searchbar/CustomButton';
+import { useHistory  } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
   const [playSound, setPlaySound] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
   const [totalClientsToMessage, setTotalClientsToMessage] = useState(0);
+  const history = useHistory();
   let fetchSoundCount = 0
+
+  useEffect(() => {
+    if(window.token && window.token.length > 0) { return; }
+
+    history.push('/');
+  }, []);
+
 
   useEffect(() => {
       fetchChatData();
@@ -44,22 +55,13 @@ function SideNav(props)  {
       });
   }
 
-  // const fetchChatData = async () => {
-  //     // if (!props.botNumber) {
-  //     //     return;
-  //     // }
-
-  //     // const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate')
-  //     // ref.onSnapshot(query => {
-  //     //   let chats = []
-  //     //   query.forEach(doc => {
-  //     //       chats.push(doc.data())
-  //     //   }) 
-
-  //     //   handleSoundPlay(chats)
-  //     //   //PLAY AUDIO HERE
-  //     // })
-  // };
+  const handleLogOut = () => {
+    Cookies.remove('token');
+    window.token = ""
+    props.setIsReloading(true)
+    history.push('/');
+    setTimeout(() => window.location.reload(), 100)
+  }
 
   const handleSoundPlay = (chats) => {
     fetchSoundCount = fetchSoundCount + 1
@@ -78,7 +80,6 @@ function SideNav(props)  {
   };
 
   const handleNavItemClick = (currentPath) => {
-    console.log("handleNavItemClick", currentPath)
     if(currentPath == "/problematicChats") { setHasNewProblematicChat(false); }
   };
 
@@ -89,7 +90,7 @@ function SideNav(props)  {
     {icon: faClock, nameText: "Tiempos y Lugares", link: "/dayLocation"},
     // {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
     {icon: faChartSimple, nameText: "Estadisticas", link: "/stats"},
-    {icon: faCloud, nameText: "Cargar Datos", link: "/"},
+    {icon: faCloud, nameText: "Cargar Datos", link: "/loadData"},
   ]
 
   const navBarButtonHtmls = navBarButton.map(x => {
@@ -122,6 +123,7 @@ function SideNav(props)  {
               <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }} className='text-center'>WhatsBot</p>
             </div>
           </div>
+          <div><CustomButton text="Cerrar Sesión" width="100%" icon={faArrowRightFromBracket} onClickCallback={handleLogOut}/></div>
         </div>
       </Sidenav.Body>
     </Sidenav>

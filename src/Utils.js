@@ -9,6 +9,10 @@ class Utils {
         return formattedDate
     }
 
+    static isAuthenticated() {
+      return window?.token?.length > 0
+    }
+
     static getCutName(name, maxCharacterLength = 25) {
         let itemName = name
     

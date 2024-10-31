@@ -6,6 +6,7 @@ import CssProperties from '../CssProperties';
 import { toast, ToastContainer } from 'react-toastify';
 import { withRouter } from 'react-router-dom/cjs/react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -18,12 +19,20 @@ class LoginScreen extends Component {
   }
 
   componentDidMount() {
+    const token = Cookies.get('token');
+
+    if(!token || token.length < 1) { return; }
+
+    window.token = token
+    this.props.history.push('/orders');
   }
 
   handleLogin = async () => {
     try {
         const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/auth/signin`, {email: this.state.email, password: this.state.password});
         console.log("user logged in", response.data)
+        Cookies.set('token', response.data.token, { secure: true, sameSite: 'Strict' });
+        window.token = response.data.token
         this.props.history.push('/orders');
     } catch {}
   }
@@ -74,7 +83,7 @@ class LoginScreen extends Component {
         <div style={loginCardStyling}>
             <div style={inputStyling}><CustomInput width='364px' height='65px' dataType="text" placeHolderText="Correo" onChange={(value) => this.handleChangeData("email", value)}/></div>
             <div style={inputStyling}><CustomInput width='364px' height='65px' dataType="text" placeHolderText="Contraseña" onChange={(value) => this.handleChangeData("password", value)}/></div>
-            <div style={inputStyling}><CustomButton text="Iniciar Session"  width="364px" height="65px" classStyle='btnGreen-clicked' onClickCallback={this.handleLogin}/></div>
+            <div style={inputStyling}><CustomButton text="Iniciar Sesión"  width="364px" height="65px" classStyle='btnGreen-clicked' onClickCallback={this.handleLogin}/></div>
             <hr />
             <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, justifySelf: 'center'}}>No tenes una cuenta?</p>
             <div style={{...inputStyling, marginTop: '15px', justifySelf: 'center'}}><CustomButton text="Crear Cuenta" classStyle='btnGreen'  width="264px" height="65px" onClickCallback={this.handleCreateAccount}/></div>

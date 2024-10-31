@@ -19,6 +19,7 @@ import ClientStatsScreen from './Stats/ClientStatsScreen';
 import KPIStatsScreen from './Stats/KPIStatsScreen';
 import QrCodeScreen from './qrCodeScreen';
 import LoginScreen from './Login/LoginScreen';
+import Cookies from 'js-cookie';
 
 class App extends Component {
   constructor(props) {
@@ -30,12 +31,15 @@ class App extends Component {
       loaderMessge: "",
       botNumber: "",
       instanceStatus: "a",
+      isReloading: false
     };
 
     this.intervalId = null
   }
   
   componentDidMount() {
+    const token = Cookies.get('token');
+    window.token = token
     this.GetInstanceStatus()
     //Get the instance status every second until y link whatsapp
     this.intervalId = setInterval(this.GetInstanceStatus, 2000);
@@ -48,7 +52,6 @@ class App extends Component {
   }
 
   componentDidUpdate() {
-    console.log("this.state.instanceStatu", this.state.instanceStatus)
     if(this.state.instanceStatus == "authenticated") {clearInterval(this.intervalId);}
   }
 
@@ -81,29 +84,39 @@ class App extends Component {
     })
   }
 
+  setIsReloading = (isReloading) => {
+    this.setState({
+      isReloading: isReloading,
+    })
+  }
+
   render() {
     const currentPath = window.location.pathname;
+
     console.log("currentPath", currentPath)
 
     return (
+    this.state.isReloading ? 
+    <img src='./images/splash.png' className="img-fluid" style={{ width: '100%', height: "100%" }} />
+    :
     <Router>
       {this.state.instanceStatus != "authenticated" && this.state.instanceStatus != "a" ? <QrCodeScreen status={this.state.instanceStatus}/> : <></>}
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
       <div className="row">
         {
-          currentPath != "/login" ?
-          <div className="col-auto">
-            <SideNav botNumber={this.state.botNumber} style={{ height: '100vh', width: '236px'}}/>
-          </div>
-          :
+          currentPath == "/" ?
           <></>
+          :
+          <div className="col-auto">
+            <SideNav botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+          </div>
         }
         <div className="col">
           <Helmet>
             <style>{`body { background-color: ${ColorHex.Background}; }`}</style>
           </Helmet>
           <Switch>
-            <Route exact path="/">
+            <Route exact path="/loadData">
               <div style={{margin: '15px'}}><MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/inventory">
@@ -127,7 +140,7 @@ class App extends Component {
             <Route exact path="/problematicChats">
               <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
-            <Route exact path="/login">
+            <Route exact path="/">
               <div style={{margin: '15px'}}><LoginScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
             <Route exact path="/createItem" 
