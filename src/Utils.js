@@ -18,6 +18,22 @@ class Utils {
       return window?.token?.length > 0
     }
 
+    
+    static sortByName = (a, b, property) => {
+
+      if(!property) {
+          if (a < b) return -1;
+          if (a > itemB) return 1;
+          return 0;
+      }
+
+      const itemA = a[property].toLowerCase();
+      const itemB = b[property].toLowerCase();
+      if (itemA < itemB) return -1;
+      if (itemA > itemB) return 1;
+      return 0;
+    }
+
     static getCutName(name, maxCharacterLength = 25) {
         let itemName = name
     

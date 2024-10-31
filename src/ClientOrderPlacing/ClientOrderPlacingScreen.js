@@ -5,6 +5,7 @@ import { ColorHex } from '../Colors'
 import CustomButton from '../Searchbar/CustomButton'
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
 import axios from 'axios';
+import Utils from '../Utils'
 
 class ClientOrderPlacingScreen extends Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class ClientOrderPlacingScreen extends Component {
 
     this.state = {
       inventoryItems: null,
+      filteredInventory: null,
       itemsInCart: []
     };
   }
@@ -25,11 +27,22 @@ class ClientOrderPlacingScreen extends Component {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventory`);
       this.setState({
         inventoryItems: response.data,
+        filteredInventory: response.data
       });
     } catch (error) {
 
     }
   };
+
+  handleSearch = (searchText) => {
+    const filteredItems = this.state.inventoryItems.filter(item =>
+        item.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+
+    this.setState({
+      filteredInventory: filteredItems
+    })
+  }
 
   handleAddItem = (item, isAdd) => {
     let cart = [...this.state.itemsInCart]
@@ -46,14 +59,15 @@ class ClientOrderPlacingScreen extends Component {
   }
 
   render() {
-    const allItems = this?.state?.inventoryItems?.map(x => (
+    const orderedFilteredProducts = this.state?.filteredInventory?.sort((a, b) => Utils.sortByName(a, b, "name"))
+    const allItems = orderedFilteredProducts?.map(x => (
       <OrderPlacingItem item={x} itemsInCart={this.state.itemsInCart} OnAddCallback={this.handleAddItem}/>
     ))
 
     return (
       <div>
         <div style={{...inventoryPanelStyling, justifyItems: 'center'}}>
-          <SearchBar width='100%' height='45px' itemList={[]} searchText="Buscar Productos..." OnSearchCallback={(value) => this.handleSearch(value, false)}/>
+          <SearchBar width='100%' height='45px' itemList={this.state.inventoryItems} searchText="Buscar Productos..." OnSearchCallback={(value) => this.handleSearch(value, false)}/>
           <div style={scrollPanelStyle}>
               <div style={scrollStyle}>
                 {allItems}
