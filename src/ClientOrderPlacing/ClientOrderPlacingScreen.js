@@ -81,7 +81,7 @@ class ClientOrderPlacingScreen extends Component {
           </div>
           {
             this.state.itemsInCart.length > 0 ?
-            <div className='absoulte' style={{marginTop: '-70px'}}><CustomButton text={`Ir a Carrito (${this.state.itemsInCart.length})`} iconSize="25px" width='250px' classStyle="btnGreen-clicked" height="60px" icon={faCartShopping} onClickCallback={() => {}}/></div>
+            <div className='absoulte' style={{marginTop: '-70px'}}><CustomButton text={`Ir a Carrito (${this.state.itemsInCart.length})`} iconSize="25px" width='250px' classStyle="btnGreen-clicked" height="60px" icon={faCartShopping} link="clientCart" linkData={this.state.itemsInCart}/></div>
             :
             <></>
           }

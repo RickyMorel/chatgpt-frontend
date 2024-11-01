@@ -22,6 +22,7 @@ import LoginScreen from './Login/LoginScreen';
 import Cookies from 'js-cookie';
 import ClientOrderPlacingScreen from './ClientOrderPlacing/ClientOrderPlacingScreen';
 import Utils from './Utils';
+import ClientCartScreen from './ClientOrderPlacing/ClientCartScreen';
 
 class App extends Component {
   constructor(props) {
@@ -148,6 +149,18 @@ class App extends Component {
             <Route exact path="/clientOrderPlacing">
               <div style={{margin: '15px'}}><ClientOrderPlacingScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
+            <Route exact path="/clientCart" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <ClientCartScreen 
+                    {...props}  
+                    showPopup={this.props.showPopup} 
+                    setIsLoading={this.setIsLoading} 
+                    botNumber={this.state.botNumber}
+                  />
+                </div>
+              )} 
+            />
             <Route exact path="/createItem" 
               render={(props) => (
                 <div style={{margin: '15px'}}>
