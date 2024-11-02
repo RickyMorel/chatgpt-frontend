@@ -67,8 +67,6 @@ class ClientCartScreen extends Component {
     });
     const message = `Voy a querer:${itemsString}\nMuchas gracias!`
 
-    console.log("this.props.botNumber", )
-
     const encodedMessage = encodeURIComponent(message);
     const url = `https://wa.me/${this.props.botNumber}?text=${encodedMessage}`;
     window.open(url, '_blank');

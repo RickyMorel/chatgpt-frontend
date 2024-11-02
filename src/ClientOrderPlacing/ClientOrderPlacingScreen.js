@@ -24,7 +24,7 @@ class ClientOrderPlacingScreen extends Component {
 
   fetchTommorrowsInventory = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventory`);
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryWithPictures`);
       this.setState({
         inventoryItems: response.data,
         filteredInventory: response.data
