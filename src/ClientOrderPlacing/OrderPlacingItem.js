@@ -16,7 +16,7 @@ class OrderPlacingItem extends Component {
                     item?.imageLink && item?.imageLink?.length > 1 ?
                     <img src={item.imageLink} className="img-fluid rounded" style={{ width: '55px', height: "100%" }} />
                     :
-                    <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' className="img-fluid rounded" style={{ width: '55px', height: "1--%" }} />
+                    <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' className="img-fluid rounded" style={{ width: '55px', height: "100%" }} />
                 }
             </div>
             <div className="col-8">

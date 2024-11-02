@@ -26,14 +26,9 @@ class ClientCartItem extends Component {
             </div>
             <div className="col-4" style={{display: 'flex', alignItems: 'center'}}>
                 <CustomButton iconSize="15px" width='15px' height="15px" icon={faMinus} onClickCallback={() => editAmountCallback(item, false)}/>
-                <CustomInput
-                    width='40px'
-                    height='40px'
-                    dataType="number"
-                    value={item.amount}
-                    onChange={(value) => {}}
-                    canEdit={false}
-                />
+                <div style={amountStyle}>
+                    <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginTop: '15px'}}>{item.amount}</p>
+                </div>
                 <CustomButton iconSize="15px" width='15px' height="15px" icon={faPlus} onClickCallback={() => editAmountCallback(item, true)}/>
             </div>
         </div>
@@ -44,6 +39,20 @@ class ClientCartItem extends Component {
 const colStyle = {
     marginRight: '10px'
 }
+
+const amountStyle = {
+    backgroundColor: ColorHex.White,
+    width: '40px',
+    height: '40px',
+    borderRadius: '10px',
+    boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
+    border: `1px solid ${ColorHex.BorderColor}`,
+    position: 'relative',
+    outline: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  };
 
 const trStyle = {
     borderRadius: '10px',

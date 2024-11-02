@@ -68,20 +68,18 @@ class ClientOrderPlacingScreen extends Component {
       <div>
         <div style={{...inventoryPanelStyling, justifyItems: 'center'}}>
           <SearchBar width='100%' height='45px' itemList={this.state.inventoryItems} searchText="Buscar Productos..." OnSearchCallback={(value) => this.handleSearch(value, false)}/>
-          <div style={scrollPanelStyle}>
-              <div style={scrollStyle}>
-                {allItems}
-                {
-                  this.state.itemsInCart.length > 0 ?
-                  <><br /><br /><br /></>
-                  :
-                  <></>
-                }
-              </div>
+          <div style={scrollStyle}>
+            {allItems}
+            {
+              this.state.itemsInCart.length > 0 ?
+              <><br /><br /><br /><br /><br /><br /><br /><br /></>
+              :
+              <></>
+            }
           </div>
           {
             this.state.itemsInCart.length > 0 ?
-            <div className='absoulte' style={{marginTop: '-70px'}}><CustomButton text={`Ir a Carrito (${this.state.itemsInCart.length})`} iconSize="25px" width='250px' classStyle="btnGreen-clicked" height="60px" icon={faCartShopping} link="clientCart" linkData={this.state.itemsInCart}/></div>
+            <div style={{bottom: 10, left: 0, right: 0, zIndex: 999, display: 'flex', position: 'absolute', justifyContent: 'center'}}><CustomButton text={`Ir a Carrito (${this.state.itemsInCart.length})`} iconSize="25px" width='250px' classStyle="btnGreen-clicked row" height="60px" icon={faCartShopping} link="clientCart" linkData={this.state.itemsInCart}/></div>
             :
             <></>
           }
@@ -96,31 +94,14 @@ const scrollStyle = {
   height: '100%',
   width: '100%',
   alignItems: 'center',
-  overflowX: 'hidden'
-}
-
-const scrollPanelStyle = {
-  borderRadius: '10px',
-  backgroundColor: ColorHex.Background,
-  padding: '10px',
-  marginTop: '20px',
-  boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
-  height: '90%',
-  width: '100%',
-  alignItems: 'center',
-  paddingTop: '10px'
+  overflowX: 'hidden',
+  marginTop: '10px'
 }
 
 const inventoryPanelStyling = {
   width: '100%',
   height: '95vh',
-  marginTop: '10px',
   marginTop: '25px',
-  padding: '25px',
-  boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
-  border: `1px solid ${ColorHex.BorderColor}`,
-  borderRadius: '10px',
-  backgroundColor: ColorHex.White,
 }
 
 export default ClientOrderPlacingScreen

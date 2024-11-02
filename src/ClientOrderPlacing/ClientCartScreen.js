@@ -82,20 +82,18 @@ class ClientCartScreen extends Component {
       <div>
         <div style={{...inventoryPanelStyling, justifyItems: 'center'}}>
         <div style={{display: 'flex', justifySelf: 'left'}}><CustomButton width='25px' icon={faArrowLeft} iconSize="20px" height="30px" link="clientOrderPlacing"/></div>
-          <div style={scrollPanelStyle}>
-              <div style={scrollStyle}>
-                {allItems}
-                {
-                  this.state.itemsInCart.length > 0 ?
-                  <><br /><br /><br /></>
-                  :
-                  <></>
-                }
-              </div>
+          <div style={scrollStyle}>
+            {allItems}
+            {
+              this.state.itemsInCart.length > 0 ?
+              <><br /><br /><br /></>
+              :
+              <></>
+            }
           </div>
           {
             this.state.itemsInCart.length > 0 ?
-            <div className='absoulte' style={{marginTop: '-70px'}}><CustomButton text={`Confirmar Pedido (${Utils.formatPrice(this.calculateTotal())})`} width='250px' classStyle="btnGreen-clicked" height="60px" onClickCallback={this.openWhatsappWithOrderMessage}/></div>
+            <div style={{bottom: 10, left: 0, right: 0, zIndex: 999, display: 'flex', position: 'absolute', justifyContent: 'center'}}><CustomButton text={`Confirmar Pedido (${Utils.formatPrice(this.calculateTotal())})`} width='250px' classStyle="btnGreen-clicked" height="60px" onClickCallback={this.openWhatsappWithOrderMessage}/></div>
             :
             <></>
           }
@@ -110,31 +108,14 @@ const scrollStyle = {
   height: '100%',
   width: '100%',
   alignItems: 'center',
-  overflowX: 'hidden'
-}
-
-const scrollPanelStyle = {
-  borderRadius: '10px',
-  backgroundColor: ColorHex.Background,
-  padding: '10px',
-  marginTop: '20px',
-  boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
-  height: '90%',
-  width: '100%',
-  alignItems: 'center',
-  paddingTop: '10px'
+  overflowX: 'hidden',
+  marginTop: '10px'
 }
 
 const inventoryPanelStyling = {
   width: '100%',
   height: '95vh',
-  marginTop: '10px',
   marginTop: '25px',
-  padding: '25px',
-  boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
-  border: `1px solid ${ColorHex.BorderColor}`,
-  borderRadius: '10px',
-  backgroundColor: ColorHex.White,
 }
 
 export default ClientCartScreen
