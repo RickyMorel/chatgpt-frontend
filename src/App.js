@@ -103,7 +103,14 @@ class App extends Component {
     <img src='./images/splash.png' className="img-fluid" style={{ width: '100%', height: "100%" }} />
     :
     <Router>
-      {this.state.instanceStatus != "authenticated" && this.state.instanceStatus != "a" ? <QrCodeScreen status={this.state.instanceStatus}/> : <></>}
+      {
+        this.state.instanceStatus != "authenticated" && 
+        this.state.instanceStatus != "a" &&
+        !Utils.loginExemptPaths.includes(currentPath) ?
+        <QrCodeScreen status={this.state.instanceStatus}/> 
+        : 
+        <></>
+      }
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
       <div className="row">
         {

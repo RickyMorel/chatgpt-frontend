@@ -1,7 +1,8 @@
 class Utils {
     static loginExemptPaths = [
       "/",
-      "/clientOrderPlacing"
+      "/clientOrderPlacing",
+      "/clientCart"
     ]
 
     static formatDate(date) {
