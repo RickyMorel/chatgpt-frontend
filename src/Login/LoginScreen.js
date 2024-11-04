@@ -7,6 +7,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import { withRouter } from 'react-router-dom/cjs/react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { isMobile, isTablet, isDesktop } from 'react-device-detect';
+import { error } from 'jquery';
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -14,11 +16,14 @@ class LoginScreen extends Component {
   
       this.state = {
         email: '',
-        password: ''
+        password: '',
+        error: ''
       }
   }
 
   componentDidMount() {
+    if(!isDesktop) { this.props.history.push('/clientOrderPlacing'); return; }
+
     const token = Cookies.get('token');
 
     if(!token || token.length < 1) { return; }
@@ -34,7 +39,13 @@ class LoginScreen extends Component {
         Cookies.set('token', response.data.token, { secure: true, sameSite: 'Strict' });
         window.token = response.data.token
         this.props.history.push('/orders');
-    } catch {}
+        this.setState({ error: '' })
+    } catch(err) {
+      this.setState({
+        error: err?.response?.data?.message ?? 'Server Error'
+      })
+      console.log("Login Error", err.response.data.message)
+    }
   }
 
   handleChangeData = (name, value) => {
@@ -59,6 +70,16 @@ class LoginScreen extends Component {
     });
   }
 
+  getErrorMessage = () => {
+    if (this.state.error === 'email') {
+      return "*No existe una cuenta asociada a este correo.";
+    } else if (this.state.error === 'password') {
+      return "*Contraseña incorrecta.";
+    } else if(this.state.error.length > 0) {
+      return "*Ocurrió un error en el servidor.";
+    }
+  };
+
   render() {
     const loginCardStyling = {
         width: '400px',
@@ -81,8 +102,11 @@ class LoginScreen extends Component {
         <ToastContainer />
         <img src='./images/Whatsbot_Green.png' alt="Logo" className="img-fluid" style={{ width: '350px', height: "350px", marginTop: '7px', marginRight: '250px',  }} />
         <div style={loginCardStyling}>
-            <div style={inputStyling}><CustomInput width='364px' height='65px' dataType="text" placeHolderText="Correo" onChange={(value) => this.handleChangeData("email", value)}/></div>
-            <div style={inputStyling}><CustomInput width='364px' height='65px' dataType="text" placeHolderText="Contraseña" onChange={(value) => this.handleChangeData("password", value)}/></div>
+            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, position: 'absolute', top: 200}}>
+              {this.getErrorMessage()}
+            </p>
+            <div style={inputStyling}><CustomInput hasError={this.state.error == 'email'} width='364px' height='65px' dataType="text" placeHolderText="Correo" onChange={(value) => this.handleChangeData("email", value)}/></div>
+            <div style={inputStyling}><CustomInput hasError={this.state.error == 'password'} width='364px' height='65px' dataType="text" placeHolderText="Contraseña" onChange={(value) => this.handleChangeData("password", value)}/></div>
             <div style={inputStyling}><CustomButton text="Iniciar Sesión"  width="364px" height="65px" classStyle='btnGreen-clicked' onClickCallback={this.handleLogin}/></div>
             <hr />
             <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, justifySelf: 'center'}}>No tenes una cuenta?</p>

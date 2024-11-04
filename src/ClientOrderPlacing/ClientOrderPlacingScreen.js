@@ -20,6 +20,8 @@ class ClientOrderPlacingScreen extends Component {
 
   componentDidMount() {
     this.fetchTommorrowsInventory()
+
+    console.log(" this.props.location.state?.data",  this.props)
   }
 
   fetchTommorrowsInventory = async () => {

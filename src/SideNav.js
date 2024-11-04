@@ -12,6 +12,7 @@ import CustomButton from './Searchbar/CustomButton';
 import { useHistory  } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Utils from './Utils';
+import { isMobile, isTablet, isDesktop } from 'react-device-detect';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
@@ -23,6 +24,8 @@ function SideNav(props)  {
 
   useEffect(() => {
     if(window.token && window.token.length > 0) { return; }
+
+    if(!isDesktop) { history.push('/clientOrderPlacing'); return; }
 
     if(Utils.loginExemptPaths.includes(history.location.pathname)) { return; }
 
