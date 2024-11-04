@@ -21,7 +21,14 @@ class ClientOrderPlacingScreen extends Component {
   componentDidMount() {
     this.fetchTommorrowsInventory()
 
-    console.log(" this.props.location.state?.data",  this.props)
+    
+    if(Utils.clientCartData.length == 0) {return;}
+    
+    console.log("Utils.testData", Utils.clientCartData)
+
+    this.setState({
+      itemsInCart: [...Utils.clientCartData]
+    })
   }
 
   fetchTommorrowsInventory = async () => {
@@ -54,6 +61,8 @@ class ClientOrderPlacingScreen extends Component {
     else {
       cart = cart.filter(x => x.code != item.code)
     }
+
+    console.log("add to cart", cart)
 
     this.setState({
       itemsInCart: cart

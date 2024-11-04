@@ -4,6 +4,7 @@ import CustomButton from '../Searchbar/CustomButton'
 import Utils from '../Utils'
 import ClientCartItem from './ClientCartItem'
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { Redirect } from 'react-router'
 
 class ClientCartScreen extends Component {
   constructor(props) {
@@ -18,17 +19,22 @@ class ClientCartScreen extends Component {
     const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
     let itemsWithAmounts = []
 
-    itemData?.forEach(item => {
+    console.log("cartScreen", itemData)
+    
+    for(const item of itemData) {
+      if(item.amount) { itemsWithAmounts.push(item); continue; }
+
       let itemWithAmount = {...item}
       itemWithAmount.amount = 1
       itemsWithAmounts.push(itemWithAmount)
-    });
+    }
 
     this.setState({
       itemsInCart: itemsWithAmounts,
     })
-  }
 
+    Utils.clientCartData = itemsWithAmounts
+  }
 
   handleEditItemAmount = (item, isAdd) => {
     let cart = [...this.state.itemsInCart]
@@ -43,11 +49,13 @@ class ClientCartScreen extends Component {
     newItem.amount = newAmount
     
     cart = cart.filter(x => x.code != item.code)
-    cart.push(newItem)
+    if(newAmount > 0) {cart.push(newItem)}
 
     this.setState({
       itemsInCart: cart
     })
+
+    Utils.clientCartData = cart
   }
 
   calculateTotal = () => {
