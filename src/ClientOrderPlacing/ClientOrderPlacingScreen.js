@@ -1,11 +1,9 @@
-import React, { Component } from 'react'
-import SearchBar from '../Searchbar/Searchbar'
-import OrderPlacingItem from './OrderPlacingItem'
-import { ColorHex } from '../Colors'
-import CustomButton from '../Searchbar/CustomButton'
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons'
-import axios from 'axios';
+import React, { Component } from 'react'
+import CustomButton from '../Searchbar/CustomButton'
+import SearchBar from '../Searchbar/Searchbar'
 import Utils from '../Utils'
+import OrderPlacingItem from './OrderPlacingItem'
 
 class ClientOrderPlacingScreen extends Component {
   constructor(props) {
@@ -19,29 +17,20 @@ class ClientOrderPlacingScreen extends Component {
   }
 
   componentDidMount() {
-    this.fetchTommorrowsInventory()
+    this.setState({
+      inventoryItems: [...Utils.clientOrderPlacingInventory],
+      filteredInventory: [...Utils.clientOrderPlacingInventory]
+    });
+
+    console.log("clientOrderPlacingScreen ivnetory", Utils.clientOrderPlacingInventory)
 
     
     if(Utils.clientCartData.length == 0) {return;}
     
-    console.log("Utils.testData", Utils.clientCartData)
-
     this.setState({
       itemsInCart: [...Utils.clientCartData]
     })
   }
-
-  fetchTommorrowsInventory = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryWithPictures`);
-      this.setState({
-        inventoryItems: response.data,
-        filteredInventory: response.data
-      });
-    } catch (error) {
-
-    }
-  };
 
   handleSearch = (searchText) => {
     const filteredItems = this.state.inventoryItems.filter(item =>

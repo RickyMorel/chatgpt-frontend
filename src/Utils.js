@@ -6,6 +6,7 @@ class Utils {
     ]
 
     static clientCartData = []
+    static clientOrderPlacingInventory = []
 
     static formatDate(date) {
         const newDate = new Date(date);

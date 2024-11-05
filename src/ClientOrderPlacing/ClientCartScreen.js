@@ -1,30 +1,75 @@
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import React, { Component } from 'react'
-import { ColorHex } from '../Colors'
 import CustomButton from '../Searchbar/CustomButton'
 import Utils from '../Utils'
 import ClientCartItem from './ClientCartItem'
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import { Redirect } from 'react-router'
+import axios from 'axios';
+import { withRouter } from "react-router-dom";
 
 class ClientCartScreen extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      itemsInCart: []
+      itemsInCart: [],
+      isInitialWindow: false
     };
+
+    this.recommededItemCodes=[]
+    this.inventoryItems=[]
   }
 
   componentDidMount() {
-    const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
+    const queryString = this.props.location.search;
+    const paramValue = queryString ? queryString.slice(1) : null;
+
+    if(paramValue) {
+      Promise.all([
+        this.fetchRecommendedItems(paramValue),
+        this.fetchTommorrowsInventory()
+      ])
+      .then(() => {
+        this.setState({isInitialWindow: true})
+        const itemData = this.inventoryItems.filter(x => this.recommededItemCodes.includes(x.code))
+        console.log("itemData", itemData)
+        this.loadCart(itemData)
+      })
+    } else {
+      this.setState({isInitialWindow: false})
+      const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined
+      this.loadCart(itemData)
+    }
+  }
+
+  fetchRecommendedItems = async (phoneNumber) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getClientReccomendedProducts?phoneNumber=${phoneNumber}`);
+      console.log("fetchRecommendedItems", response.data, phoneNumber)
+      this.recommededItemCodes = response.data
+    } catch (error) {
+
+    }
+  };
+
+  fetchTommorrowsInventory = async () => {
+    if(Utils.clientOrderPlacingInventory.length > 0) { return; }
+
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryWithPictures`);
+      this.inventoryItems = response.data
+      Utils.clientOrderPlacingInventory = [...response.data]
+    } catch (error) {
+
+    }
+  };
+
+  loadCart(itemData) {
     let itemsWithAmounts = []
 
-    console.log("cartScreen", itemData)
-    
-    for(const item of itemData) {
-      if(item.amount) { itemsWithAmounts.push(item); continue; }
+    for (const item of itemData) {
+      if (item.amount) { itemsWithAmounts.push(item); continue} 
 
-      let itemWithAmount = {...item}
+      let itemWithAmount = { ...item }
       itemWithAmount.amount = 1
       itemsWithAmounts.push(itemWithAmount)
     }
@@ -80,6 +125,12 @@ class ClientCartScreen extends Component {
     window.open(url, '_blank');
   }
 
+  askForOtherItems = () => {
+    Utils.clientCartData = []
+    console.log("this.props.history", this.props.history)
+    this.props.history.push('/clientOrderPlacing')
+  }
+
   render() {
     const orderedFilteredProducts = this.state?.itemsInCart?.sort((a, b) => Utils.sortByName(a, b, "name"))
     const allItems = orderedFilteredProducts?.map(x => (
@@ -101,7 +152,15 @@ class ClientCartScreen extends Component {
           </div>
           {
             this.state.itemsInCart.length > 0 ?
-            <div style={{bottom: 10, left: 0, right: 0, zIndex: 999, display: 'flex', position: 'absolute', justifyContent: 'center'}}><CustomButton text={`Confirmar Pedido (${Utils.formatPrice(this.calculateTotal())})`} width='250px' classStyle="btnGreen-clicked" height="60px" onClickCallback={this.openWhatsappWithOrderMessage}/></div>
+            <div style={{bottom: 10, left: 0, right: 0, zIndex: 999, display: 'flex', position: 'absolute', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
+              {
+                this.state.isInitialWindow ? 
+                <div style={{marginBottom: '15px'}}><CustomButton text={`Pedir otros items`} width='200px' height="60px" onClickCallback={this.askForOtherItems}/></div>
+                :
+                <></>
+              }
+              <CustomButton text={`Confirmar Pedido (${Utils.formatPrice(this.calculateTotal())})`} width='250px' classStyle="btnGreen-clicked" height="60px" onClickCallback={this.openWhatsappWithOrderMessage}/>
+            </div>
             :
             <></>
           }
