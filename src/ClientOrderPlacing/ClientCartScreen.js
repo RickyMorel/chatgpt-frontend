@@ -1,4 +1,4 @@
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import React, { Component } from 'react'
 import CustomButton from '../Searchbar/CustomButton'
 import Utils from '../Utils'
@@ -30,6 +30,9 @@ class ClientCartScreen extends Component {
       ])
       .then(() => {
         this.setState({isInitialWindow: true})
+
+        if(this.recommededItemCodes.length < 1) { this.props.history.push('/clientOrderPlacing'); return;}
+
         const itemData = this.inventoryItems.filter(x => this.recommededItemCodes.includes(x.code))
         console.log("itemData", itemData)
         this.loadCart(itemData)
@@ -155,10 +158,13 @@ class ClientCartScreen extends Component {
             <div style={{bottom: 10, left: 0, right: 0, zIndex: 999, display: 'flex', position: 'absolute', justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>
               {
                 this.state.isInitialWindow ? 
-                <div style={{marginBottom: '15px'}}><CustomButton text={`Pedir otros items`} width='200px' height="60px" onClickCallback={this.askForOtherItems}/></div>
+                <>
+                  <div style={{marginBottom: '15px'}}><CustomButton icon={faTrash} text={`Pedir otros items`} width='200px' height="60px" onClickCallback={this.askForOtherItems}/></div>
+                </>
                 :
                 <></>
               }
+              <div style={{marginBottom: '15px'}}><CustomButton text={`Agregar items`} icon={faPlus} width='200px' height="60px" onClickCallback={() => this.props.history.push("/clientOrderPlacing")}/></div>
               <CustomButton text={`Confirmar Pedido (${Utils.formatPrice(this.calculateTotal())})`} width='250px' classStyle="btnGreen-clicked" height="60px" onClickCallback={this.openWhatsappWithOrderMessage}/>
             </div>
             :
