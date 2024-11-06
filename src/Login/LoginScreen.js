@@ -29,7 +29,7 @@ class LoginScreen extends Component {
     if(!token || token.length < 1) { return; }
 
     window.token = token
-    this.props.history.push('/orders');
+    this.props.history.push('/blockChats');
   }
 
   handleLogin = async () => {
@@ -38,7 +38,7 @@ class LoginScreen extends Component {
         console.log("user logged in", response.data)
         Cookies.set('token', response.data.token, { secure: true, sameSite: 'Strict' });
         window.token = response.data.token
-        this.props.history.push('/orders');
+        this.props.history.push('/blockChats');
         this.setState({ error: '' })
     } catch(err) {
       this.setState({
