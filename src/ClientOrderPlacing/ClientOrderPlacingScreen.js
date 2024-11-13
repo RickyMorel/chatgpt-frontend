@@ -4,6 +4,7 @@ import CustomButton from '../Searchbar/CustomButton'
 import SearchBar from '../Searchbar/Searchbar'
 import Utils from '../Utils'
 import OrderPlacingItem from './OrderPlacingItem'
+import axios from 'axios';
 
 class ClientOrderPlacingScreen extends Component {
   constructor(props) {
@@ -22,6 +23,8 @@ class ClientOrderPlacingScreen extends Component {
       filteredInventory: [...Utils.clientOrderPlacingInventory]
     });
 
+    if(Utils.clientOrderPlacingInventory.length < 1) {this.fetchTommorrowsInventory()}
+
     console.log("clientOrderPlacingScreen ivnetory", Utils.clientOrderPlacingInventory)
 
     
@@ -31,6 +34,22 @@ class ClientOrderPlacingScreen extends Component {
       itemsInCart: [...Utils.clientCartData]
     })
   }
+
+  fetchTommorrowsInventory = async () => {
+    if(Utils.clientOrderPlacingInventory.length > 0) { return; }
+
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryWithPictures`);
+      this.inventoryItems = response.data
+      Utils.clientOrderPlacingInventory = [...response.data]
+      this.setState({
+        inventoryItems: [...response.data],
+        filteredInventory: [...response.data],
+      })
+    } catch (error) {
+
+    }
+  };
 
   handleSearch = (searchText) => {
     const filteredItems = this.state.inventoryItems.filter(item =>
