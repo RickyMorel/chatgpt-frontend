@@ -115,7 +115,7 @@ function SideNav(props)  {
       <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>
         <div className="d-flex flex-column p-3" style={{ height: '100vh' }}>
           <div className="text-center p-3">
-            <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '24px' }} />
+            <img src={props?.globalConfig?.companyLogoUrl} alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '24px' }} />
           </div>
           <hr className='border border-dark'/>
           {navBarButtonHtmls}

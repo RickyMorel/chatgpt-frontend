@@ -34,7 +34,8 @@ class App extends Component {
       loaderMessge: "",
       botNumber: "",
       instanceStatus: "a",
-      isReloading: false
+      isReloading: false,
+      globalConfig: undefined
     };
 
     this.intervalId = null
@@ -44,6 +45,7 @@ class App extends Component {
     const token = Cookies.get('token');
     window.token = token
     this.GetInstanceStatus()
+    this.fetchGlobalConfig()
     //Get the instance status every second until y link whatsapp
     this.intervalId = setInterval(this.GetInstanceStatus, 2000);
 
@@ -56,6 +58,14 @@ class App extends Component {
 
   componentDidUpdate() {
     if(this.state.instanceStatus == "authenticated") {clearInterval(this.intervalId);}
+  }
+
+  fetchGlobalConfig = async () => {
+    try {
+        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+
+        this.setState({globalConfig: response.data})
+    } catch (error) {}
   }
 
   GetBotNumber = async () => {
@@ -71,7 +81,6 @@ class App extends Component {
   GetInstanceStatus = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/whatsapp/getInstanceStatus`);
-      console.log("GetInstanceStatus", response)
 
       this.setState({
         instanceStatus: response.data.accountStatus.status,
@@ -96,8 +105,6 @@ class App extends Component {
   render() {
     const currentPath = window.location.pathname;
 
-    console.log("currentPath", currentPath)
-
     return (
     this.state.isReloading ? 
     <img src='./images/splash.png' className="img-fluid" style={{ width: '100%', height: "100%" }} />
@@ -118,7 +125,7 @@ class App extends Component {
           <></>
           :
           <div className="col-auto">
-            <SideNav botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+            <SideNav globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
           </div>
         }
         <div className="col">
@@ -130,7 +137,7 @@ class App extends Component {
               <div style={{margin: '15px'}}><MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/inventory">
-              <div style={{margin: '15px'}}><InventoryScreen showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} /></div>
+              <div style={{margin: '15px'}}><InventoryScreen globalConfig={this.state.globalConfig} showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/dayLocation">
               <div style={{margin: '15px'}}><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
