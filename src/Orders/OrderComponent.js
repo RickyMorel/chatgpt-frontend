@@ -30,8 +30,6 @@ class OrderComponent extends React.Component {
   componentDidMount() {
     const selectedMovil = this?.props?.movilObjs?.find(x => x.van == this.props.movil) ?? ""
 
-    console.log("this.props.deliveryDate", this.props.deliveryDate, "this.props.creationDate", this.props.creationDate)
-
     this.setState({
       checked: this.props.checkedBySalesPerson,
       order: [...this.props.order],

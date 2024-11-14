@@ -12,6 +12,8 @@ import './ScrollView.css'
 import StatCard from '../Searchbar/StatCard';
 import { faPenToSquare, faArrowRotateRight} from '@fortawesome/free-solid-svg-icons';
 import { faFloppyDisk, faRectangleXmark, faSquarePlus} from '@fortawesome/free-regular-svg-icons';
+import Utils from '../Utils';
+import { Redirect } from 'react-router-dom';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -37,6 +39,7 @@ class OrderScreen extends Component {
   }
 
   componentDidMount() {
+    if(!Utils.isAuthenticated()) { return <Redirect to="/" />;}
     this.fetchOrderData();
     this.fetchMovilData();
     this.fetchInventoryItemNames();
@@ -51,7 +54,6 @@ class OrderScreen extends Component {
         orders: response.data,
         filteredOrders: response.data,
       })
-      console.log("response orderScreen", response.data)
     } catch (error) {
 
     }

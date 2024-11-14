@@ -1,4 +1,13 @@
 class Utils {
+    static loginExemptPaths = [
+      "/",
+      "/clientOrderPlacing",
+      "/clientCart"
+    ]
+
+    static clientCartData = []
+    static clientOrderPlacingInventory = []
+
     static formatDate(date) {
         const newDate = new Date(date);
         const year = newDate.getFullYear();
@@ -7,6 +16,26 @@ class Utils {
 
         const formattedDate = `${day}-${month}-${year}`;
         return formattedDate
+    }
+
+    static isAuthenticated() {
+      return window?.token?.length > 0
+    }
+
+    
+    static sortByName = (a, b, property) => {
+
+      if(!property) {
+          if (a < b) return -1;
+          if (a > itemB) return 1;
+          return 0;
+      }
+
+      const itemA = a[property].toLowerCase();
+      const itemB = b[property].toLowerCase();
+      if (itemA < itemB) return -1;
+      if (itemA > itemB) return 1;
+      return 0;
     }
 
     static getCutName(name, maxCharacterLength = 25) {

@@ -18,6 +18,11 @@ import SideNav from './SideNav';
 import ClientStatsScreen from './Stats/ClientStatsScreen';
 import KPIStatsScreen from './Stats/KPIStatsScreen';
 import QrCodeScreen from './qrCodeScreen';
+import LoginScreen from './Login/LoginScreen';
+import Cookies from 'js-cookie';
+import ClientOrderPlacingScreen from './ClientOrderPlacing/ClientOrderPlacingScreen';
+import Utils from './Utils';
+import ClientCartScreen from './ClientOrderPlacing/ClientCartScreen';
 
 class App extends Component {
   constructor(props) {
@@ -29,13 +34,18 @@ class App extends Component {
       loaderMessge: "",
       botNumber: "",
       instanceStatus: "a",
+      isReloading: false,
+      globalConfig: undefined
     };
 
     this.intervalId = null
   }
   
   componentDidMount() {
+    const token = Cookies.get('token');
+    window.token = token
     this.GetInstanceStatus()
+    this.fetchGlobalConfig()
     //Get the instance status every second until y link whatsapp
     this.intervalId = setInterval(this.GetInstanceStatus, 2000);
 
@@ -47,8 +57,15 @@ class App extends Component {
   }
 
   componentDidUpdate() {
-    console.log("this.state.instanceStatu", this.state.instanceStatus)
     if(this.state.instanceStatus == "authenticated") {clearInterval(this.intervalId);}
+  }
+
+  fetchGlobalConfig = async () => {
+    try {
+        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+
+        this.setState({globalConfig: response.data})
+    } catch (error) {}
   }
 
   GetBotNumber = async () => {
@@ -64,7 +81,6 @@ class App extends Component {
   GetInstanceStatus = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/whatsapp/getInstanceStatus`);
-      console.log("GetInstanceStatus", response)
 
       this.setState({
         instanceStatus: response.data.accountStatus.status,
@@ -80,25 +96,48 @@ class App extends Component {
     })
   }
 
+  setIsReloading = (isReloading) => {
+    this.setState({
+      isReloading: isReloading,
+    })
+  }
+
   render() {
+    const currentPath = window.location.pathname;
+
     return (
+    this.state.isReloading ? 
+    <img src='./images/splash.png' className="img-fluid" style={{ width: '100%', height: "100%" }} />
+    :
     <Router>
-      {this.state.instanceStatus != "authenticated" && this.state.instanceStatus != "a" ? <QrCodeScreen status={this.state.instanceStatus}/> : <></>}
+      {
+        this.state.instanceStatus != "authenticated" && 
+        this.state.instanceStatus != "a" &&
+        !Utils.loginExemptPaths.includes(currentPath) ?
+        <QrCodeScreen status={this.state.instanceStatus}/> 
+        : 
+        <></>
+      }
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
       <div className="row">
-        <div className="col-auto">
-          <SideNav botNumber={this.state.botNumber} style={{ height: '100vh', width: '236px'}}/>
-        </div>
+        {
+          Utils.loginExemptPaths.includes(currentPath) ?
+          <></>
+          :
+          <div className="col-auto">
+            <SideNav globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+          </div>
+        }
         <div className="col">
           <Helmet>
             <style>{`body { background-color: ${ColorHex.Background}; }`}</style>
           </Helmet>
           <Switch>
-            <Route exact path="/">
+            <Route exact path="/loadData">
               <div style={{margin: '15px'}}><MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/inventory">
-              <div style={{margin: '15px'}}><InventoryScreen showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} /></div>
+              <div style={{margin: '15px'}}><InventoryScreen globalConfig={this.state.globalConfig} showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/dayLocation">
               <div style={{margin: '15px'}}><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
@@ -118,6 +157,24 @@ class App extends Component {
             <Route exact path="/problematicChats">
               <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
+            <Route exact path="/">
+              <div style={{margin: '15px'}}><LoginScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
+            </Route>
+            <Route exact path="/clientOrderPlacing">
+              <div style={{margin: '15px'}}><ClientOrderPlacingScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
+            </Route>
+            <Route exact path="/clientCart" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <ClientCartScreen 
+                    {...props}  
+                    showPopup={this.props.showPopup} 
+                    setIsLoading={this.setIsLoading} 
+                    botNumber={this.state.botNumber}
+                  />
+                </div>
+              )} 
+            />
             <Route exact path="/createItem" 
               render={(props) => (
                 <div style={{margin: '15px'}}>

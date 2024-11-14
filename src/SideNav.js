@@ -6,15 +6,32 @@ import CssProperties from './CssProperties';
 import { firestore } from './firebaseConfig';
 import './SideNav.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping, faChartSimple, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faCartShopping, faChartSimple, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
+import CustomButton from './Searchbar/CustomButton';
+import { useHistory  } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import Utils from './Utils';
+import { isMobile, isTablet, isDesktop } from 'react-device-detect';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
   const [playSound, setPlaySound] = useState(false);
   const [messageCount, setMessageCount] = useState(0);
   const [totalClientsToMessage, setTotalClientsToMessage] = useState(0);
+  const history = useHistory();
   let fetchSoundCount = 0
+
+  useEffect(() => {
+    if(window.token && window.token.length > 0) { return; }
+
+    if(!isDesktop) { history.push('/clientOrderPlacing'); return; }
+
+    if(Utils.loginExemptPaths.includes(history.location.pathname)) { return; }
+
+    history.push('/');
+  }, []);
+
 
   useEffect(() => {
       fetchChatData();
@@ -44,22 +61,13 @@ function SideNav(props)  {
       });
   }
 
-  // const fetchChatData = async () => {
-  //     // if (!props.botNumber) {
-  //     //     return;
-  //     // }
-
-  //     // const ref = firebase.collection(String(props.botNumber)).orderBy('createdDate')
-  //     // ref.onSnapshot(query => {
-  //     //   let chats = []
-  //     //   query.forEach(doc => {
-  //     //       chats.push(doc.data())
-  //     //   }) 
-
-  //     //   handleSoundPlay(chats)
-  //     //   //PLAY AUDIO HERE
-  //     // })
-  // };
+  const handleLogOut = () => {
+    Cookies.remove('token');
+    window.token = ""
+    props.setIsReloading(true)
+    history.push('/');
+    setTimeout(() => window.location.reload(), 100)
+  }
 
   const handleSoundPlay = (chats) => {
     fetchSoundCount = fetchSoundCount + 1
@@ -78,7 +86,6 @@ function SideNav(props)  {
   };
 
   const handleNavItemClick = (currentPath) => {
-    console.log("handleNavItemClick", currentPath)
     if(currentPath == "/problematicChats") { setHasNewProblematicChat(false); }
   };
 
@@ -89,7 +96,7 @@ function SideNav(props)  {
     {icon: faClock, nameText: "Tiempos y Lugares", link: "/dayLocation"},
     // {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
     {icon: faChartSimple, nameText: "Estadisticas", link: "/stats"},
-    {icon: faCloud, nameText: "Cargar Datos", link: "/"},
+    {icon: faCloud, nameText: "Cargar Datos", link: "/loadData"},
   ]
 
   const navBarButtonHtmls = navBarButton.map(x => {
@@ -108,7 +115,7 @@ function SideNav(props)  {
       <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>
         <div className="d-flex flex-column p-3" style={{ height: '100vh' }}>
           <div className="text-center p-3">
-            <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbQLGnT0RH-Rh0_5NefuPRVbUAXU0CxPfpDw&s' alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '24px' }} />
+            <img src={props?.globalConfig?.companyLogoUrl} alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '24px' }} />
           </div>
           <hr className='border border-dark'/>
           {navBarButtonHtmls}
@@ -118,10 +125,11 @@ function SideNav(props)  {
               <p className='text-center' style={{ ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '-16px'}}>{`${messageCount}/${totalClientsToMessage}`}</p>
             </div>
             <div style={{display: 'flex', justifyContent: 'center'}}>
-              <img src='./images/icon.jpg' alt="Logo" className="img-fluid" style={{ width: '25px', height: "25px", marginTop: '7px', marginRight: '3px' }} />
+              <img src='./images/icon.png' alt="Logo" className="img-fluid" style={{ width: '25px', height: "25px", marginTop: '7px', marginRight: '3px' }} />
               <p style={{ ...CssProperties.BodyTextStyle, color: ColorHex.TextBody, marginTop: '8px' }} className='text-center'>WhatsBot</p>
             </div>
           </div>
+          <div><CustomButton text="Cerrar Sesión" width="100%" icon={faArrowRightFromBracket} onClickCallback={handleLogOut}/></div>
         </div>
       </Sidenav.Body>
     </Sidenav>
