@@ -100,7 +100,8 @@ class ClientCartScreen extends Component {
     console.log("this.state.ruc", this.state.ruc[7])
 
     if(this.state.hasRuc && this.state.ruc.toLowerCase() != 'no tengo') {
-      if(!this.state.ruc.includes("-")) { errors.push("-"); }
+      if(this.state.ruc.length < 1) { errors.push("empty_ruc"); }
+      else if(!this.state.ruc.includes("-")) { errors.push("-"); }
       else if(this.state.ruc[7] != '-') { errors.push("-"); }
       else if(this.state.ruc.split('-')[0].length < 7) { errors.push("id_length"); }
       else if(this.state.ruc.split('-')[1].length != 1) { errors.push("no_ruc_num"); }
@@ -195,6 +196,7 @@ class ClientCartScreen extends Component {
                 {
                     this.state?.fieldsWithErrors?.map(x => {
                         if(x == '-') {return "*Falta el guion '-' ej: 5720624-7\n"} 
+                        else if(x == 'empty_ruc') {return "*Hace falta llenar el RUC, si no tenes, pone: 'No tengo'\n"} 
                         else if(x == 'id_length') {return "*Tu cedula debe tener al menos 7 numeros, ej '5720624'\n"} 
                         else if(x == 'no_ruc_num') {return "*Falta el numero despues del guion, ej '-7'\n"} 
                     })
@@ -207,12 +209,12 @@ class ClientCartScreen extends Component {
                   onChange={(itemValue) => this.handleChangeRuc(itemValue) }
                   width="99%"
                   height='65px'
-                  hasError={this.state.fieldsWithErrors.includes('-' || 'id_length' || 'no_ruc_num')}
+                  hasError={['-', 'id_length', 'no_ruc_num', 'empty_ruc'].some(err => this.state.fieldsWithErrors.includes(err))}
                 />
               <p style={headersStyle}>Pedido:</p>
             </>
             : 
-            <></>
+            <p style={headersStyle}>Ya tenemos su RUC😊</p>
           }
           <div style={scrollStyle}>
             {allItems}
