@@ -46,7 +46,7 @@ class ClientCartScreen extends Component {
       this.setState({isInitialWindow: false})
       const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData.cartItems : undefined
       const hasRuc = Utils.needsRuc
-      console.log("hasRuc client cart", this.props.location.state.linkData.hasRuc, this.props.location.state.linkData)
+      console.log("hasRuc client cart", hasRuc)
       this.loadCart(itemData, hasRuc)
     }
   }
@@ -86,10 +86,19 @@ class ClientCartScreen extends Component {
 
     this.setState({
       itemsInCart: itemsWithAmounts,
-      hasRuc: hasRuc
+      hasRuc: hasRuc,
+      ruc: Utils.ruc
     })
 
     Utils.clientCartData = itemsWithAmounts
+  }
+
+  handleChangeRuc(value) {
+    Utils.ruc = value
+
+    this.setState({
+      ruc: value
+    })
   }
 
   handleEditItemAmount = (item, isAdd) => {
@@ -160,7 +169,7 @@ class ClientCartScreen extends Component {
                   maxLength={9}
                   placeHolderText="ej: '5720624-7' o 'No tengo'"
                   value={this.state.ruc}
-                  onChange={(itemValue) => this.setState({ruc: itemValue}) }
+                  onChange={(itemValue) => this.handleChangeRuc(itemValue) }
                   width="99%"
                   height='65px'
                 />

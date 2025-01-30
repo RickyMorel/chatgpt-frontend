@@ -13,8 +13,7 @@ class ClientOrderPlacingScreen extends Component {
     this.state = {
       inventoryItems: null,
       filteredInventory: null,
-      itemsInCart: [],
-      needsRuc: false
+      itemsInCart: []
     };
   }
 
@@ -38,14 +37,12 @@ class ClientOrderPlacingScreen extends Component {
   }
 
   checkIfNeedsRuc() {
+    if(Utils.needsRuc == true) { return; }
+    
     const searchParams = new URLSearchParams(window.location.search);
     const hasRuc = searchParams.has('ruc');
 
     Utils.needsRuc = hasRuc
-
-    if(hasRuc) {
-      this.setState({needsRuc: true})
-    }
   }
 
   fetchTommorrowsInventory = async () => {
@@ -109,7 +106,7 @@ class ClientOrderPlacingScreen extends Component {
           </div>
           {
             this.state.itemsInCart.length > 0 ?
-            <div style={{bottom: 10, left: 0, right: 0, zIndex: 999, display: 'flex', position: 'absolute', justifyContent: 'center'}}><CustomButton text={`Ir a Carrito (${this.state.itemsInCart.length})`} iconSize="25px" width='250px' classStyle="btnGreen-clicked row" height="60px" icon={faCartShopping} link="clientCart" linkData={{cartItems: this.state.itemsInCart, hasRuc: this.state.needsRuc}}/></div>
+            <div style={{bottom: 10, left: 0, right: 0, zIndex: 999, display: 'flex', position: 'absolute', justifyContent: 'center'}}><CustomButton text={`Ir a Carrito (${this.state.itemsInCart.length})`} iconSize="25px" width='250px' classStyle="btnGreen-clicked row" height="60px" icon={faCartShopping} link="clientCart" linkData={{cartItems: this.state.itemsInCart}}/></div>
             :
             <></>
           }
