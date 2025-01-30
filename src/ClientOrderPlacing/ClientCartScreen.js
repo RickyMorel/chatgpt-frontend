@@ -17,7 +17,8 @@ class ClientCartScreen extends Component {
       itemsInCart: [],
       isInitialWindow: false,
       hasRuc: false,
-      ruc: ''
+      ruc: '',
+      fieldsWithErrors: []
     };
 
     this.recommededItemCodes=[]
@@ -93,6 +94,25 @@ class ClientCartScreen extends Component {
     Utils.clientCartData = itemsWithAmounts
   }
 
+  hasErrors() {
+    let errors = []
+
+    console.log("this.state.ruc", this.state.ruc[7])
+
+    if(this.state.hasRuc && this.state.ruc.toLowerCase() != 'no tengo') {
+      if(!this.state.ruc.includes("-")) { errors.push("-"); }
+      else if(this.state.ruc[7] != '-') { errors.push("-"); }
+      else if(this.state.ruc.split('-')[0].length < 7) { errors.push("id_length"); }
+      else if(this.state.ruc.split('-')[1].length != 1) { errors.push("no_ruc_num"); }
+    }
+
+    this.setState({
+      fieldsWithErrors: errors
+    })
+
+    return errors.length > 0
+  }
+
   handleChangeRuc(value) {
     Utils.ruc = value
 
@@ -134,11 +154,17 @@ class ClientCartScreen extends Component {
   }
 
   openWhatsappWithOrderMessage = () => {
+    if(this.hasErrors()) {return;}
+
     let itemsString = ""
     this.state.itemsInCart.forEach(item => {
       itemsString += `\n-${item.amount} ${item.name}`
     });
-    const message = `RUC: 5710644-4\nVoy a querer:${itemsString}\nMuchas gracias!`
+    const message = 
+    this.state.hasRuc ? 
+    `RUC: ${this.state.ruc}\nVoy a querer:${itemsString}\nMuchas gracias!` 
+    :
+    `Voy a querer:${itemsString}\nMuchas gracias!` 
 
     const encodedMessage = encodeURIComponent(message);
     const url = `https://wa.me/${this.props.botNumber}?text=${encodedMessage}`;
@@ -165,6 +191,15 @@ class ClientCartScreen extends Component {
             this.state.hasRuc == true ? 
             <>
               <p style={headersStyle}>Ingrese su RUC:</p>
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, marginTop: '10px', marginBottom: '-2px', textAlign: 'center'}}>
+                {
+                    this.state?.fieldsWithErrors?.map(x => {
+                        if(x == '-') {return "*Falta el guion '-' ej: 5720624-7\n"} 
+                        else if(x == 'id_length') {return "*Tu cedula debe tener al menos 7 numeros, ej '5720624'\n"} 
+                        else if(x == 'no_ruc_num') {return "*Falta el numero despues del guion, ej '-7'\n"} 
+                    })
+                }
+              </p>
               <CustomInput
                   maxLength={9}
                   placeHolderText="ej: '5720624-7' o 'No tengo'"
@@ -172,6 +207,7 @@ class ClientCartScreen extends Component {
                   onChange={(itemValue) => this.handleChangeRuc(itemValue) }
                   width="99%"
                   height='65px'
+                  hasError={this.state.fieldsWithErrors.includes('-' || 'id_length' || 'no_ruc_num')}
                 />
               <p style={headersStyle}>Pedido:</p>
             </>
