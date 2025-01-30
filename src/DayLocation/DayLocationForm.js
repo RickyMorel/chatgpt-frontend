@@ -315,7 +315,7 @@ class DayLocationForm extends Component {
               {this.state.isEditingLocations == true ? (
                   <CustomInput
                     maxLength={18}
-                    placeholder='Mañana'
+                    placeHolderText='Mañana'
                     value={time}
                     onChange={(itemValue) => this.handleTimeChange(x, itemValue)}
                     width="90%"

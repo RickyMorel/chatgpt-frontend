@@ -13,7 +13,8 @@ class ClientOrderPlacingScreen extends Component {
     this.state = {
       inventoryItems: null,
       filteredInventory: null,
-      itemsInCart: []
+      itemsInCart: [],
+      needsRuc: false
     };
   }
 
@@ -23,16 +24,28 @@ class ClientOrderPlacingScreen extends Component {
       filteredInventory: [...Utils.clientOrderPlacingInventory]
     });
 
+    this.checkIfNeedsRuc();
+
     if(Utils.clientOrderPlacingInventory.length < 1) {this.fetchTommorrowsInventory()}
 
     console.log("clientOrderPlacingScreen ivnetory", Utils.clientOrderPlacingInventory)
-
     
     if(Utils.clientCartData.length == 0) {return;}
     
     this.setState({
       itemsInCart: [...Utils.clientCartData]
     })
+  }
+
+  checkIfNeedsRuc() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const hasRuc = searchParams.has('ruc');
+
+    Utils.needsRuc = hasRuc
+
+    if(hasRuc) {
+      this.setState({needsRuc: true})
+    }
   }
 
   fetchTommorrowsInventory = async () => {
@@ -70,8 +83,6 @@ class ClientOrderPlacingScreen extends Component {
       cart = cart.filter(x => x.code != item.code)
     }
 
-    console.log("add to cart", cart)
-
     this.setState({
       itemsInCart: cart
     })
@@ -98,7 +109,7 @@ class ClientOrderPlacingScreen extends Component {
           </div>
           {
             this.state.itemsInCart.length > 0 ?
-            <div style={{bottom: 10, left: 0, right: 0, zIndex: 999, display: 'flex', position: 'absolute', justifyContent: 'center'}}><CustomButton text={`Ir a Carrito (${this.state.itemsInCart.length})`} iconSize="25px" width='250px' classStyle="btnGreen-clicked row" height="60px" icon={faCartShopping} link="clientCart" linkData={this.state.itemsInCart}/></div>
+            <div style={{bottom: 10, left: 0, right: 0, zIndex: 999, display: 'flex', position: 'absolute', justifyContent: 'center'}}><CustomButton text={`Ir a Carrito (${this.state.itemsInCart.length})`} iconSize="25px" width='250px' classStyle="btnGreen-clicked row" height="60px" icon={faCartShopping} link="clientCart" linkData={{cartItems: this.state.itemsInCart, hasRuc: this.state.needsRuc}}/></div>
             :
             <></>
           }

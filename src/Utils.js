@@ -6,6 +6,7 @@ class Utils {
     ]
 
     static clientCartData = []
+    static needsRuc = false
     static clientOrderPlacingInventory = []
 
     static formatDate(date) {

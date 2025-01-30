@@ -124,11 +124,11 @@ class EditClientScreen extends Component {
         }
     };
 
-    formInput = (title, placeholder, dataName, dataType = 'text', canEdit = true) => (
-        <>
+    formInput = (title, placeholder, dataName, dataType = 'text', canEdit = true, isHalfWidth = false) => (
+        <div>
             <p style={headersStyle}>{title}</p>
             <CustomInput
-                width='800px'
+                width={isHalfWidth ? '375px' : '800px'}
                 height='75px'
                 placeHolderText={placeholder}
                 dataType={dataType}
@@ -137,7 +137,7 @@ class EditClientScreen extends Component {
                 hasError={this.state.fieldsWithErrors.includes(dataName)}
                 canEdit={canEdit}
             />
-        </>
+        </div>
     )
 
     render() {
@@ -170,7 +170,10 @@ class EditClientScreen extends Component {
                 </p>
                 <div className="row">
                     <div className="col-6">
-                        {clientToEdit && this.formInput("Numero de Cliente *", " ", "phoneNumber", "numeric", false)}
+                        <div style={{display: 'flex', gap: '50px'}}>
+                            {clientToEdit && this.formInput("Numero de Cliente", " ", "phoneNumber", "numeric", false, true)}
+                            {clientToEdit && this.formInput("RUC de Cliente *", "No tiene RUC", "ruc", "string", false, true)}
+                        </div>
                         {clientToEdit && this.formInput("Nombre de Cliente *", "Ingresar nombre de cliente......", "name")}
                         <p style={headersStyle}>Barrio *</p>
                         <CustomSelect

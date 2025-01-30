@@ -5,6 +5,9 @@ import Utils from '../Utils'
 import ClientCartItem from './ClientCartItem'
 import axios from 'axios';
 import { withRouter } from "react-router-dom";
+import CustomInput from '../Searchbar/CustomInput'
+import CssProperties from '../CssProperties'
+import { ColorHex } from '../Colors'
 
 class ClientCartScreen extends Component {
   constructor(props) {
@@ -12,7 +15,9 @@ class ClientCartScreen extends Component {
 
     this.state = {
       itemsInCart: [],
-      isInitialWindow: false
+      isInitialWindow: false,
+      hasRuc: false,
+      ruc: ''
     };
 
     this.recommededItemCodes=[]
@@ -35,12 +40,14 @@ class ClientCartScreen extends Component {
 
         const itemData = this.inventoryItems.filter(x => this.recommededItemCodes.includes(x.code))
         console.log("itemData", itemData)
-        this.loadCart(itemData)
+        this.loadCart(itemData, Utils.needsRuc)
       })
     } else {
       this.setState({isInitialWindow: false})
-      const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined
-      this.loadCart(itemData)
+      const itemData = this.props.location && this.props.location.state ? this.props.location.state.linkData.cartItems : undefined
+      const hasRuc = Utils.needsRuc
+      console.log("hasRuc client cart", this.props.location.state.linkData.hasRuc, this.props.location.state.linkData)
+      this.loadCart(itemData, hasRuc)
     }
   }
 
@@ -66,7 +73,7 @@ class ClientCartScreen extends Component {
     }
   };
 
-  loadCart(itemData) {
+  loadCart(itemData, hasRuc) {
     let itemsWithAmounts = []
 
     for (const item of itemData) {
@@ -79,6 +86,7 @@ class ClientCartScreen extends Component {
 
     this.setState({
       itemsInCart: itemsWithAmounts,
+      hasRuc: hasRuc
     })
 
     Utils.clientCartData = itemsWithAmounts
@@ -121,7 +129,7 @@ class ClientCartScreen extends Component {
     this.state.itemsInCart.forEach(item => {
       itemsString += `\n-${item.amount} ${item.name}`
     });
-    const message = `Voy a querer:${itemsString}\nMuchas gracias!`
+    const message = `RUC: 5710644-4\nVoy a querer:${itemsString}\nMuchas gracias!`
 
     const encodedMessage = encodeURIComponent(message);
     const url = `https://wa.me/${this.props.botNumber}?text=${encodedMessage}`;
@@ -144,6 +152,23 @@ class ClientCartScreen extends Component {
       <div>
         <div style={{...inventoryPanelStyling, justifyItems: 'center'}}>
         <div style={{display: 'flex', justifySelf: 'left'}}><CustomButton width='25px' icon={faArrowLeft} iconSize="20px" height="30px" link="clientOrderPlacing"/></div>
+          {
+            this.state.hasRuc == true ? 
+            <>
+              <p style={headersStyle}>Ingrese su RUC:</p>
+              <CustomInput
+                  maxLength={9}
+                  placeHolderText="ej: '5720624-7' o 'No tengo'"
+                  value={this.state.ruc}
+                  onChange={(itemValue) => this.setState({ruc: itemValue}) }
+                  width="99%"
+                  height='65px'
+                />
+              <p style={headersStyle}>Pedido:</p>
+            </>
+            : 
+            <></>
+          }
           <div style={scrollStyle}>
             {allItems}
             {
@@ -174,6 +199,13 @@ class ClientCartScreen extends Component {
       </div>
     )
   }
+}
+
+const headersStyle = {
+  ...CssProperties.SmallHeaderTextStyle,
+  color: ColorHex.TextBody, 
+  marginTop: '10px',
+  marginBottom: '0px'
 }
 
 const scrollStyle = {
