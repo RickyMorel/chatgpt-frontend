@@ -23,6 +23,7 @@ import Cookies from 'js-cookie';
 import ClientOrderPlacingScreen from './ClientOrderPlacing/ClientOrderPlacingScreen';
 import Utils from './Utils';
 import ClientCartScreen from './ClientOrderPlacing/ClientCartScreen';
+import CreateExampleConversationScreen from './ExampleConversations/CreateExampleConversationScreen';
 
 class App extends Component {
   constructor(props) {
@@ -190,6 +191,13 @@ class App extends Component {
               render={(props) => (
                 <div style={{margin: '15px'}}>
                   <AddOrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
+                </div>
+              )} 
+            />
+            <Route exact path="/createExampleConversation" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <CreateExampleConversationScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />

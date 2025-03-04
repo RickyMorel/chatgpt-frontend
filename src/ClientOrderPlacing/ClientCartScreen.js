@@ -249,10 +249,11 @@ class ClientCartScreen extends Component {
 }
 
 const headersStyle = {
-  ...CssProperties.SmallHeaderTextStyle,
+  ...CssProperties.BodyTextStyle,
   color: ColorHex.TextBody, 
-  marginTop: '10px',
-  marginBottom: '0px'
+  marginTop: '5px',
+  marginBottom: '0px',
+  textAlign: 'center'
 }
 
 const scrollStyle = {

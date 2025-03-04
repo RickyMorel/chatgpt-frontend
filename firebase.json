@@ -1,7 +1,7 @@
 {
   "hosting": {
     "public": "build",
-    "site": "emporio-chatbot",
+    "site": "chatbot-test-22",
     "ignore": [
       "firebase.json",
       "**/.*",

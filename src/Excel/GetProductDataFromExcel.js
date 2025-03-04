@@ -3,7 +3,7 @@ import GetDataFromExcel from "./GetDataFromExcel";
 class GetProductDataFromExcel extends GetDataFromExcel {
 
     static ExtractProductData = (productsJson) => {
-        const stringsToFind = ["Nombre", "Codigo", "Precio", "Etiquetas", "Cantidad", "Descripcion", "ImagenURL", "CatalogoURL"];
+        const stringsToFind = ["Nombre", "Codigo", "Precio", "Etiquetas", "Descripcion", "ImagenURL", "CatalogoURL"];
         const headerIndexes = this.FindHeaderIndexes(productsJson[0], stringsToFind)
         productsJson.shift()
         let productData = []
@@ -15,12 +15,12 @@ class GetProductDataFromExcel extends GetDataFromExcel {
             const newProduct = {
                 name: jsonProduct[headerIndexes[0]],
                 code: jsonProduct[headerIndexes[1]],
-                description: jsonProduct[headerIndexes[5]],
+                description: jsonProduct[headerIndexes[4]],
                 price: parseInt(extractedPrice), 
                 tags: tagsArray,
-                amount: jsonProduct[headerIndexes[4]],
-                imageLink: jsonProduct[headerIndexes[6]],
-                catalogueLink: jsonProduct[headerIndexes[7]],
+                amount: 20,
+                imageLink: jsonProduct[headerIndexes[5]],
+                catalogueLink: jsonProduct[headerIndexes[6]],
             }
             productData.push(newProduct)
         });

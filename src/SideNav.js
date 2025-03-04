@@ -6,7 +6,7 @@ import CssProperties from './CssProperties';
 import { firestore } from './firebaseConfig';
 import './SideNav.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightFromBracket, faCartShopping, faChartSimple, faClipboardList, faCloud, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faCartShopping, faChartSimple, faClipboardList, faCloud, faTriangleExclamation, faUserGroup, faRobot } from '@fortawesome/free-solid-svg-icons';
 import { faClock } from '@fortawesome/free-regular-svg-icons';
 import CustomButton from './Searchbar/CustomButton';
 import { useHistory  } from 'react-router-dom';
@@ -97,6 +97,7 @@ function SideNav(props)  {
     {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
     {icon: faChartSimple, nameText: "Estadisticas", link: "/stats"},
     {icon: faCloud, nameText: "Cargar Datos", link: "/loadData"},
+    {icon: faRobot, nameText: "Configuración IA", link: "/createExampleConversation"},
   ]
 
   const navBarButtonHtmls = navBarButton.map(x => {
