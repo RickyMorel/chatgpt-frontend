@@ -46,13 +46,20 @@ class CreateExampleConversationScreen extends Component {
         this.setState(prevState => ({
             messages: [...prevState.messages, newMessage],
             messageText: '',
-            nextId: prevState.nextId + 1
+            nextId: prevState.nextId + 1,
+            selectedUser: prevState.selectedUser == "Cliente" ? "IA" : "Cliente"
         }));
     }
 
     handleClearConversation() {
         this.setState({ messages: [], nextId: 1, selectedUser: 'Cliente' });
     }
+
+    handleRemoveMessage = (id) => {
+        this.setState(prevState => ({
+            messages: prevState.messages.filter(message => message.id !== id)
+        }));
+    };
 
     handleSave = async () => {
         this.props.setIsLoading(true)
@@ -73,6 +80,7 @@ class CreateExampleConversationScreen extends Component {
 
             }
            // this.props.history.goBack()
+           this.handleClearConversation()
           } catch (error) {
             console.log("ERROR", error)
             this.props.showPopup(new Error("No se pudo guardar el ejemplo"));
@@ -107,6 +115,7 @@ class CreateExampleConversationScreen extends Component {
                             >
                                 <div style={styles.messageHeader}>
                                     <span style={styles.senderName}>{message.sender}</span>
+                                    <div><CustomButton icon={faRectangleXmark} width="20px" height="20px" iconSize="20px" classStyle='btnRed' onClickCallback={() => this.handleRemoveMessage(message.id)}/></div>
                                 </div>
                                 <div style={styles.messageText}>{message.text}</div>
                             </div>
@@ -162,7 +171,9 @@ const styles = {
     },
     messageHeader: {
         marginBottom: '5px',
-        fontSize: '0.9em'
+        fontSize: '0.9em',
+        display: 'flex',
+        justifyContent: 'space-between'
     },
     senderName: {
         fontWeight: 'bold'
@@ -199,7 +210,18 @@ const styles = {
         padding: '10px',
         borderRadius: '4px',
         cursor: 'pointer'
-    }
+    },
+    deleteButton: {
+        background: 'none',
+        border: 'none',
+        color: '#ff4444',
+        cursor: 'pointer',
+        fontSize: '1.2em',
+        padding: '0 5px',
+        ':hover': {
+            color: '#cc0000'
+        }
+    },
 };
 
 export default CreateExampleConversationScreen;
