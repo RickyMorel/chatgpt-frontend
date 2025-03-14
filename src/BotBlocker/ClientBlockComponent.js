@@ -6,6 +6,7 @@ import Utils from '../Utils';
 import CustomButton from '../Searchbar/CustomButton';
 import { faPenToSquare, faEnvelopeCircleCheck, faCommentSlash, faComment } from '@fortawesome/free-solid-svg-icons';
 import { faFloppyDisk, faEnvelope} from '@fortawesome/free-regular-svg-icons';
+import HttpRequest from '../HttpRequest';
 
 class ClientBlockComponent extends React.Component {
 
@@ -62,7 +63,7 @@ class ClientBlockComponent extends React.Component {
       this.setState({
         address: location
       })
-      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/updateByNumber`, clientObj);
+      const response = await HttpRequest.put(`/client-crud/updateByNumber`, clientObj);
       return null
     } catch (error) {
       this.props.showPopup(new Error(error.response.data.message))
@@ -75,7 +76,7 @@ class ClientBlockComponent extends React.Component {
       this.setState({
         name: newName
       })
-      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/updateByNumber`, clientObj);
+      const response = await HttpRequest.put(`/client-crud/updateByNumber`, clientObj);
       return null
     } catch (error) {
       this.props.showPopup(new Error(error.response.data.message))
@@ -85,7 +86,7 @@ class ClientBlockComponent extends React.Component {
   handleBlock = async (phoneNumber, clientRegisterBlockedStateFunc) => {
     try {
       const newBlockedState = !this.state.isBlocked
-      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/blockClientChat`, {phoneNumber: phoneNumber, isBlocked: newBlockedState});
+      const response = await HttpRequest.put(`/client-crud/blockClientChat`, {phoneNumber: phoneNumber, isBlocked: newBlockedState});
       clientRegisterBlockedStateFunc(phoneNumber, newBlockedState)
       
       this.setState({

@@ -8,6 +8,7 @@ import CssProperties from '../CssProperties';
 import { ColorHex } from '../Colors';
 import { faPenToSquare, faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 import axios from 'axios';
+import HttpRequest from '../HttpRequest';
 
 class CreateExampleConversationScreen extends Component {
     constructor(props) {
@@ -71,7 +72,7 @@ class CreateExampleConversationScreen extends Component {
                 )
             })
             if(this.state.isCreateItem) {
-                const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/self-learn/create`, {
+                const response = await HttpRequest.post(`/self-learn/create`, {
                     chat: formattedMessages,
                     wasGoodResponse: true,
                     correctedChat: formattedMessages

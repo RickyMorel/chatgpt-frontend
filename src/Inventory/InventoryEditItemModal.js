@@ -4,6 +4,7 @@ import { Select, MenuItem, InputLabel, FormControl, Button } from '@mui/material
 import Modal from 'react-modal';
 import { Color, ColorHex } from '../Colors';
 import axios from 'axios';
+import HttpRequest from '../HttpRequest';
 
 class InventoryEditItemModal extends Component {
     constructor(props) {
@@ -61,9 +62,9 @@ class InventoryEditItemModal extends Component {
                 if(!newItem.description || newItem.description.length < 1) { this.props.showPopup(new Error("Falta ponerle una descripcion al item!")); return;}
                 if(!newItem.tags || newItem.tags.length < 1) { this.props.showPopup(new Error("Falta ponerle etiquetas al item!")); return;}
                 
-                const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/inventory/addItems`, [newItem]);
+                const response = await HttpRequest.post(`/inventory/addItems`, [newItem]);
             } else {
-                const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/inventory/updateItem`, itemToEdit);
+                const response = await HttpRequest.put(`/inventory/updateItem`, itemToEdit);
             }
             this.props.updateProductsCallback(itemToEdit)
             return null

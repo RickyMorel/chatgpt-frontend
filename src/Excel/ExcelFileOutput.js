@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Color } from '../Colors';
 import CustomButton from '../Searchbar/CustomButton';
 import { faCloudArrowDown} from '@fortawesome/free-solid-svg-icons';
+import HttpRequest from '../HttpRequest';
 
 class ExcelFileOutput extends Component {
   state = {
@@ -14,7 +15,7 @@ class ExcelFileOutput extends Component {
 
   fetchOrderData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
+      const response = await HttpRequest.get(`/order`);
       this.setState({ orders: response.data });
     } catch (error) {
       this.setState({ error: error });

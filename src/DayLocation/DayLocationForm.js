@@ -11,6 +11,7 @@ import CustomButton from '../Searchbar/CustomButton';
 import CustomInput from '../Searchbar/CustomInput';
 import { faFloppyDisk, faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 import Utils from '../Utils';
+import HttpRequest from '../HttpRequest';
 
 class DayLocationForm extends Component {
   constructor(props) {
@@ -46,7 +47,7 @@ class DayLocationForm extends Component {
 
   GetCanMessageTommorrowsClients = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/canMessageTommorrowsClients`);
+      const response = await HttpRequest.get(`/chat-gpt-ai/canMessageTommorrowsClients`);
 
       this.setState({
         canMessageTommorrowsClients: response.data
@@ -60,7 +61,7 @@ class DayLocationForm extends Component {
 
   GetDayLocations = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+      const response = await HttpRequest.get(`/global-config`);
       let timeSets = []
       for (let i = 0; i < response.data.timesToSendMessages.length; i++) {
         const timeSet = {id: i, set: response.data.timesToSendMessages[i]};
@@ -84,7 +85,7 @@ class DayLocationForm extends Component {
 
   GetAllClientLocations = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getAllClientZones`);
+      const response = await HttpRequest.get(`/client-crud/getAllClientZones`);
 
       this.setState({
         clientLocations: [...response.data]
@@ -189,7 +190,7 @@ class DayLocationForm extends Component {
     })
 
     try {
-      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayLocations`, 
+      const response = await HttpRequest.put(`/global-config/dayLocations`, 
         {
           dayLocations: [...this.state.locations],
           timesToSendMessages: timeSets,
@@ -205,7 +206,7 @@ class DayLocationForm extends Component {
   handleSendMessages = async () => {
     if(this.state.canMessageTommorrowsClients == false) {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/canMessageTommorrowsClients`);
+        const response = await HttpRequest.get(`/chat-gpt-ai/canMessageTommorrowsClients`);
       } catch(error) {
         this.props.showPopup(new Error(error.response.data.message))
       }
@@ -215,7 +216,7 @@ class DayLocationForm extends Component {
       this.setState({
         canMessageTommorrowsClients: false
       })
-      const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/messageTommorrowsClients`);
+      const response = await HttpRequest.post(`/chat-gpt-ai/messageTommorrowsClients`);
     } catch (error) {
       this.props.showPopup(new Error(error.response.data.message))
     }

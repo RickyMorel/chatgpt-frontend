@@ -1,4 +1,5 @@
 import axios from 'axios';
+import HttpRequest from '../HttpRequest';
 
 class GetDataFromExcel {
 
@@ -17,7 +18,7 @@ class GetDataFromExcel {
 
     static PostData = async (url, data) => {
         try {
-          const response = await axios.post(url, data);
+          const response = await HttpRequest.post(url, data);
           return null
         } catch (error) {
           return error

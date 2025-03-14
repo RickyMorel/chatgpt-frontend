@@ -5,6 +5,7 @@ import { Color } from '../Colors';
 import { PopupStyle } from '../Popups/PopupManager';
 import ProductComponent from './ProductComponent';
 import SearchBar from '../Searchbar/Searchbar';
+import HttpRequest from '../HttpRequest';
 
 class ProductListModal extends Component {
     constructor(props) {
@@ -25,7 +26,7 @@ class ProductListModal extends Component {
 
   fetchClientData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/allItems`);
+      const response = await HttpRequest.get(`/inventory/allItems`);
       this.setState({
         products: response.data,
         filteredProducts: response.data,

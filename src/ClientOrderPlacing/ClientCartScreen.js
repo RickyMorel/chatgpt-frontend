@@ -8,6 +8,7 @@ import { withRouter } from "react-router-dom";
 import CustomInput from '../Searchbar/CustomInput'
 import CssProperties from '../CssProperties'
 import { ColorHex } from '../Colors'
+import HttpRequest from '../HttpRequest'
 
 class ClientCartScreen extends Component {
   constructor(props) {
@@ -54,7 +55,7 @@ class ClientCartScreen extends Component {
 
   fetchRecommendedItems = async (phoneNumber) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getClientReccomendedProducts?phoneNumber=${phoneNumber}`);
+      const response = await HttpRequest.get(`/client-crud/getClientReccomendedProducts?phoneNumber=${phoneNumber}`);
       console.log("fetchRecommendedItems", response.data, phoneNumber)
       this.recommededItemCodes = response.data
     } catch (error) {
@@ -66,7 +67,7 @@ class ClientCartScreen extends Component {
     if(Utils.clientOrderPlacingInventory.length > 0) { return; }
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryWithPictures`);
+      const response = await HttpRequest.get(`/inventory/getTommorowsInventoryWithPictures`);
       this.inventoryItems = response.data
       Utils.clientOrderPlacingInventory = [...response.data]
     } catch (error) {

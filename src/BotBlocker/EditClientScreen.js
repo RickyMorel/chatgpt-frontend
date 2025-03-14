@@ -8,6 +8,7 @@ import CustomInput from '../Searchbar/CustomInput'
 import Map from './Map'
 import axios from 'axios';
 import RemovableItem from '../Searchbar/RemovableItem'
+import HttpRequest from '../HttpRequest'
 
 class EditClientScreen extends Component {
     constructor(props) {
@@ -46,7 +47,7 @@ class EditClientScreen extends Component {
                 locationPicture: locationData.locationPicture
             }
             console.log("handleSave", clientObj)
-            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/updateWithLocation`, clientObj);
+            const response = await HttpRequest.put(`/client-crud/updateWithLocation`, clientObj);
             this.props.history.goBack()
         } catch (error) {
             console.log("error", error)
@@ -72,7 +73,7 @@ class EditClientScreen extends Component {
             locationData: {...this.state.locationData, location: newPos}
         })
 
-        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-location/updateClientLocation`, locationObj);
+        const response = await HttpRequest.put(`/client-location/updateClientLocation`, locationObj);
     };
 
     handleStringChange = (name, value) => {
@@ -86,7 +87,7 @@ class EditClientScreen extends Component {
 
     fetchAllClientLocations = async () => {
         try {
-          const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getAllClientZones`);
+          const response = await HttpRequest.get(`/client-crud/getAllClientZones`);
     
           this.setState({
             clientLocations: [...response.data]
@@ -99,7 +100,7 @@ class EditClientScreen extends Component {
 
     fetchExtraClientData = async (clientToEdit) => {
         try {
-          const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getClientByPhoneNumber?phoneNumber=${clientToEdit.phoneNumber}`);
+          const response = await HttpRequest.get(`/client-crud/getClientByPhoneNumber?phoneNumber=${clientToEdit.phoneNumber}`);
     
           this.setState({
             clientToEdit: response.data
@@ -112,7 +113,7 @@ class EditClientScreen extends Component {
 
     fetchClientLocation = async (clientToEdit) => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-location/getLocationByNumber?phoneNumber=${clientToEdit.phoneNumber}`);
+            const response = await HttpRequest.get(`/client-location/getLocationByNumber?phoneNumber=${clientToEdit.phoneNumber}`);
             
             this.setState({
                 locationData: response.data

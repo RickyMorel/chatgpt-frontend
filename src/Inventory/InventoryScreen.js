@@ -11,6 +11,7 @@ import CustomButton from '../Searchbar/CustomButton';
 import CustomToggle from '../Searchbar/CustomToggle';
 import { faFloppyDisk, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
+import HttpRequest from '../HttpRequest';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -57,7 +58,7 @@ class InventoryScreen extends Component {
     
     fetchProductData = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/allItems`);
+            const response = await HttpRequest.get(`/inventory/allItems`);
             this.setState({
             products: response.data,
             filteredProducts: response.data,
@@ -67,7 +68,7 @@ class InventoryScreen extends Component {
 
     fetchProductReccomendations = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/product-correlation/getAllItemReccomendationsList`);
+            const response = await HttpRequest.get(`/product-correlation/getAllItemReccomendationsList`);
             this.setState({
                 productReccomendations: response.data,
             });
@@ -76,7 +77,7 @@ class InventoryScreen extends Component {
 
     fetchGlobalConfig = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+            const response = await HttpRequest.get(`/global-config`);
             let selectedInventoryItems = {day: response.data.dayInventories[0].day , items: this.state.products.filter(x => response.data.dayInventories[0].itemIds.includes(x.code))}
 
             this.setState({
@@ -291,7 +292,7 @@ class InventoryScreen extends Component {
         });
 
         try {
-            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayInventory`, {inventories: newDayInventoriesDto});
+            const response = await HttpRequest.put(`/global-config/dayInventory`, {inventories: newDayInventoriesDto});
             this.setState({
                 dayInventories: response.data,
             });

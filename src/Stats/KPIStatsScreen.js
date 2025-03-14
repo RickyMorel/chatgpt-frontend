@@ -7,6 +7,7 @@ import Utils from '../Utils';
 import CustomSelect from '../Searchbar/CustomSelect';
 import CustomButton from '../Searchbar/CustomButton';
 import { faAddressCard } from '@fortawesome/free-solid-svg-icons';
+import HttpRequest from '../HttpRequest';
 
 const monthNames = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -40,7 +41,7 @@ class KPIStatsScreen  extends Component {
 
   fetchOrderHistoryData = async () => {
       try {
-          const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order-history/getAllWithinMonth`, {monthDate: new Date(), monthsBack: 2});
+          const response = await HttpRequest.put(`/order-history/getAllWithinMonth`, {monthDate: new Date(), monthsBack: 2});
           this.setState({
           orderHistories: response.data,
           });
@@ -51,7 +52,7 @@ class KPIStatsScreen  extends Component {
 
   fetchProductData = async () => {
     try {
-        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/allItems`);
+        const response = await HttpRequest.get(`/inventory/allItems`);
         this.setState({
           products: response.data,
         });

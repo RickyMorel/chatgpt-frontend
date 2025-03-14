@@ -14,6 +14,7 @@ import { faPenToSquare, faArrowRotateRight} from '@fortawesome/free-solid-svg-ic
 import { faFloppyDisk, faRectangleXmark, faSquarePlus} from '@fortawesome/free-regular-svg-icons';
 import Utils from '../Utils';
 import { Redirect } from 'react-router-dom';
+import HttpRequest from '../HttpRequest';
 
 class OrderScreen extends Component {
   constructor(props) {
@@ -49,7 +50,7 @@ class OrderScreen extends Component {
     this.props.setIsLoading(true)
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/order`);
+      const response = await HttpRequest.get(`/order`);
       this.setState({
         orders: response.data,
         filteredOrders: response.data,
@@ -63,7 +64,7 @@ class OrderScreen extends Component {
 
   fetchInventoryItemNames = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryNamesWithCodes`);
+      const response = await HttpRequest.get(`/inventory/getTommorowsInventoryNamesWithCodes`);
       this.setState({
         inventoryItemNamesWithCodes: response.data,
       });
@@ -76,7 +77,7 @@ class OrderScreen extends Component {
     this.props.setIsLoading(true)
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/extentions/getEmporioMoviles`);
+      const response = await HttpRequest.get(`/extentions/getEmporioMoviles`);
       this.setState({
         movilObjs: response.data,
       });
@@ -104,7 +105,7 @@ class OrderScreen extends Component {
     this.props.setIsLoading(true, "Creando pedidos, puede tardar hasta unos minutos...")
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/order/processForgottenOrders`);
+      const response = await HttpRequest.post(`/order/processForgottenOrders`);
       let updatedOrders = [...this.state.orders, ...response.data]
       this.setState({
         orders: updatedOrders,

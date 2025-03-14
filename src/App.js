@@ -24,6 +24,7 @@ import ClientOrderPlacingScreen from './ClientOrderPlacing/ClientOrderPlacingScr
 import Utils from './Utils';
 import ClientCartScreen from './ClientOrderPlacing/ClientCartScreen';
 import CreateExampleConversationScreen from './ExampleConversations/CreateExampleConversationScreen';
+import HttpRequest from './HttpRequest';
 
 class App extends Component {
   constructor(props) {
@@ -63,7 +64,7 @@ class App extends Component {
 
   fetchGlobalConfig = async () => {
     try {
-        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+        const response = await HttpRequest.get(`/global-config`);
 
         this.setState({globalConfig: response.data})
     } catch (error) {}
@@ -71,7 +72,7 @@ class App extends Component {
 
   GetBotNumber = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config/botNumber`);
+      const response = await HttpRequest.get(`/global-config/botNumber`);
       this.setState({
         botNumber: response.data,
       })
@@ -81,7 +82,7 @@ class App extends Component {
 
   GetInstanceStatus = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/whatsapp/getInstanceStatus`);
+      const response = await HttpRequest.get(`/whatsapp/getInstanceStatus`);
 
       this.setState({
         instanceStatus: response.data.accountStatus.status,

@@ -7,6 +7,7 @@ import CssProperties from '../CssProperties';
 import CustomButton from '../Searchbar/CustomButton';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import CustomDatePicker from '../Searchbar/CustomDatePicker';
+import HttpRequest from '../HttpRequest';
 
 class ClientStatsScreen extends Component {
   constructor() {
@@ -33,7 +34,7 @@ class ClientStatsScreen extends Component {
 
   fetchOrderHistoryData = async (newDate) => {
     try {
-        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order-history/getAllWithinMonth`, {monthDate: newDate, monthsBack: 1});
+        const response = await HttpRequest.put(`/order-history/getAllWithinMonth`, {monthDate: newDate, monthsBack: 1});
         this.setState({
           orderHistories: response.data,
         });
@@ -42,7 +43,7 @@ class ClientStatsScreen extends Component {
 
   fetchClientsOfDay = async (newDate) => {
     try {
-        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getDayOfTheWeekClients?dayIndex=${Utils.getDayIndex(newDate)}`);
+        const response = await HttpRequest.get(`/client-crud/getDayOfTheWeekClients?dayIndex=${Utils.getDayIndex(newDate)}`);
         console.log("fetchClientsOfDay", Utils.getDayIndex(newDate), newDate, response.data)
         this.setState({
           clientsOfDay: response.data,

@@ -4,6 +4,7 @@ import { ColorHex } from './Colors';
 import axios from 'axios';
 import { QRCodeCanvas } from 'qrcode.react';
 import CssProperties from './CssProperties';
+import HttpRequest from './HttpRequest';
 
 class QrCodeScreen extends Component {
   constructor(props) {
@@ -33,7 +34,7 @@ class QrCodeScreen extends Component {
         qr: null
       })
 
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/whatsapp/getInstanceQR`);
+      const response = await HttpRequest.get(`/whatsapp/getInstanceQR`);
 
       this.setState({
         qr: response.data.qrCode

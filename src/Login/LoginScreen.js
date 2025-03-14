@@ -9,6 +9,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { isMobile, isTablet, isDesktop } from 'react-device-detect';
 import { error } from 'jquery';
+import HttpRequest from '../HttpRequest';
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -34,7 +35,7 @@ class LoginScreen extends Component {
 
   handleLogin = async () => {
     try {
-        const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/auth/signin`, {email: this.state.email, password: this.state.password});
+        const response = await HttpRequest.post(`/auth/signin`, {email: this.state.email, password: this.state.password});
         console.log("user logged in", response.data)
         Cookies.set('token', response.data.token, { secure: true, sameSite: 'Strict' });
         window.token = response.data.token
