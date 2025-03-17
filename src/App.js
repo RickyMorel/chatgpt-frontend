@@ -49,7 +49,7 @@ class App extends Component {
     this.GetInstanceStatus()
     this.fetchGlobalConfig()
     //Get the instance status every second until y link whatsapp
-    this.intervalId = setInterval(this.GetInstanceStatus, 2000);
+    this.intervalId = setInterval(this.GetInstanceStatus, 10000);
 
     this.GetBotNumber()
   }
@@ -83,9 +83,10 @@ class App extends Component {
   GetInstanceStatus = async () => {
     try {
       const response = await HttpRequest.get(`/whatsapp/getInstanceStatus`);
+      console.log("INSTANCE STATUS", response)
 
       this.setState({
-        instanceStatus: response.data.accountStatus.status,
+        instanceStatus: response.data,
       })
     } catch (error) {
     }

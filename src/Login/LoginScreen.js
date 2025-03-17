@@ -35,7 +35,7 @@ class LoginScreen extends Component {
 
   handleLogin = async () => {
     try {
-        const response = await HttpRequest.post(`/auth/signin`, {email: this.state.email, password: this.state.password});
+        const response = await HttpRequest.post(`/auth/signin`, {email: this.state.email, password: this.state.password}, true);
         console.log("user logged in", response.data)
         Cookies.set('token', response.data.token, { secure: true, sameSite: 'Strict' });
         window.token = response.data.token

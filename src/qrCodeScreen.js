@@ -5,6 +5,7 @@ import axios from 'axios';
 import { QRCodeCanvas } from 'qrcode.react';
 import CssProperties from './CssProperties';
 import HttpRequest from './HttpRequest';
+import Utils from './Utils';
 
 class QrCodeScreen extends Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class QrCodeScreen extends Component {
   componentDidMount() {
     this.GetInstanceQR()
 
-    this.intervalId = setInterval(this.GetInstanceQR, 15000);
+    this.intervalId = setInterval(this.GetInstanceQR, 25000);
   }
 
   componentWillUnmount() {
@@ -28,17 +29,40 @@ class QrCodeScreen extends Component {
   }
 
   GetInstanceQR = async () => {
-    console.log("Get new QR")
     try {
       this.setState({
         qr: null
       })
 
-      const response = await HttpRequest.get(`/whatsapp/getInstanceQR`);
+      const newInstanceResponse = await this.ReInitInstance();
+
+      // const response = await HttpRequest.get(`/whatsapp/getInstanceQR`);
+      // console.log("Get new QR", response)
+
+      // if(response.data.qrcode.length < 3) {
+      //   // setTimeout(() => {
+      //   //   this.GetInstanceQR(); 
+      //   // }, 4000); 
+      //   return; 
+      // }
 
       this.setState({
-        qr: response.data.qrCode
+        qr: newInstanceResponse.qrcode
       })
+    } catch (error) {
+      console.log("error", error)
+    }
+  };
+
+  ReInitInstance = async () => {
+    try {
+      this.setState({
+        qr: null
+      })
+
+      const response = await HttpRequest.post(`/whatsapp/initInstance`);
+      console.log("Restaring instance...", response)
+      return response.data
     } catch (error) {
       console.log("error", error)
     }
@@ -64,13 +88,7 @@ class QrCodeScreen extends Component {
       <div style={{marginBottom: '50px'}}>
         {
           this.state.qr != null ?
-            <QRCodeCanvas
-            value={this.state.qr}
-            size={256} 
-            bgColor="#ffffff"
-            fgColor="#000000"
-            level="L" // Error correction level: L, M, Q, H
-          />
+          <img src={this.state.qr} alt="QR Code" className="w-60 h-60" />
           :
           <ColorRing
             visible={true}
@@ -108,6 +126,8 @@ class QrCodeScreen extends Component {
       />
       <h4 style={{ margin: 0, ...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody }}>Vinculando...</h4>
     </>
+
+    console.log("QR CODE", this.state.qr)
     
     
     return (

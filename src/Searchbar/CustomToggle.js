@@ -30,8 +30,6 @@ class CustomToggle extends Component {
     render() {
       const { text, value, onChange, width, height, explinationText } = this.props;
 
-      console.log("value", value)
-
       return (
         <>
           <div style={{ display: 'inline-block', position: 'relative', padding: '5px 0'}} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
