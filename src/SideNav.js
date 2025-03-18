@@ -97,7 +97,7 @@ function SideNav(props)  {
     {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
     {icon: faChartSimple, nameText: "Estadisticas", link: "/stats"},
     {icon: faCloud, nameText: "Cargar Datos", link: "/loadData"},
-    {icon: faRobot, nameText: "Configuración IA", link: "/createExampleConversation"},
+    {icon: faRobot, nameText: "Configuración IA", link: "/aiConfiguration"},
   ]
 
   const navBarButtonHtmls = navBarButton.map(x => {

@@ -1,17 +1,17 @@
+import { faComments, faPenToSquare, faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 import React, { Component } from 'react';
 import "react-datepicker/dist/react-datepicker.css";
-import CustomInput from '../Searchbar/CustomInput';
-import CustomButton from '../Searchbar/CustomButton';
-import { Dropdown } from 'rsuite';
-import CustomSelect from '../Searchbar/CustomSelect';
-import CssProperties from '../CssProperties';
 import { ColorHex } from '../Colors';
-import { faPenToSquare, faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
-import axios from 'axios';
+import CssProperties from '../CssProperties';
 import HttpRequest from '../HttpRequest';
+import CustomButton from '../Searchbar/CustomButton';
+import CustomInput from '../Searchbar/CustomInput';
+import CustomSelect from '../Searchbar/CustomSelect';
+import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import CustomTextArea from '../Searchbar/CustomTextArea';
+import CustomToggle from '../Searchbar/CustomToggle';
 
-class CreateExampleConversationScreen extends Component {
+class BotConfigurationScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -96,47 +96,46 @@ class CreateExampleConversationScreen extends Component {
             {value: "Cliente", label: "Cliente"},
             {value: "IA", label: "IA"}
         ]
+        const explanationText = `<strong>Caso Bloquear:</strong><br/>En un Instituto de Inglés, se establece que la IA interactúe únicamente en el primer contacto con el cliente. Una vez que el cliente se registra como alumno, la IA deja de responder sus mensajes, bloqueando la conversación.<br/><strong>Caso No Bloquear:</strong><br/>En una panadería o restaurante, se requiere que la IA responda cada vez que el cliente se comunique, proporcionando información como precios o detalles de productos, sin bloquear la conversación.`
         return (
             <div>
-                <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{this.state.isCreateItem ? 'Crear Conversacion Ejemplo' : 'Editar Conversacion Ejemplo'}</p>
+                <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Configuración IA</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Crear Ejemplo' : 'Editar Ejemplo'} classStyle="btnGreen" width="182px" height="45px" icon={this.state.isCreateItem ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
-                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="inventory"/></div>
+                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={'Conversaciones Ejemplo'} width="252px" height="45px" icon={faComments} link='createExampleConversation'/></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={'Preguntas Frecuentes'} icon={faQuestion} link="inventory"/></div>
                     <div className="col-10"></div>
                 </div>
-                <div style={styles.container}>
-                    <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>Conversacion</p>
-                    <div style={styles.chatWindow}>
-                        {this.state.messages.map(message => (
-                            <div 
-                                key={message.id}
-                                style={{
-                                    ...styles.messageBubble,
-                                    ...(message.sender === 'Cliente' ? styles.user1 : styles.user2)
-                                }}
-                            >
-                                <div style={styles.messageHeader}>
-                                    <span style={styles.senderName}>{message.sender}</span>
-                                    <div><CustomButton icon={faRectangleXmark} width="20px" height="20px" iconSize="20px" classStyle='btnRed' onClickCallback={() => this.handleRemoveMessage(message.id)}/></div>
-                                </div>
-                                <div style={styles.messageText}>{message.text}</div>
-                            </div>
-                        ))}
+                <div className="row">
+                    <div className="col-6">
+                        <div style={styles.container}>
+                            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Rol de la IA *</p>
+                            <CustomTextArea 
+                                value={this.state.messageText} 
+                                noPadding={false} 
+                                width='800px' 
+                                height='150px' 
+                                placeHolderText="Eres recepcionista de English Is Easy. Tu trabajo es responder las preguntas de los clientes" 
+                                onChange={(value) => this.handleTextChange(value)}
+                            />
+                            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Descripcion resumida de Empresa *</p>
+                            <CustomTextArea 
+                                value={this.state.messageText} 
+                                noPadding={false} 
+                                width='800px' 
+                                height='200px' 
+                                placeHolderText="English Is Easy es un instituto de aprendizaje de inglés. Se dan ambas clases presenciales como virtuales, en donde tenemos un enfoque en gramatica y pronunciacion" 
+                                onChange={(value) => this.handleTextChange(value)}
+                            />
+                            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Frase para dirigir al cliente a atención al cliente *</p>
+                            <CustomInput value={this.state.messageText} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText="Te pasaremos con atencion al cliente" onChange={(value) => this.handleTextChange(value)}/>
+                        </div>
                     </div>
-                    
-                    <div style={styles.controls}>
-                        <CustomSelect
-                        width="180px"
-                            height='45px'
-                            options={dropdownItems}
-                            onChange={(value) => {this.handleUserChange(value.value)}}
-                            value={dropdownItems.find(x => x.value == this.state.selectedUser)}
-                            isSearchable={false}
-                        />
-                        <CustomButton text="Agregar Mensaje"  width="150px" height="45px" classStyle='btnGreen' onClickCallback={this.handleAddMessage}/>
-                        <CustomButton text="Limpiar Conversacion"  width="200px" height="45px" classStyle='btnRed' onClickCallback={this.handleClearConversation}/>
+                    <div className="col-6">
+                        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Parametros Opcionales</p>
+                        <div style={styles.controls}>
+                            <div style={{flexGrow: 0}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text="Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente" explinationText={explanationText} onChange={this.handleGlobalBlock} value={this.state.isGloballyBlocked}/></div>
+                        </div>
                     </div>
-                    <CustomTextArea value={this.state.messageText} noPadding={false} width='600px' height='250px' dataType="text" placeHolderText="Texto de Mensaje" onChange={(value) => this.handleTextChange(value)}/>
                 </div>
             </div>
         );
@@ -186,7 +185,7 @@ const styles = {
     controls: {
         display: 'flex',
         gap: '10px',
-        marginBottom: '15px'
+        marginTop: '15px'
     },
     select: {
         padding: '8px',
@@ -227,4 +226,4 @@ const styles = {
     },
 };
 
-export default CreateExampleConversationScreen;
+export default BotConfigurationScreen;

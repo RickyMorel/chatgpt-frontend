@@ -28,7 +28,7 @@ class CustomToggle extends Component {
     }
 
     render() {
-      const { text, value, onChange, width, height, explinationText } = this.props;
+      const { text, value, onChange, width, height, explinationText, explinationPopupWidth, explinationPopupHeight } = this.props;
 
       return (
         <>
@@ -68,7 +68,7 @@ class CustomToggle extends Component {
             </label>
           </div>
 
-          {this.state.showHint ? <ExplinationPopup text={explinationText} /> : null}
+          {this.state.showHint ? <ExplinationPopup width={explinationPopupWidth} height={explinationPopupHeight} text={explinationText} /> : null}
         </>
       );
   }
