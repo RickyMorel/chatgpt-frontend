@@ -26,6 +26,7 @@ import ClientCartScreen from './ClientOrderPlacing/ClientCartScreen';
 import CreateExampleConversationScreen from './ExampleConversations/CreateExampleConversationScreen';
 import HttpRequest from './HttpRequest';
 import BotConfigurationScreen from './BotConfiguration/BotConfigurationScreen';
+import ExampleConversationsScreen from './ExampleConversations/ExampleConversationsScreen';
 
 class App extends Component {
   constructor(props) {
@@ -201,6 +202,13 @@ class App extends Component {
               render={(props) => (
                 <div style={{margin: '15px'}}>
                   <CreateExampleConversationScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
+                </div>
+              )} 
+            />
+            <Route exact path="/exampleConversations" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <ExampleConversationsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />

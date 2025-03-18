@@ -101,7 +101,7 @@ class BotConfigurationScreen extends Component {
             <div>
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Configuración IA</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={'Conversaciones Ejemplo'} width="252px" height="45px" icon={faComments} link='createExampleConversation'/></div>
+                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={'Conversaciones Ejemplo'} width="252px" height="45px" icon={faComments} link='exampleConversations'/></div>
                     <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={'Preguntas Frecuentes'} icon={faQuestion} link="inventory"/></div>
                     <div className="col-10"></div>
                 </div>
