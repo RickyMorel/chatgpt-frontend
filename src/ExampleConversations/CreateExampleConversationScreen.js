@@ -19,13 +19,39 @@ class CreateExampleConversationScreen extends Component {
             selectedUser: 'Cliente',
             messageText: '',
             nextId: 1,
-            isCreateItem: true
+            isCreateExample: true,
         };
 
         this.handleUserChange = this.handleUserChange.bind(this);
         this.handleTextChange = this.handleTextChange.bind(this);
         this.handleAddMessage = this.handleAddMessage.bind(this);
         this.handleClearConversation = this.handleClearConversation.bind(this);
+    }
+
+    componentDidMount() {
+        const exampleData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
+
+        this.setState({
+            messages: exampleData ? this.formatMessages([...exampleData.correctedChat]) : [],
+            isCreateExample: exampleData == undefined,
+            nextId: exampleData?.length ?? 1
+        })
+    }
+
+    formatMessages(dbMessages) {
+        let formattedMessages = []
+        let nextId = 0
+        dbMessages.forEach(message => {
+            const newMessage = {
+                id: nextId,
+                sender: message.role == "user" ? "Cliente" : "IA",
+                text: message.content
+            };
+            nextId++
+            formattedMessages.push(newMessage)
+        });
+
+        return formattedMessages
     }
 
     handleUserChange(value) {
