@@ -1,18 +1,18 @@
+import { faClose } from '@fortawesome/free-solid-svg-icons';
 import React, { Component } from 'react';
-import { Circles, ColorRing, RotatingSquare } from 'react-loader-spinner';
+import { ColorRing } from 'react-loader-spinner';
 import { ColorHex } from './Colors';
-import axios from 'axios';
-import { QRCodeCanvas } from 'qrcode.react';
 import CssProperties from './CssProperties';
 import HttpRequest from './HttpRequest';
-import Utils from './Utils';
+import CustomButton from './Searchbar/CustomButton';
 
 class QrCodeScreen extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      qr: null
+      qr: null,
+      tempClose: false
     };
 
     this.intervalId = null
@@ -36,18 +36,9 @@ class QrCodeScreen extends Component {
 
       const newInstanceResponse = await this.ReInitInstance();
 
-      // const response = await HttpRequest.get(`/whatsapp/getInstanceQR`);
-      // console.log("Get new QR", response)
-
-      // if(response.data.qrcode.length < 3) {
-      //   // setTimeout(() => {
-      //   //   this.GetInstanceQR(); 
-      //   // }, 4000); 
-      //   return; 
-      // }
-
       this.setState({
-        qr: newInstanceResponse.qrcode
+        qr: newInstanceResponse.qrcode,
+        tempClose: false
       })
     } catch (error) {
       console.log("error", error)
@@ -130,8 +121,18 @@ class QrCodeScreen extends Component {
     console.log("QR CODE", this.state.qr)
     
     
-    return (
+    return this.state.tempClose ?
+        <></>
+        :
         <div style={overlayStyles}>
+          <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+            <CustomButton
+              width="45px"
+              height="45px"
+              icon={faClose}
+              onClickCallback={() => {this.setState({tempClose: true})}}
+            />
+          </div>
           {
             status == "loading" ?
             loadingHtml
@@ -139,7 +140,6 @@ class QrCodeScreen extends Component {
             scanQrHtml
           }
         </div>
-    );
   }
 }
 

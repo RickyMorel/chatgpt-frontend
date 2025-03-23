@@ -215,13 +215,13 @@ class InventoryScreen extends Component {
         let reccomendedItems = this.state.productReccomendations.find(x => x.itemCode == item.code)?.reccomendedItemCodes
         
         if(!this.state.hasShownPromoPopup) {
-            this.props.showPopup_2_Buttons(
-                "Promociones Recomendados",
-                `Elegiste poner “${item.name}” de promoción. Recomendamos poner los siguientes items en promoción tambien.`,
-                "Te gustaria poner estos items de promoción?",
-                [item.name, ...reccomendedItems.map(x => this.state.products.find(y => y.code == x).name)].slice(0, 3),
-                () => this.handleSelectPromoItem(item, true),
-            )
+            // this.props.showPopup_2_Buttons(
+            //     "Promociones Recomendados",
+            //     `Elegiste poner “${item.name}” de promoción. Recomendamos poner los siguientes items en promoción tambien.`,
+            //     "Te gustaria poner estos items de promoción?",
+            //     [item.name, ...reccomendedItems.map(x => this.state.products.find(y => y.code == x).name)].slice(0, 3),
+            //     () => this.handleSelectPromoItem(item, true),
+            // )
 
             this.setState({ hasShownPromoPopup: true })
         }
@@ -266,6 +266,7 @@ class InventoryScreen extends Component {
     }
 
     saveDailyInventories = async () => {
+        console.log("saveDailyInventories")
         if(this.state.selectedDayInventory?.items?.length < 5) {this.props.showPopup(new Error("Cargar al menos 5 productos!")); return;}
         if(this.state.promoItemCodes.length < 3) {this.props.showPopup(new Error("Hace falta marcar 3 productos especiales!")); return;}
 
