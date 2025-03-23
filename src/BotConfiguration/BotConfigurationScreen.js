@@ -19,6 +19,7 @@ class BotConfigurationScreen extends Component {
             aiRoleFrase: '',
             companyDescriptionFrase: '',
             customerServiceFrase: '',
+            permanentlyBlockClientsAfterCustomerService: false,
             needsToSave: false
         };
     }
@@ -35,7 +36,8 @@ class BotConfigurationScreen extends Component {
                 botNumber: response.data.botNumber,
                 aiRoleFrase: response.data.aiRoleFrase,
                 companyDescriptionFrase: response.data.companyDescriptionFrase,
-                customerServicePhrase: response.data.customerServiceFrase
+                customerServicePhrase: response.data.customerServiceFrase,
+                permanentlyBlockClientsAfterCustomerService: response.data.permanentlyBlockClientsAfterCustomerService
             })
         } catch (error) {}
       }
@@ -50,12 +52,15 @@ class BotConfigurationScreen extends Component {
     handleSave = async () => {
         this.props.setIsLoading(true)
 
+        console.log("handleSave globalConfig", this.state)
+
         try {
             const response = await HttpRequest.put(`/global-config`, {
                 botNumber: this.state.botNumber,
                 aiRoleFrase: this.state.aiRoleFrase,
                 companyDescriptionFrase: this.state.companyDescriptionFrase,
-                customerServicePhrase: this.state.customerServiceFrase
+                customerServicePhrase: this.state.customerServiceFrase,
+                permanentlyBlockClientsAfterCustomerService: this.state.permanentlyBlockClientsAfterCustomerService
             });
             this.setState({needsToSave: false})
           } catch (error) {
@@ -116,7 +121,7 @@ class BotConfigurationScreen extends Component {
                     <div className="col-6">
                         <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Parametros Opcionales</p>
                         <div style={styles.controls}>
-                            <div style={{flexGrow: 0}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text="Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente" explinationText={explanationText} onChange={this.handleGlobalBlock} value={this.state.isGloballyBlocked}/></div>
+                            <div style={{flexGrow: 0}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text="Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente" explinationText={explanationText} onChange={(e) => this.handleValueChange("permanentlyBlockClientsAfterCustomerService", e.target.checked)} value={this.state.permanentlyBlockClientsAfterCustomerService}/></div>
                         </div>
                     </div>
                 </div>
