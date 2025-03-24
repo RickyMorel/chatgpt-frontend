@@ -208,7 +208,7 @@ class App extends Component {
             <Route exact path="/exampleConversations" 
               render={(props) => (
                 <div style={{margin: '15px'}}>
-                  <ExampleConversationsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
+                  <ExampleConversationsScreen showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />

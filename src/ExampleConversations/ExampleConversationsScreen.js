@@ -34,12 +34,46 @@ class ExampleConversationsScreen extends Component {
     }
   };
 
+  openDeleteExamplePopup = (creationDate) => {
+    console.log("openDeleteExamplePopup", creationDate)
+      this.props.showPopup_2_Buttons(
+        "Eliminar Ejemplo",
+        `Estas seguro que queres eliminar este ejemplo?`,
+        " ",
+        [],
+        () => this.deleteExample(creationDate),
+        undefined,
+        "Cancelar",
+        "Confirmar"
+    )
+  }
+
+  deleteExample = async (creationDate) => {
+    this.props.setIsLoading(true)
+
+    try {
+        const response = await HttpRequest.put(`/self-learn/delete`, {
+          creationDate: new Date(creationDate).toISOString()
+        });
+        let updatedExamples = [...this.state.examples]
+        updatedExamples = updatedExamples.filter(x => x.creationDate != creationDate)
+        console.log("updatedExamples", updatedExamples)
+        this.setState({examples: [...updatedExamples]})
+      } catch (error) {
+        console.log("ERROR", error)
+        this.props.showPopup(new Error("No se eliminar el ejemplo"));
+      }
+
+    this.props.setIsLoading(false)
+}
+
   render() {
     const allExamplesList = this.state.examples?.map(x => {
         return(
             <ExampleConversationComponent 
                 key={x.creationDate}
                 example={x}
+                deleteCallback={this.openDeleteExamplePopup}
             />
         )
     });
@@ -49,7 +83,7 @@ class ExampleConversationsScreen extends Component {
             <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Conversaciones Ejemplo</p>
 
             <div style={{display: 'flex'}}>
-                <div class="flex-grow-1"><StatCard title="Ejemplos" amountColor={ColorHex.TextBody} amountFunction={() => 25}/></div>
+                <div class="flex-grow-1"><StatCard title="Ejemplos" amountColor={ColorHex.TextBody} amountFunction={() => this.state.examples.length}/></div>
                 <div className="col-11"></div>
             </div>
 

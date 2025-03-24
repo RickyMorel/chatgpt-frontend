@@ -4,10 +4,11 @@ import { ColorHex } from '../Colors';
 import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import CustomButton from '../Searchbar/CustomButton';
 import Utils from '../Utils';
+import { faDeleteLeft, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 class ExampleConversationComponent extends Component {
     render() {
-        const { example } = this.props;
+        const { example, deleteCallback } = this.props;
 
         return (
         <div className="row" style={trStyle}>
@@ -20,8 +21,9 @@ class ExampleConversationComponent extends Component {
             <div className="col-2">
                 <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginTop: '12px'}}>{Utils.formatDate(example.creationDate)}</p>
             </div>
-            <div className="col-1">
+            <div className="col-1" style={{display: 'flex', gap: '10px'}}>
                 <CustomButton iconSize="25px" width='40px' height="40px" icon={faPenToSquare} link="createExampleConversation" linkData={example}/>
+                <CustomButton iconSize="25px" width='40px' height="40px" icon={faTrash} classStyle="btnRed" onClickCallback={() => deleteCallback(example.creationDate)}/>
             </div> 
         </div>
         );
