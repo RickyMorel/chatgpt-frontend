@@ -18,8 +18,10 @@ class CreateExampleConversationScreen extends Component {
             messages: [],
             selectedUser: 'Cliente',
             messageText: '',
+            creationDate: new Date(),
             nextId: 1,
             isCreateExample: true,
+            editingId: null, // New state for tracking edits
         };
 
         this.handleUserChange = this.handleUserChange.bind(this);
@@ -33,6 +35,7 @@ class CreateExampleConversationScreen extends Component {
 
         this.setState({
             messages: exampleData ? this.formatMessages([...exampleData.correctedChat]) : [],
+            creationDate: exampleData ? exampleData.creationDate : new Date(),
             isCreateExample: exampleData == undefined,
             nextId: exampleData?.length ?? 1
         })
@@ -59,29 +62,65 @@ class CreateExampleConversationScreen extends Component {
     }
 
     handleTextChange(value) {
+        if(value.length)
         this.setState({ messageText: value });
     }
 
     handleAddMessage() {
         if (!this.state.messageText) return;
 
-        const newMessage = {
-            id: this.state.nextId,
-            sender: this.state.selectedUser,
-            text: this.state.messageText
-        };
+        if (this.state.editingId !== null) {
+            // Update existing message
+            const updatedMessages = this.state.messages.map(message => {
+                if (message.id === this.state.editingId) {
+                    return {
+                        ...message,
+                        sender: this.state.selectedUser,
+                        text: this.state.messageText
+                    };
+                }
+                return message;
+            });
 
-        this.setState(prevState => ({
-            messages: [...prevState.messages, newMessage],
-            messageText: '',
-            nextId: prevState.nextId + 1,
-            selectedUser: prevState.selectedUser == "Cliente" ? "IA" : "Cliente"
-        }));
+            this.setState(prevState => ({
+                messages: updatedMessages,
+                messageText: '',
+                selectedUser: prevState.selectedUser === "Cliente" ? "IA" : "Cliente",
+                editingId: null
+            }));
+        } else {
+            // Add new message
+            const newMessage = {
+                id: this.state.nextId,
+                sender: this.state.selectedUser,
+                text: this.state.messageText
+            };
+
+            this.setState(prevState => ({
+                messages: [...prevState.messages, newMessage],
+                messageText: '',
+                nextId: prevState.nextId + 1,
+                selectedUser: prevState.selectedUser === "Cliente" ? "IA" : "Cliente"
+            }));
+        }
     }
 
     handleClearConversation() {
-        this.setState({ messages: [], nextId: 1, selectedUser: 'Cliente' });
+        this.setState({ 
+            messages: [], 
+            nextId: 1, 
+            selectedUser: 'Cliente',
+            editingId: null 
+        });
     }
+
+    handleEditMessage = (message) => {
+        this.setState({
+            editingId: message.id,
+            selectedUser: message.sender,
+            messageText: message.text
+        });
+    };
 
     handleRemoveMessage = (id) => {
         this.setState(prevState => ({
@@ -102,12 +141,17 @@ class CreateExampleConversationScreen extends Component {
                 const response = await HttpRequest.post(`/self-learn/create`, {
                     chat: formattedMessages,
                     wasGoodResponse: true,
-                    correctedChat: formattedMessages
+                    correctedChat: formattedMessages,
+                    creationDate: this.state.creationDate
                 });
             } else {
-
+                console.log("creationDate for update", new Date(this.state.creationDate).toISOString())
+                const response = await HttpRequest.put(`/self-learn/update`, {
+                    correctedChat: formattedMessages,
+                    creationDate: new Date(this.state.creationDate).toISOString()
+                });
+                this.props.history.goBack()
             }
-           // this.props.history.goBack()
            this.handleClearConversation()
           } catch (error) {
             console.log("ERROR", error)
@@ -143,7 +187,10 @@ class CreateExampleConversationScreen extends Component {
                             >
                                 <div style={styles.messageHeader}>
                                     <span style={styles.senderName}>{message.sender}</span>
-                                    <div><CustomButton icon={faRectangleXmark} width="20px" height="20px" iconSize="20px" classStyle='btnRed' onClickCallback={() => this.handleRemoveMessage(message.id)}/></div>
+                                    <div style={{display: 'flex', marginLeft: 'auto', gap: '10px' }}>
+                                        <div><CustomButton icon={faPenToSquare} width="20px" height="20px" iconSize="20px" onClickCallback={() => this.handleEditMessage(message)}/></div>
+                                        <div><CustomButton icon={faRectangleXmark} width="20px" height="20px" iconSize="20px" classStyle='btnRed' onClickCallback={() => this.handleRemoveMessage(message.id)}/></div>
+                                    </div>
                                 </div>
                                 <div style={styles.messageText}>{message.text}</div>
                             </div>
@@ -159,10 +206,36 @@ class CreateExampleConversationScreen extends Component {
                             value={dropdownItems.find(x => x.value == this.state.selectedUser)}
                             isSearchable={false}
                         />
-                        <CustomButton text="Agregar Mensaje"  width="150px" height="45px" classStyle='btnGreen' onClickCallback={this.handleAddMessage}/>
+                        <CustomButton 
+                            text={this.state.editingId !== null ? 'Guardar Cambios' : 'Agregar Mensaje'} 
+                            width="150px" 
+                            height="45px" 
+                            classStyle={this.state.editingId !== null ? 'btnGreen-clicked' : 'btnGreen'}
+                            onClickCallback={this.handleAddMessage}
+                        />
+                        {
+                            this.state.editingId ?
+                                <CustomButton 
+                                    text="Cancelar Edicion" 
+                                    width="150px" 
+                                    height="45px" 
+                                    classStyle={'btnRed-clicked'}
+                                    onClickCallback={() => this.setState({editingId: null, messageText: ''})}
+                                />
+                            :
+                                <></>
+                        }
                         <CustomButton text="Limpiar Conversacion"  width="200px" height="45px" classStyle='btnRed' onClickCallback={this.handleClearConversation}/>
                     </div>
-                    <CustomTextArea value={this.state.messageText} noPadding={false} width='600px' height='250px' dataType="text" placeHolderText="Texto de Mensaje" onChange={(value) => this.handleTextChange(value)}/>
+                    <CustomTextArea 
+                        value={this.state.messageText} 
+                        noPadding={false} 
+                        width='600px' 
+                        height='250px' 
+                        dataType="text" 
+                        placeHolderText="Texto de Mensaje" 
+                        onChange={(value) => this.handleTextChange(value)}
+                    />
                 </div>
             </div>
         );
@@ -201,7 +274,6 @@ const styles = {
         marginBottom: '5px',
         fontSize: '0.9em',
         display: 'flex',
-        justifyContent: 'space-between'
     },
     senderName: {
         fontWeight: 'bold'
