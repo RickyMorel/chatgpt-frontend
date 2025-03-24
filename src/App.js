@@ -27,6 +27,8 @@ import CreateExampleConversationScreen from './ExampleConversations/CreateExampl
 import HttpRequest from './HttpRequest';
 import BotConfigurationScreen from './BotConfiguration/BotConfigurationScreen';
 import ExampleConversationsScreen from './ExampleConversations/ExampleConversationsScreen';
+import QuestionsAndAnswersScreen from './QuestionsAndAnswers/QuestionsAndAnswersScreen';
+import CreateQuestionAndAnswerScreen from './QuestionsAndAnswers/CreateQuestionAndAnswerScreen';
 
 class App extends Component {
   constructor(props) {
@@ -220,6 +222,20 @@ class App extends Component {
               render={(props) => (
                 <div style={{margin: '15px'}}>
                   <ExampleConversationsScreen showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} {...props}/>
+                </div>
+              )} 
+            />
+            <Route exact path="/questionsAndAnswers" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <QuestionsAndAnswersScreen showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} {...props}/>
+                </div>
+              )} 
+            />
+            <Route exact path="/createQuestionAndAnswer" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <CreateQuestionAndAnswerScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />
