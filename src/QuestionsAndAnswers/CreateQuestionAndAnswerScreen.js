@@ -10,6 +10,7 @@ import { faPenToSquare, faRectangleXmark, faSquarePlus } from '@fortawesome/free
 import axios from 'axios';
 import HttpRequest from '../HttpRequest';
 import CustomTextArea from '../Searchbar/CustomTextArea';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 
 class CreateQuestionAndAnswerScreen extends Component {
     constructor(props) {
@@ -18,6 +19,8 @@ class CreateQuestionAndAnswerScreen extends Component {
             question: '',
             answer: '',
             isCreateExample: true,
+            exampleQuestion: '',
+            exampleAnswer: ''
         };
     }
 
@@ -30,7 +33,23 @@ class CreateQuestionAndAnswerScreen extends Component {
             creationDate: exampleData ? exampleData.creationDate : new Date(),
             isCreateExample: exampleData == undefined,
         })
+
+        this.fetchExample()
     }
+
+    fetchExample = async () => {
+        try {
+          const response = await HttpRequest.get(`/questions-and-answers/example`);
+    
+          this.setState({
+            exampleQuestion: response.data.question,
+            exampleAnswer: response.data.answer
+          })
+        } catch (error) {
+          console.log("error", error)
+          return error
+        }
+      };
 
     handleValueChange(property, value) {
         this.setState({ [property]: value });
@@ -69,10 +88,11 @@ class CreateQuestionAndAnswerScreen extends Component {
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
                     <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Crear Pregunta' : 'Editar Pregunta'} classStyle="btnGreen" width="182px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
                     <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="questionsAndAnswers"/></div>
-                    <div className="col-10"></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text='Ver Otro Ejemplo' icon={faRotateRight} onClickCallback={this.fetchExample}/></div>
+                    <div className="col-9"></div>
                 </div>
                 <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Pregunta *</p>
-                <CustomInput value={this.state.question} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText="Ej: Cuando abren la tienda?" onChange={(value) => this.handleValueChange("question", value)}/>
+                <CustomInput value={this.state.question} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText={`Ej: ${this.state.exampleQuestion}`} onChange={(value) => this.handleValueChange("question", value)}/>
                 <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Respuesta *</p>
                 <CustomTextArea 
                     value={this.state.answer} 
@@ -80,7 +100,7 @@ class CreateQuestionAndAnswerScreen extends Component {
                     width='600px' 
                     height='250px' 
                     dataType="text" 
-                    placeHolderText="Ej: Nosotros abrimos desde las 9:00 hasta las 17:00" 
+                    placeHolderText={`Ej: ${this.state.exampleAnswer}`}
                     onChange={(value) => this.handleValueChange("answer", value)}
                 />
                 {/* <CustomInput value={this.state.answer} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText="Ej: Nosotros abrimos desde las 9:00 hasta las 17:00" onChange={(value) => this.handleValueChange("answer", value)}/> */}

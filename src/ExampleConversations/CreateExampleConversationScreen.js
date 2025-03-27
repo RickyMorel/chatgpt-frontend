@@ -10,12 +10,14 @@ import { faPenToSquare, faRectangleXmark, faSquarePlus } from '@fortawesome/free
 import axios from 'axios';
 import HttpRequest from '../HttpRequest';
 import CustomTextArea from '../Searchbar/CustomTextArea';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 
 class CreateExampleConversationScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
             messages: [],
+            exampleMessages: [],
             selectedUser: 'Cliente',
             messageText: '',
             creationDate: new Date(),
@@ -39,7 +41,25 @@ class CreateExampleConversationScreen extends Component {
             isCreateExample: exampleData == undefined,
             nextId: exampleData?.length ?? 1
         })
+
+        this.fetchExample()
     }
+
+    fetchExample = async () => {
+        try {
+          this.props.setIsLoading(true)
+          const response = await HttpRequest.get(`/self-learn/example`);
+          const formattedExamples = this.formatMessages(response.data.correctedChat)
+    
+          this.setState({
+            exampleMessages: [...formattedExamples]
+          })
+          this.props.setIsLoading(false)
+        } catch (error) {
+          console.log("error", error)
+          return error
+        }
+    };
 
     formatMessages(dbMessages) {
         let formattedMessages = []
@@ -160,6 +180,32 @@ class CreateExampleConversationScreen extends Component {
         this.props.setIsLoading(false)
     }
 
+    messageElement = (message, isExample) => {
+        return (
+            <div 
+                key={message.id}
+                style={{
+                    ...messageBubbleStyle(this.state.messages.length < 1),
+                    ...(message.sender === 'Cliente' ? styles.user1 : styles.user2)
+                }}
+            >
+                <div style={styles.messageHeader}>
+                    <span style={styles.senderName}>{message.sender}</span>
+                    {
+                        isExample ?
+                        <></>
+                        :
+                        <div style={{display: 'flex', marginLeft: 'auto', gap: '10px' }}>
+                            <div><CustomButton icon={faPenToSquare} width="20px" height="20px" iconSize="20px" onClickCallback={() => this.handleEditMessage(message)}/></div>
+                            <div><CustomButton icon={faRectangleXmark} width="20px" height="20px" iconSize="20px" classStyle='btnRed' onClickCallback={() => this.handleRemoveMessage(message.id)}/></div>
+                        </div>
+                    }
+                </div>
+                <div style={styles.messageText}>{message.text}</div>
+            </div>
+        )
+    }
+
     render() {
         const dropdownItems = [
             {value: "Cliente", label: "Cliente"},
@@ -171,29 +217,22 @@ class CreateExampleConversationScreen extends Component {
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
                     <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Crear Ejemplo' : 'Editar Ejemplo'} classStyle="btnGreen" width="182px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
                     <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="exampleConversations"/></div>
-                    <div className="col-10"></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text='Ver Otro Ejemplo' icon={faRotateRight} onClickCallback={this.fetchExample}/></div>
+                    <div className="col-9"></div>
                 </div>
                 <div style={styles.container}>
                     <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>Conversacion</p>
                     <div style={styles.chatWindow}>
-                        {this.state.messages.map(message => (
-                            <div 
-                                key={message.id}
-                                style={{
-                                    ...styles.messageBubble,
-                                    ...(message.sender === 'Cliente' ? styles.user1 : styles.user2)
-                                }}
-                            >
-                                <div style={styles.messageHeader}>
-                                    <span style={styles.senderName}>{message.sender}</span>
-                                    <div style={{display: 'flex', marginLeft: 'auto', gap: '10px' }}>
-                                        <div><CustomButton icon={faPenToSquare} width="20px" height="20px" iconSize="20px" onClickCallback={() => this.handleEditMessage(message)}/></div>
-                                        <div><CustomButton icon={faRectangleXmark} width="20px" height="20px" iconSize="20px" classStyle='btnRed' onClickCallback={() => this.handleRemoveMessage(message.id)}/></div>
-                                    </div>
-                                </div>
-                                <div style={styles.messageText}>{message.text}</div>
-                            </div>
-                        ))}
+                        {
+                            this.state.messages.length > 0 ?
+                            this.state.messages.map(message => (
+                                this.messageElement(message, false)
+                            ))
+                            :
+                            this.state.exampleMessages.map(exampleMessage => (
+                                this.messageElement(exampleMessage, true)
+                            ))
+                        }
                     </div>
                     
                     <div style={styles.controls}>
@@ -241,6 +280,16 @@ class CreateExampleConversationScreen extends Component {
     }
 }
 
+const messageBubbleStyle = (isExample) => {
+    return {
+        padding: '10px 15px',
+        borderRadius: '15px',
+        marginBottom: '10px',
+        maxWidth: '70%',
+        opacity: isExample ? '0.5' : '1'
+    }
+}
+
 const styles = {
     container: {
         paddingTop: '20px',
@@ -253,12 +302,6 @@ const styles = {
         borderRadius: '8px',
         padding: '20px',
         marginBottom: '20px'
-    },
-    messageBubble: {
-        padding: '10px 15px',
-        borderRadius: '15px',
-        marginBottom: '10px',
-        maxWidth: '70%'
     },
     user1: {
         backgroundColor: '#e0e0e0',
