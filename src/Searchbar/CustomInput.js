@@ -1,9 +1,7 @@
-import React, { Component, useRef } from 'react';
+import React, { Component } from 'react';
+import "react-datepicker/dist/react-datepicker.css";
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
-import { es } from 'date-fns/locale';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
 import Utils from '../Utils';
 
 class CustomInput extends Component {

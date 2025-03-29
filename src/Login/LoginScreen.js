@@ -111,7 +111,7 @@ class LoginScreen extends Component {
             <div style={inputStyling}><CustomButton text="Iniciar Sesión"  width="364px" height="65px" classStyle='btnGreen-clicked' onClickCallback={this.handleLogin}/></div>
             <hr />
             <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, justifySelf: 'center'}}>No tenes una cuenta?</p>
-            <div style={{...inputStyling, marginTop: '15px', justifySelf: 'center'}}><CustomButton text="Crear Cuenta" classStyle='btnGreen'  width="264px" height="65px" onClickCallback={this.handleCreateAccount}/></div>
+            <div style={{...inputStyling, marginTop: '15px', justifySelf: 'center'}}><CustomButton text="Crear Cuenta" classStyle='btnGreen'  width="264px" height="65px" link="createAccount"/></div>
         </div>
       </div>
     );

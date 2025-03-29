@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "emporiotissy2"
-  }
+    "default": "whatsbot-e670a",
+    "whatsbot": "whatsbot-e670a"
+  },
+  "targets": {},
+  "etags": {}
 }

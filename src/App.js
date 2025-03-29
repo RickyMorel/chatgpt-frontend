@@ -29,6 +29,7 @@ import BotConfigurationScreen from './BotConfiguration/BotConfigurationScreen';
 import ExampleConversationsScreen from './ExampleConversations/ExampleConversationsScreen';
 import QuestionsAndAnswersScreen from './QuestionsAndAnswers/QuestionsAndAnswersScreen';
 import CreateQuestionAndAnswerScreen from './QuestionsAndAnswers/CreateQuestionAndAnswerScreen';
+import CreateAccountScreen from './Login/CreateAccountScreen';
 
 class App extends Component {
   constructor(props) {
@@ -177,6 +178,9 @@ class App extends Component {
             </Route>
             <Route exact path="/">
               <div style={{margin: '15px'}}><LoginScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
+            </Route>
+            <Route exact path="/createAccount">
+              <div style={{margin: '15px'}}><CreateAccountScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
             <Route exact path="/clientOrderPlacing">
               <div style={{margin: '15px'}}><ClientOrderPlacingScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
