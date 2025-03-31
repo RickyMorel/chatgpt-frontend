@@ -10,6 +10,7 @@ import CustomSelect from '../Searchbar/CustomSelect';
 import { faFloppyDisk, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import CustomTextArea from '../Searchbar/CustomTextArea';
 import CustomToggle from '../Searchbar/CustomToggle';
+import Utils from '../Utils';
 
 class BotConfigurationScreen extends Component {
     constructor(props) {
@@ -73,7 +74,6 @@ class BotConfigurationScreen extends Component {
     }
 
     render() {
-        const explanationText = `<strong>Caso Bloquear:</strong><br/>En un Instituto de Inglés, se establece que la IA interactúe únicamente en el primer contacto con el cliente. Una vez que el cliente se registra como alumno, la IA deja de responder sus mensajes, bloqueando la conversación.<br/><strong>Caso No Bloquear:</strong><br/>En una panadería o restaurante, se requiere que la IA responda cada vez que el cliente se comunique, proporcionando información como precios o detalles de productos, sin bloquear la conversación.`
         return (
             <div>
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>Configuración IA</p>
@@ -121,7 +121,7 @@ class BotConfigurationScreen extends Component {
                     <div className="col-6">
                         <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Parametros Opcionales</p>
                         <div style={styles.controls}>
-                            <div style={{flexGrow: 0}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text="Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente" explinationText={explanationText} onChange={(e) => this.handleValueChange("permanentlyBlockClientsAfterCustomerService", e.target.checked)} value={this.state.permanentlyBlockClientsAfterCustomerService}/></div>
+                            <div style={{flexGrow: 0}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text="Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente" explinationText={Utils.permanantBlockChatExplanationText} onChange={(e) => this.handleValueChange("permanentlyBlockClientsAfterCustomerService", e.target.checked)} value={this.state.permanentlyBlockClientsAfterCustomerService}/></div>
                         </div>
                     </div>
                 </div>

@@ -48,17 +48,17 @@ function SideNav(props)  {
         return;
     }
 
-    const ref = firestore.collection('globalConfig').doc(String(props.botNumber));
+    // const ref = firestore.collection('globalConfig').doc(String(props.botNumber));
 
-    ref.get()
-      .then((doc) => {
-        const response = doc.data()
-        setMessageCount(response.messageCount)
-        setTotalClientsToMessage(response.totalClientsToMessage)
-      })
-      .catch((error) => {
-        console.error('Error getting document:', error);
-      });
+    // ref.get()
+    //   .then((doc) => {
+    //     const response = doc.data()
+    //     setMessageCount(response.messageCount)
+    //     setTotalClientsToMessage(response.totalClientsToMessage)
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error getting document:', error);
+    //   });
   }
 
   const handleLogOut = () => {

@@ -10,6 +10,7 @@ import Cookies from 'js-cookie';
 import { isMobile, isTablet, isDesktop } from 'react-device-detect';
 import { error } from 'jquery';
 import HttpRequest from '../HttpRequest';
+import { globalEmitter } from '../GlobalEventEmitter';
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -27,10 +28,32 @@ class LoginScreen extends Component {
 
     const token = Cookies.get('token');
 
+    globalEmitter.addEventListener('signedUp', this.handleSignedUp);
+
     if(!token || token.length < 1) { return; }
 
     window.token = token
     this.props.history.push('/blockChats');
+  }
+
+  handleSignedUp() {
+    this.showToastIfCreatedAccount();
+  }
+
+  showToastIfCreatedAccount = () => {
+    toast.success(`Creaste un cuenta!🎉🎉. Ahora solo falta iniciar session`, {
+      style: {
+          backgroundColor: ColorHex.GreenDark_1,
+          color: '#fff',
+          fontWeight: 'bold',
+          padding: '10px',
+      },
+      progressStyle: {
+          backgroundColor: '#fff',
+      },
+      autoClose: 5000,
+      icon: false
+    });
   }
 
   handleLogin = async () => {
@@ -41,6 +64,7 @@ class LoginScreen extends Component {
         window.token = response.data.token
         this.props.history.push('/blockChats');
         this.setState({ error: '' })
+        globalEmitter.emit('loggedIn');
     } catch(err) {
       this.setState({
         error: err?.response?.data?.message ?? 'Server Error'
@@ -53,22 +77,6 @@ class LoginScreen extends Component {
     this.setState({
         [name]: value
     })
-  }
-
-  handleCreateAccount = () => {
-    toast.success("Contacte con tu proveedor del servicio para que te cree una cuenta", {
-        style: {
-            backgroundColor: ColorHex.GreenDark_1,
-            color: '#fff',
-            fontWeight: 'bold',
-            padding: '10px',
-        },
-        progressStyle: {
-            backgroundColor: '#fff',
-        },
-        autoClose: 5000,
-        icon: false
-    });
   }
 
   getErrorMessage = () => {

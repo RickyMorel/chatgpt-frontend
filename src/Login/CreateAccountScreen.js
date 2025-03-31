@@ -9,6 +9,10 @@ import HttpRequest from '../HttpRequest';
 import CustomButton from '../Searchbar/CustomButton';
 import CustomInput from '../Searchbar/CustomInput';
 import CountryDropdown from '../Searchbar/CountryDropdown';
+import CustomToggle from '../Searchbar/CustomToggle';
+import Utils from '../Utils';
+import CustomTextArea from '../Searchbar/CustomTextArea';
+import { globalEmitter } from '../GlobalEventEmitter';
 
 class CreateAccountScreen extends Component {
   constructor(props) {
@@ -16,18 +20,22 @@ class CreateAccountScreen extends Component {
   
       this.state = {
         currentStep: 1,
-        name: '',
+        name: ' ',
         email: '',
         password: '',
-        countryCode: '+595', // New state for country code
-        nationalNumber: '', // Changed from phoneNumber
+        usesInventory: true,
+        permanentlyBlockClientsAfterCustomerService: false,
+        aiRoleFrase: '',
+        companyDescriptionFrase: '',
+        countryCode: '595',
+        nationalNumber: '',
         error: ''
       }
   }
 
-  nextStep = () => {
+  nextStep = async () => {
     const { currentStep } = this.state;
-    if (this.validateStep(currentStep)) {
+    if (await this.validateStep(currentStep)) {
       this.setState({ 
         currentStep: currentStep + 1,
         error: '' 
@@ -43,52 +51,87 @@ class CreateAccountScreen extends Component {
     });
   }
 
-  validateStep = (step) => {
-    const { name, email, password, nationalNumber  } = this.state;
+  validateStep = async (step) => {
+    const { name, email, password, nationalNumber, aiRoleFrase, companyDescriptionFrase  } = this.state;
+    console.log("validateStep", step)
     switch(step) {
       case 1:
-        if (!name.trim()) {
-          this.setState({ error: 'Por favor ingresa tu nombre' });
-          return false;
-        }
-        return true;
-      case 2:
         if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
           this.setState({ error: 'Correo electrónico inválido' });
           return false;
         }
-        if (!password.match(/^(?=.*\d)(?=.*[A-Z]).{6,}$/)) {
+        else if (!password.match(/^(?=.*\d)(?=.*[A-Z]).{6,}$/)) {
           this.setState({ error: 'La contraseña debe tener al menos 6 caracteres, 1 número y 1 mayúscula' });
           return false;
         }
+        else if(await this.configWithEmailAlreadyExists()) {
+          this.setState({ error: 'Ya existe un usuario con este correo' });
+          return false;
+        }
         return true;
-        case 3:
-            if (!nationalNumber.match(/^\d{10}$/)) {
-                this.setState({ error: 'Número de teléfono inválido (10 dígitos)' });
-                return false;
-            }
-            return true;
+      case 2:
+        if (nationalNumber.length != 9) {
+          this.setState({ error: 'Numero invalido' });
+          return false;
+        }
+        else if(await this.configWithNumberAlreadyExists()) {
+          this.setState({ error: 'Numero ya exitse' });
+          return false;
+        }
+        else {
+          console.log("VALIDATE STEP 2 TRUE")
+          return true;
+        }
+      case 3:
+        if (aiRoleFrase.length < 20) {
+            this.setState({ error: 'La descripcion del rol de la IA debe tener al menos 2 oraciones' });
+            return false;
+        }
+        if (companyDescriptionFrase.length < 10) {
+          this.setState({ error: 'La descripcion de tu empresa debe tener al menos 1 oracion' });
+          return false;
+        }
+        return true;
       default:
         return true;
     }
   }
 
-  handleCreateAccount = async () => {
-    if (!this.validateStep(3)) return;
-    
+  configWithEmailAlreadyExists = async () => {
+    try {
+      const response = await HttpRequest.get(`/global-config/exists?email=${this.state.email}`, true);
+      console.log("user logged in", response.data)
+      return response.data
+    } catch(err) {}
+  }
+
+  configWithNumberAlreadyExists = async () => {
+    console.log("configWithNumberAlreadyExists", this.state.countryCode)
+    try {
+      const number = this.state.countryCode.toString().replaceAll("+", "") + this.state.nationalNumber
+      console.log("number", number)
+      const response = await HttpRequest.get(`/global-config/exists?phoneNumber=${number}`, true);
+      console.log("user logged in", number, response.data)
+      return response.data
+    } catch(err) { console.log("configWithNumberAlreadyExists ERROR", err)}
+  }
+
+  handleCreateAccount = async () => {    
     try {
         const response = await HttpRequest.post('/auth/signup', 
         {
             name: this.state.name,
             email: this.state.email,
             password: this.state.password,
-            botNumber: this.state.countryCode + this.state.nationalNumber,
+            botNumber: this.state.countryCode.replaceAll("+", "") + this.state.nationalNumber,
+            usesInventory: this.state.usesInventory,
+            permanentlyBlockClientsAfterCustomerService: this.state.permanentlyBlockClientsAfterCustomerService,
+            aiRoleFrase: this.state.aiRoleFrase,
+            companyDescriptionFrase: this.state.companyDescriptionFrase,
             role: 'manager'
         }, true);
-        Cookies.set('token', response.data.token, { secure: true, sameSite: 'Strict' });
-        window.token = response.data.token
-        this.props.history.push('/blockChats');
-        this.setState({ error: '' })
+        this.props.history.push('/');
+        globalEmitter.emit('signedUp');   
     } catch(err) {
       this.setState({
         error: err?.response?.data?.message ?? 'Error del servidor'
@@ -107,22 +150,59 @@ class CreateAccountScreen extends Component {
     const { error, countryCode, nationalNumber } = this.state;
     
     return (
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-        <div style={{ position: 'relative' }}>
-          <CountryDropdown OnChange={(value) => this.setState({countryCode: value})}/>
+      <>
+        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Número que usará WhatsBot para responder</p>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <div style={{ position: 'relative' }}>
+            <CountryDropdown value={this.state?.countryCode} OnChange={(value) => this.setState({countryCode: value?.code})}/>
+          </div>
+          
+          <CustomInput 
+            hasError={error.includes('teléfono')}
+            width='264px'
+            height='65px'
+            dataType="tel" 
+            placeHolderText="971602289" 
+            value={nationalNumber}
+            onChange={(value) => this.handleChangeData('nationalNumber', value)}
+          />
         </div>
-        
-        <CustomInput 
-          hasError={error.includes('teléfono')}
-          width='264px'
-          height='65px'
-          dataType="tel" 
-          placeHolderText="Número de teléfono" 
-          value={nationalNumber}
-          onChange={(value) => this.handleChangeData('nationalNumber', value)}
+      </>
+    );
+  }
+
+  renderBusinessQuestionsInput() {
+    return (
+      <div style={{paddingLeft: '25px'}}>
+        <div style={{marginBottom: '25px'}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"110px"} text={`Usar catalogo de productos y/o servicios`} explinationText={Utils.useInventoryExplinationText} onChange={(e) => this.handleChangeData("usesInventory", e.target.checked)} value={this.state.usesInventory}/></div>
+        <div><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text={`Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente`} explinationText={Utils.permanantBlockChatExplanationText} onChange={(e) => this.handleChangeData("permanentlyBlockClientsAfterCustomerService", e.target.checked)} value={this.state.permanentlyBlockClientsAfterCustomerService}/></div>
+      </div>
+    )
+  }
+
+  renderBusinessDescriptionsInput() {
+    return (
+      <div>
+        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Rol de la IA *</p>
+        <CustomTextArea 
+            value={this.state.aiRoleFrase} 
+            noPadding={false} 
+            width='800px' 
+            height='150px' 
+            placeHolderText="Ej: Eres recepcionista de English Is Easy. Tu trabajo es responder las preguntas de los clientes" 
+            onChange={(value) => this.handleChangeData("aiRoleFrase", value)}
+        />
+        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Descripcion resumida de tu empresa *</p>
+        <CustomTextArea 
+            value={this.state.companyDescriptionFrase} 
+            noPadding={false} 
+            width='800px' 
+            height='200px' 
+            placeHolderText="Ej: English Is Easy es un instituto de aprendizaje de inglés. Se dan ambas clases presenciales como virtuales, en donde tenemos un enfoque en gramatica y pronunciacion" 
+            onChange={(value) => this.handleChangeData("companyDescriptionFrase", value)}
         />
       </div>
-    );
+    )
   }
 
   renderProgressBar() {
@@ -134,7 +214,7 @@ class CreateAccountScreen extends Component {
         width: '80%', 
         margin: '20px 0' 
       }}>
-        {[1, 2, 3].map((step) => (
+        {[1, 2, 3, 4].map((step) => (
           <div key={step} style={{ 
             width: '30px',
             height: '30px',
@@ -147,12 +227,12 @@ class CreateAccountScreen extends Component {
             position: 'relative'
           }}>
             <p style={{...CssProperties.SmallHeaderTextStyle, marginTop: '15px'}}>{currentStep > step ? '✓' : step}</p>
-            {step < 3 && (
+            {step < 4 && (
               <div style={{
                 position: 'absolute',
                 top: '50%',
-                left: 'calc(100% + 15px)',
-                width: '150px',
+                left: 'calc(100%)',
+                width: '90px',
                 height: '2px',
                 backgroundColor: currentStep > step ? ColorHex.GreenDark_1 : ColorHex.BorderColor
               }} />
@@ -163,51 +243,49 @@ class CreateAccountScreen extends Component {
     );
   }
 
+  renderEmailInput = () => {
+    const { currentStep, error, name, email, password, phoneNumber } = this.state;
+
+    return (
+      <>
+        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Correo electrónico *</p>
+        <CustomInput 
+          hasError={error.includes('correo')}
+          width='364px' 
+          height='65px' 
+          dataType="email" 
+          placeHolderText="tuempresa@gmail.com"
+          value={email}
+          onChange={(value) => this.handleChangeData("email", value)}
+        />
+        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Contraseña *</p>
+        <div style={{ marginTop: '25px' }}>
+          <CustomInput 
+            hasError={error.includes('contraseña')}
+            width='364px' 
+            height='65px' 
+            dataType="password" 
+            placeHolderText="Contraseña" 
+            value={password}
+            onChange={(value) => this.handleChangeData("password", value)}
+          />
+        </div>
+      </>
+    );
+  }
+
   renderStep() {
     const { currentStep, error, name, email, password, phoneNumber } = this.state;
     
     switch(currentStep) {
       case 1:
-        return (
-          <>
-            <CustomInput 
-              hasError={error.includes('nombre')}
-              width='364px' 
-              height='65px' 
-              dataType="text" 
-              placeHolderText="Nombre completo"
-              value={name}
-              onChange={(value) => this.handleChangeData("name", value)}
-            />
-          </>
-        );
+        return this.renderEmailInput();
       case 2:
-        return (
-          <>
-            <CustomInput 
-              hasError={error.includes('correo')}
-              width='364px' 
-              height='65px' 
-              dataType="email" 
-              placeHolderText="Correo"
-              value={email}
-              onChange={(value) => this.handleChangeData("email", value)}
-            />
-            <div style={{ marginTop: '25px' }}>
-              <CustomInput 
-                hasError={error.includes('contraseña')}
-                width='364px' 
-                height='65px' 
-                dataType="password" 
-                placeHolderText="Contraseña" 
-                value={password}
-                onChange={(value) => this.handleChangeData("password", value)}
-              />
-            </div>
-          </>
-        );
+        return this.renderPhoneInput()
       case 3:
-        return this.renderPhoneInput();
+        return this.renderBusinessDescriptionsInput();
+      case 4:
+        return this.renderBusinessQuestionsInput();
       default:
         return null;
     }
@@ -215,12 +293,13 @@ class CreateAccountScreen extends Component {
 
   render() {
     const { currentStep, error } = this.state;
-    const isLastStep = currentStep === 3;
+    const isLastStep = currentStep === 4;
 
     const cardStyling = {
-        width: '600px',
-        height: '456px',
-        marginTop: '10px',
+        width: 'auto',
+        height: 'auto',
+        minWidth: '550px',
+        minHeight: '300px',
         alignItems: 'center',
         padding: '15px',
         boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
@@ -243,9 +322,14 @@ class CreateAccountScreen extends Component {
         <div style={cardStyling}>
             {this.renderProgressBar()}
             
-            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, height: '20px', margin: '10px 0'}}>
-              {error}
-            </p>
+            {
+              error.length > 0 ?
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, height: '20px', margin: '10px 0'}}>
+                {error}
+              </p>
+              :
+              <></>
+            }
 
             <div style={{ marginBottom: '25px' }}>
               {this.renderStep()}

@@ -1,17 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import twemoji from 'twemoji';
 import CssProperties from '../CssProperties';
 import { ColorHex } from '../Colors';
 
-const CountryDropdown = ({OnChange}) => {
+const CountryDropdown = ({OnChange, value}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(null);
-
-  const setCountry = (country) => {
-    OnChange(country)
-    setSelectedCountry(country);
-    setIsOpen(false);
-  }
 
   const countries = [
     { code: '+595', flag: '🇵🇾', name: 'Paraguay' },
@@ -22,6 +16,17 @@ const CountryDropdown = ({OnChange}) => {
     { code: '+52', flag: '🇲🇽', name: 'Mexico' },
     { code: '+598', flag: '🇺🇾', name: 'Uruguay' }
   ];
+
+  useEffect(() => {
+    let country = countries.find(x => x.code == value)
+    setCountry(country)
+  }, [])
+
+  const setCountry = (country) => {
+    OnChange(country)
+    setSelectedCountry(country);
+    setIsOpen(false);
+  }
 
   const optionHtml = (country, showAllData = false) => {
     return (

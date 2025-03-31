@@ -117,8 +117,6 @@ class BlockChatScreen extends Component {
     try {
       const response = await HttpRequest.get(`/chat-gpt-ai/canMessageTommorrowsClients`);
 
-      console.log("canMessageTommorrowsClients", response.data)
-
       this.setState({
         canMessageTommorrowsClients: response.data
       })

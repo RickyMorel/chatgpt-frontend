@@ -52,7 +52,7 @@ class CustomToggle extends Component {
               <div
                 style={{
                   position: 'relative',
-                  width: '55px',
+                  width: width ?? '55px',
                   height: '25px',
                   backgroundColor: value ? ColorHex.GreenDark_1 : '#ccc',
                   borderRadius: '15px',

@@ -30,6 +30,7 @@ import ExampleConversationsScreen from './ExampleConversations/ExampleConversati
 import QuestionsAndAnswersScreen from './QuestionsAndAnswers/QuestionsAndAnswersScreen';
 import CreateQuestionAndAnswerScreen from './QuestionsAndAnswers/CreateQuestionAndAnswerScreen';
 import CreateAccountScreen from './Login/CreateAccountScreen';
+import { globalEmitter } from './GlobalEventEmitter';
 
 class App extends Component {
   constructor(props) {
@@ -43,7 +44,7 @@ class App extends Component {
       instanceStatus: "a",
       isReloading: false,
       globalConfig: undefined,
-      setupConditions: undefined
+      setupConditions: undefined,
     };
 
     this.intervalId = null
@@ -52,12 +53,18 @@ class App extends Component {
   componentDidMount() {
     const token = Cookies.get('token');
     window.token = token
-    this.GetInstanceStatus()
-    this.fetchGlobalConfig()
-    this.fetchSetupConditions()
     //Get the instance status every second until y link whatsapp
     this.intervalId = setInterval(this.GetInstanceStatus, 10000);
 
+    globalEmitter.addEventListener('loggedIn', this.handleLoggedIn);
+  }
+
+  handleLoggedIn = () => {
+    console.log("handleLoggedIn")
+
+    this.GetInstanceStatus()
+    this.fetchGlobalConfig()
+    this.fetchSetupConditions()
     this.GetBotNumber()
   }
 
@@ -99,7 +106,6 @@ class App extends Component {
   GetInstanceStatus = async () => {
     try {
       const response = await HttpRequest.get(`/whatsapp/getInstanceStatus`);
-      console.log("INSTANCE STATUS", response)
 
       this.setState({
         instanceStatus: response.data,
@@ -176,9 +182,18 @@ class App extends Component {
             <Route exact path="/problematicChats">
               <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
-            <Route exact path="/">
-              <div style={{margin: '15px'}}><LoginScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
-            </Route>
+            <Route exact path="/" 
+              render={(props) => (
+                <div style={{margin: '15px'}}>
+                  <LoginScreen 
+                    {...props}  
+                    showPopup={this.props.showPopup} 
+                    setIsLoading={this.setIsLoading} 
+                    botNumber={this.state.botNumber}
+                  />
+                </div>
+              )} 
+            />
             <Route exact path="/createAccount">
               <div style={{margin: '15px'}}><CreateAccountScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>

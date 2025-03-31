@@ -33,11 +33,9 @@ class HttpRequest {
         let response = undefined
 
         if(noToken) {
-            console.log("HttpRequest post NO TOKENNNNNNNNNN", link, data)
             response = await axios.post(`${process.env.REACT_APP_HOST_URL}${link}`, data);
         }
         else {
-            console.log("HttpRequest post DATAAAAAAAA", link, data)
             response = await axios.post(
                 `${process.env.REACT_APP_HOST_URL}${link}`,
                 data,
@@ -48,7 +46,6 @@ class HttpRequest {
                 }
             );
         }
-        console.log("post response", response)
         return response
     }
 }

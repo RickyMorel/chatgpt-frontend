@@ -52,7 +52,6 @@ class QrCodeScreen extends Component {
       })
 
       const response = await HttpRequest.post(`/whatsapp/initInstance`);
-      console.log("Restaring instance...", response)
       return response.data
     } catch (error) {
       console.log("error", error)
@@ -118,9 +117,6 @@ class QrCodeScreen extends Component {
       <h4 style={{ margin: 0, ...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody }}>Vinculando...</h4>
     </>
 
-    console.log("QR CODE", this.state.qr)
-    
-    
     return this.state.tempClose ?
         <></>
         :
