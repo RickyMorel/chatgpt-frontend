@@ -141,7 +141,6 @@ const inventoryPanelStyling = {
     width: '100%',
     height: '70vh',
     marginTop: '10px',
-    marginTop: '25px',
     padding: '25px',
     boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',
     border: `1px solid ${ColorHex.BorderColor}`,
