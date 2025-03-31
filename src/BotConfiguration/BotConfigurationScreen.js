@@ -21,6 +21,7 @@ class BotConfigurationScreen extends Component {
             companyDescriptionFrase: '',
             customerServiceFrase: '',
             permanentlyBlockClientsAfterCustomerService: false,
+            usesInventory: false,
             needsToSave: false
         };
     }
@@ -32,13 +33,16 @@ class BotConfigurationScreen extends Component {
     fetchGlobalConfig = async () => {
         try {
             const response = await HttpRequest.get(`/global-config`);
+
+            console.log("fetchGlobalConfig", response.data)
     
             this.setState({
                 botNumber: response.data.botNumber,
                 aiRoleFrase: response.data.aiRoleFrase,
                 companyDescriptionFrase: response.data.companyDescriptionFrase,
                 customerServicePhrase: response.data.customerServiceFrase,
-                permanentlyBlockClientsAfterCustomerService: response.data.permanentlyBlockClientsAfterCustomerService
+                permanentlyBlockClientsAfterCustomerService: response.data.permanentlyBlockClientsAfterCustomerService,
+                usesInventory: response.data.usesInventory
             })
         } catch (error) {}
       }
@@ -61,7 +65,8 @@ class BotConfigurationScreen extends Component {
                 aiRoleFrase: this.state.aiRoleFrase,
                 companyDescriptionFrase: this.state.companyDescriptionFrase,
                 customerServicePhrase: this.state.customerServiceFrase,
-                permanentlyBlockClientsAfterCustomerService: this.state.permanentlyBlockClientsAfterCustomerService
+                permanentlyBlockClientsAfterCustomerService: this.state.permanentlyBlockClientsAfterCustomerService,
+                usesInventory: this.state.usesInventory
             });
             this.setState({needsToSave: false})
           } catch (error) {
@@ -114,15 +119,12 @@ class BotConfigurationScreen extends Component {
                                 placeHolderText="Ej: English Is Easy es un instituto de aprendizaje de inglés. Se dan ambas clases presenciales como virtuales, en donde tenemos un enfoque en gramatica y pronunciacion" 
                                 onChange={(value) => this.handleValueChange("companyDescriptionFrase", value)}
                             />
-                            <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Frase para dirigir al cliente a atención al cliente *</p>
-                            <CustomInput value={this.state.customerServiceFrase} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText="Ej: Te pasaremos con atencion al cliente" onChange={(value) => this.handleValueChange("customerServiceFrase", value)}/>
                         </div>
                     </div>
                     <div className="col-6">
                         <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Parametros Opcionales</p>
-                        <div style={styles.controls}>
-                            <div style={{flexGrow: 0}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text="Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente" explinationText={Utils.permanantBlockChatExplanationText} onChange={(e) => this.handleValueChange("permanentlyBlockClientsAfterCustomerService", e.target.checked)} value={this.state.permanentlyBlockClientsAfterCustomerService}/></div>
-                        </div>
+                        <CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"110px"} text={`Usar catalogo de productos y/o servicios`} explinationText={Utils.useInventoryExplinationText} onChange={(e) => this.handleValueChange("usesInventory", e.target.checked)} value={this.state.usesInventory}/>
+                        <CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text="Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente" explinationText={Utils.permanantBlockChatExplanationText} onChange={(e) => this.handleValueChange("permanentlyBlockClientsAfterCustomerService", e.target.checked)} value={this.state.permanentlyBlockClientsAfterCustomerService}/>
                     </div>
                 </div>
             </div>
@@ -172,8 +174,9 @@ const styles = {
     },
     controls: {
         display: 'flex',
-        gap: '10px',
-        marginTop: '15px'
+        gap: '15px',
+        marginTop: '15px',
+        flexDirection: 'column'
     },
     select: {
         padding: '8px',

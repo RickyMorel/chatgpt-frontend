@@ -136,7 +136,7 @@ class CreateAccountScreen extends Component {
       this.setState({
         error: err?.response?.data?.message ?? 'Error del servidor'
       })
-      console.log("Login Error", err.response.data.message)
+      console.log("Login Error", err)
     }
   }
 

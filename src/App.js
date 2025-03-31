@@ -53,6 +53,9 @@ class App extends Component {
   componentDidMount() {
     const token = Cookies.get('token');
     window.token = token
+    this.fetchGlobalConfig()
+    this.fetchSetupConditions()
+    this.GetBotNumber()
     //Get the instance status every second until y link whatsapp
     this.intervalId = setInterval(this.GetInstanceStatus, 10000);
 

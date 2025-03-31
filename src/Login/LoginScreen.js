@@ -19,7 +19,7 @@ class LoginScreen extends Component {
       this.state = {
         email: '',
         password: '',
-        error: ''
+        error: '',
       }
   }
 
@@ -37,23 +37,22 @@ class LoginScreen extends Component {
   }
 
   handleSignedUp() {
-    this.showToastIfCreatedAccount();
-  }
-
-  showToastIfCreatedAccount = () => {
-    toast.success(`Creaste un cuenta!🎉🎉. Ahora solo falta iniciar session`, {
-      style: {
-          backgroundColor: ColorHex.GreenDark_1,
-          color: '#fff',
-          fontWeight: 'bold',
-          padding: '10px',
-      },
-      progressStyle: {
-          backgroundColor: '#fff',
-      },
-      autoClose: 5000,
-      icon: false
-    });
+    const timer = setTimeout(() => {
+      toast.success(`Creaste un cuenta!🎉🎉. Ahora solo falta iniciar session`, {
+        style: {
+            backgroundColor: ColorHex.GreenDark_1,
+            color: '#fff',
+            fontWeight: 'bold',
+            padding: '10px',
+        },
+        progressStyle: {
+            backgroundColor: '#fff',
+        },
+        autoClose: 10000,
+        icon: false
+      });
+    }, 500);
+    return () => clearTimeout(timer);
   }
 
   handleLogin = async () => {

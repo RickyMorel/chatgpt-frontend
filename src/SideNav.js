@@ -112,6 +112,8 @@ function SideNav(props)  {
   ]
 
   const navBarButtonHtmls = navBarButton.map(x => {
+    if(x.link == "/inventory" && props?.globalConfig?.usesInventory == false) { return; }
+    
     const disableCondition = !props?.setupConditions?.minimumConditionsMet && x.link != "/aiConfiguration" &&  x.link != "/inventory"
     const navBarButtonStyle = GetNavButtonStyle(x.link, disableCondition)
 
