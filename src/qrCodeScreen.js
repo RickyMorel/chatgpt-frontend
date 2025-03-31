@@ -59,7 +59,7 @@ class QrCodeScreen extends Component {
   };
 
   render() {
-    const {status} = this.props
+    let {status} = this.props
 
     const overlayStyles = {
       position: 'absolute',
@@ -72,6 +72,23 @@ class QrCodeScreen extends Component {
       backgroundColor: 'rgba(255, 255, 255, 0.5)',
       zIndex: 9999,
     };
+
+    const wrongNumberHtml = 
+    <>
+      <div style={{marginBottom: '10px'}}>
+        <img src='./images/wrongNumber.png' alt="QR Code" className="w-60 h-60" />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
+        <img 
+          src='./images/whatsapplogo.png' 
+          alt="Logo" 
+          className="img-fluid" 
+          style={{ width: '65px', height: '65px'}} 
+        />
+        <h4 style={{ margin: 0, ...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody }}>El número vinculado no coincide con el número ingresado</h4>
+      </div>
+      <h3 style={{ margin: 0, ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody }}>Desvincula el WhatsApp que acabas de escanear y vincúlalo con el WhatsApp asociado al número que ingresaste en la página.</h3>
+    </>
 
     const scanQrHtml = 
     <>
@@ -133,7 +150,10 @@ class QrCodeScreen extends Component {
             status == "loading" ?
             loadingHtml
             :
-            scanQrHtml
+            status == "wrong_qr_number" ? 
+              wrongNumberHtml
+              :
+              scanQrHtml
           }
         </div>
   }

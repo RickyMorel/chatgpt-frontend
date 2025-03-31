@@ -132,6 +132,7 @@ class App extends Component {
 
   render() {
     const currentPath = window.location.pathname;
+    console.log("this.state.instanceStatus", this.state.instanceStatus)
 
     return (
     this.state.isReloading ? 

@@ -4,6 +4,7 @@ import { ColorHex } from '../Colors';
 import CustomInput from './CustomInput';
 import CountryDropdown from './CountryDropdown';
 import HttpRequest from '../HttpRequest';
+import Utils from '../Utils';
 
 class PhoneNumberComponent extends React.Component {
     constructor(props) {
@@ -23,26 +24,23 @@ class PhoneNumberComponent extends React.Component {
 
         if(phoneNumber.length < 1) { return; }
 
-        console.log("componentDidUpdate", phoneNumber)
-
-        const splitValues = [phoneNumber.slice(0, 3), phoneNumber.slice(3)];
+        const splitNumbers = Utils.getSplitPhoneNumbers(phoneNumber)
+        console.log("splitNumbers", splitNumbers)
         
         this.setState({
-            countryCode: splitValues[0],
-            nationalNumber: splitValues[1]
+            countryCode: splitNumbers.countryCode,
+            nationalNumber: splitNumbers.rest
         }); 
     }
 
     handleChange = (property ,value, OnChangeCallback) => {
         if(property == "countryCode" && value) 
         { 
-            console.log("Change countryCode", value)
             this.setState({countryCode: value.code}); 
             OnChangeCallback(value?.code?.replaceAll("+", "")  + this.state.nationalNumber) 
         }
         else if(property == "nationalNumber") 
         { 
-            console.log("Change National Number", value)
             this.setState({nationalNumber: value}); 
             OnChangeCallback(this.state?.countryCode?.replaceAll("+", "")  + value) 
         }
@@ -70,7 +68,7 @@ class PhoneNumberComponent extends React.Component {
               </div>
               
               <CustomInput 
-                hasError={hasError.includes("phoneNumber_exists") || hasError.includes("phoneNumber_empty")}
+                hasError={hasError?.includes("phoneNumber_exists") || hasError?.includes("phoneNumber_empty")}
                 width='264px'
                 height='65px'
                 dataType="tel" 

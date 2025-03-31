@@ -2,25 +2,16 @@ import React, { useEffect, useState } from 'react';
 import twemoji from 'twemoji';
 import CssProperties from '../CssProperties';
 import { ColorHex } from '../Colors';
+import Utils from '../Utils';
 
 const CountryDropdown = ({OnChange, value}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(null);
 
-  const countries = [
-    { code: '+595', flag: '🇵🇾', name: 'Paraguay' },
-    { code: '+54', flag: '🇦🇷', name: 'Argentina' },
-    { code: '+55', flag: '🇧🇷', name: 'Brazil' },
-    { code: '+56', flag: '🇨🇱', name: 'Chile' },
-    { code: '+57', flag: '🇨🇴', name: 'Colombia' },
-    { code: '+52', flag: '🇲🇽', name: 'Mexico' },
-    { code: '+598', flag: '🇺🇾', name: 'Uruguay' }
-  ];
-
   useEffect(() => {
     if(!value.includes("+")) { value = "+" + value}
     
-    let country = countries.find(x => x.code == value)
+    let country = Utils.countries.find(x => x.code == value)
     setCountry(country)
   }, [value])
 
@@ -59,7 +50,7 @@ const CountryDropdown = ({OnChange, value}) => {
         style={dropdownStyle}
         onClick={() => setIsOpen(!isOpen)}
       >
-        {optionHtml(selectedCountry ? selectedCountry : countries[0])}
+        {optionHtml(selectedCountry ? selectedCountry : Utils.countries[0])}
       </div>
       
       {isOpen && (
@@ -71,7 +62,7 @@ const CountryDropdown = ({OnChange, value}) => {
           zIndex: 1000,
           marginTop: '5px'
         }}>
-          {countries.map((country) => (
+          {Utils.countries.map((country) => (
             <div
               key={country.code}
               style={{
