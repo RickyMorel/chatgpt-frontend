@@ -48,6 +48,8 @@ function SideNav(props)  {
         return;
     }
 
+    setMessageCount(props?.globalConfig?.usedMonthlyMessages)
+    setTotalClientsToMessage(props?.globalConfig?.maxMonthlyMessages)
     // const ref = firestore.collection('globalConfig').doc(String(props.botNumber));
 
     // ref.get()

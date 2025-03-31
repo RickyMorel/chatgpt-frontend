@@ -25,11 +25,11 @@ const SetupBlockedPopup = ({setupConditions, closePopupFunc}) => {
       <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, textAlign: 'center'}}>Debes completar estos pasos antes de usar WhatsBot</p>
         <div style={{display: 'flex', justifyContent: 'center'}}>
             <ul style={ulStyle}>
-                {Condition(setupConditions.hasLinkedWhatsapp, "Vincular WhatsApp", '/aiConfiguration')}
-                {Condition(setupConditions.hasBusinessDescription, "Dar descripcion de negocio", '/aiConfiguration')}
-                {Condition(setupConditions.hasProducts, "Cargar productos", '/createItem')}
-                {Condition(setupConditions.hasExamples, "Cargar 15 ejemplos de conversacion", '/createExampleConversation')}
-                {Condition(setupConditions.hasAnswers, "Cargar preguntas y respuestas", '/createExampleConversation')}
+                {setupConditions.hasLinkedWhatsapp == "unneeded" ? <></> : Condition(setupConditions.hasLinkedWhatsapp == "true", "Vincular WhatsApp", '/aiConfiguration')}
+                {setupConditions.hasBusinessDescription == "unneeded" ? <></> : Condition(setupConditions.hasBusinessDescription == "true", "Dar descripcion de negocio", '/aiConfiguration')}
+                {setupConditions.hasProducts == "unneeded" ? <></> : Condition(setupConditions.hasProducts == "true", "Cargar productos", '/createItem')}
+                {setupConditions.hasExamples == "unneeded" ? <></> : Condition(setupConditions.hasExamples == "true", "Cargar 15 ejemplos de conversacion", '/createExampleConversation')}
+                {setupConditions.hasAnswers == "unneeded" ? <></> : Condition(setupConditions.hasAnswers == "true", "Cargar preguntas y respuestas", '/createExampleConversation')}
             </ul>
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '20px' }}>
