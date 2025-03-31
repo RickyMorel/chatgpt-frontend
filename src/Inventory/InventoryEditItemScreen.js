@@ -12,6 +12,7 @@ import CustomFileInput from '../Searchbar/CustomFileInput';
 import CustomInput from '../Searchbar/CustomInput';
 import CustomSelect from '../Searchbar/CustomSelect';
 import RemovableItem from '../Searchbar/RemovableItem';
+import HttpRequest from '../HttpRequest';
 
 class InventoryEditItemScreen extends Component {
     constructor(props) {
@@ -56,7 +57,7 @@ class InventoryEditItemScreen extends Component {
 
     fetchProductData = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/allItems`);
+            const response = await HttpRequest.get(`/inventory/allItems`);
 
             this.getAllTags(response.data)
 
@@ -149,13 +150,13 @@ class InventoryEditItemScreen extends Component {
 
                 if(missingFields.length > 0) {return;}
                 
-                const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/inventory/addItems`, [newItem]);
+                const response = await HttpRequest.post(`/inventory/addItems`, [newItem]);
             } else {
                 if(this.state.selectedImage) {
                     const imageLink = await this.uploadImageToFirebase(this.state.selectedImage)
                     itemToEdit.imageLink = imageLink
                 }
-                const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/inventory/updateItem`, itemToEdit);
+                const response = await HttpRequest.put(`/inventory/updateItem`, itemToEdit);
             }
             this.props.history.goBack()
           } catch (error) {

@@ -52,7 +52,7 @@ class ExplinationPopup extends Component {
 
         return (
           <div style={styling}>
-            <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center'}}>{text}</p>
+            <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center'}} dangerouslySetInnerHTML={{ __html: text }}/>
             <div style={tailStyle}></div>
           </div>
         );

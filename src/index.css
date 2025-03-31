@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.emoji {
+  font-family: "Twemoji Mozilla";
+  font-size: 1em;
+}

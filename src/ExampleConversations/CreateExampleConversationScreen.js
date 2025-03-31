@@ -8,16 +8,22 @@ import CssProperties from '../CssProperties';
 import { ColorHex } from '../Colors';
 import { faPenToSquare, faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 import axios from 'axios';
+import HttpRequest from '../HttpRequest';
+import CustomTextArea from '../Searchbar/CustomTextArea';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 
 class CreateExampleConversationScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
             messages: [],
+            exampleMessages: [],
             selectedUser: 'Cliente',
             messageText: '',
+            creationDate: new Date(),
             nextId: 1,
-            isCreateItem: true
+            isCreateExample: true,
+            editingId: null, // New state for tracking edits
         };
 
         this.handleUserChange = this.handleUserChange.bind(this);
@@ -26,34 +32,115 @@ class CreateExampleConversationScreen extends Component {
         this.handleClearConversation = this.handleClearConversation.bind(this);
     }
 
+    componentDidMount() {
+        const exampleData = this.props.location && this.props.location.state ? this.props.location.state.linkData : undefined;
+
+        this.setState({
+            messages: exampleData ? this.formatMessages([...exampleData.correctedChat]) : [],
+            creationDate: exampleData ? exampleData.creationDate : new Date(),
+            isCreateExample: exampleData == undefined,
+            nextId: exampleData?.length ?? 1
+        })
+
+        this.fetchExample()
+    }
+
+    fetchExample = async () => {
+        try {
+          this.props.setIsLoading(true)
+          const response = await HttpRequest.get(`/self-learn/example`);
+          const formattedExamples = this.formatMessages(response.data.correctedChat)
+    
+          this.setState({
+            exampleMessages: [...formattedExamples]
+          })
+          this.props.setIsLoading(false)
+        } catch (error) {
+          console.log("error", error)
+          return error
+        }
+    };
+
+    formatMessages(dbMessages) {
+        let formattedMessages = []
+        let nextId = 0
+        dbMessages.forEach(message => {
+            const newMessage = {
+                id: nextId,
+                sender: message.role == "user" ? "Cliente" : "IA",
+                text: message.content
+            };
+            nextId++
+            formattedMessages.push(newMessage)
+        });
+
+        return formattedMessages
+    }
+
     handleUserChange(value) {
         this.setState({ selectedUser: value });
     }
 
     handleTextChange(value) {
+        if(value.length)
         this.setState({ messageText: value });
     }
 
     handleAddMessage() {
         if (!this.state.messageText) return;
 
-        const newMessage = {
-            id: this.state.nextId,
-            sender: this.state.selectedUser,
-            text: this.state.messageText
-        };
+        if (this.state.editingId !== null) {
+            // Update existing message
+            const updatedMessages = this.state.messages.map(message => {
+                if (message.id === this.state.editingId) {
+                    return {
+                        ...message,
+                        sender: this.state.selectedUser,
+                        text: this.state.messageText
+                    };
+                }
+                return message;
+            });
 
-        this.setState(prevState => ({
-            messages: [...prevState.messages, newMessage],
-            messageText: '',
-            nextId: prevState.nextId + 1,
-            selectedUser: prevState.selectedUser == "Cliente" ? "IA" : "Cliente"
-        }));
+            this.setState(prevState => ({
+                messages: updatedMessages,
+                messageText: '',
+                selectedUser: prevState.selectedUser === "Cliente" ? "IA" : "Cliente",
+                editingId: null
+            }));
+        } else {
+            // Add new message
+            const newMessage = {
+                id: this.state.nextId,
+                sender: this.state.selectedUser,
+                text: this.state.messageText
+            };
+
+            this.setState(prevState => ({
+                messages: [...prevState.messages, newMessage],
+                messageText: '',
+                nextId: prevState.nextId + 1,
+                selectedUser: prevState.selectedUser === "Cliente" ? "IA" : "Cliente"
+            }));
+        }
     }
 
     handleClearConversation() {
-        this.setState({ messages: [], nextId: 1, selectedUser: 'Cliente' });
+        this.setState({ 
+            messages: [], 
+            nextId: 1, 
+            selectedUser: 'Cliente',
+            editingId: null 
+        });
     }
+
+    handleEditMessage = (message) => {
+        this.setState({
+            editingId: message.id,
+            selectedUser: message.sender,
+            messageText: message.text
+        });
+    };
 
     handleRemoveMessage = (id) => {
         this.setState(prevState => ({
@@ -70,16 +157,20 @@ class CreateExampleConversationScreen extends Component {
                     {role: x.sender == "Cliente" ? "user" : "assistant", content: x.text}
                 )
             })
-            if(this.state.isCreateItem) {
-                const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/self-learn/create`, {
+            if(this.state.isCreateExample) {
+                const response = await HttpRequest.post(`/self-learn/create`, {
                     chat: formattedMessages,
                     wasGoodResponse: true,
-                    correctedChat: formattedMessages
+                    correctedChat: formattedMessages,
                 });
             } else {
-
+                console.log("creationDate for update", new Date(this.state.creationDate).toISOString())
+                const response = await HttpRequest.put(`/self-learn/update`, {
+                    correctedChat: formattedMessages,
+                    creationDate: new Date(this.state.creationDate).toISOString()
+                });
+                this.props.history.goBack()
             }
-           // this.props.history.goBack()
            this.handleClearConversation()
           } catch (error) {
             console.log("ERROR", error)
@@ -89,6 +180,32 @@ class CreateExampleConversationScreen extends Component {
         this.props.setIsLoading(false)
     }
 
+    messageElement = (message, isExample) => {
+        return (
+            <div 
+                key={message.id}
+                style={{
+                    ...messageBubbleStyle(this.state.messages.length < 1),
+                    ...(message.sender === 'Cliente' ? styles.user1 : styles.user2)
+                }}
+            >
+                <div style={styles.messageHeader}>
+                    <span style={styles.senderName}>{message.sender}</span>
+                    {
+                        isExample ?
+                        <></>
+                        :
+                        <div style={{display: 'flex', marginLeft: 'auto', gap: '10px' }}>
+                            <div><CustomButton icon={faPenToSquare} width="20px" height="20px" iconSize="20px" onClickCallback={() => this.handleEditMessage(message)}/></div>
+                            <div><CustomButton icon={faRectangleXmark} width="20px" height="20px" iconSize="20px" classStyle='btnRed' onClickCallback={() => this.handleRemoveMessage(message.id)}/></div>
+                        </div>
+                    }
+                </div>
+                <div style={styles.messageText}>{message.text}</div>
+            </div>
+        )
+    }
+
     render() {
         const dropdownItems = [
             {value: "Cliente", label: "Cliente"},
@@ -96,30 +213,26 @@ class CreateExampleConversationScreen extends Component {
         ]
         return (
             <div>
-                <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{this.state.isCreateItem ? 'Crear Conversacion Ejemplo' : 'Editar Conversacion Ejemplo'}</p>
+                <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{this.state.isCreateExample ? 'Crear Conversacion Ejemplo' : 'Editar Conversacion Ejemplo'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Crear Ejemplo' : 'Editar Ejemplo'} classStyle="btnGreen" width="182px" height="45px" icon={this.state.isCreateItem ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
-                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateItem ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="inventory"/></div>
-                    <div className="col-10"></div>
+                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Crear Ejemplo' : 'Editar Ejemplo'} classStyle="btnGreen" width="182px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="exampleConversations"/></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text='Ver Otro Ejemplo' icon={faRotateRight} onClickCallback={this.fetchExample}/></div>
+                    <div className="col-9"></div>
                 </div>
                 <div style={styles.container}>
                     <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>Conversacion</p>
                     <div style={styles.chatWindow}>
-                        {this.state.messages.map(message => (
-                            <div 
-                                key={message.id}
-                                style={{
-                                    ...styles.messageBubble,
-                                    ...(message.sender === 'Cliente' ? styles.user1 : styles.user2)
-                                }}
-                            >
-                                <div style={styles.messageHeader}>
-                                    <span style={styles.senderName}>{message.sender}</span>
-                                    <div><CustomButton icon={faRectangleXmark} width="20px" height="20px" iconSize="20px" classStyle='btnRed' onClickCallback={() => this.handleRemoveMessage(message.id)}/></div>
-                                </div>
-                                <div style={styles.messageText}>{message.text}</div>
-                            </div>
-                        ))}
+                        {
+                            this.state.messages.length > 0 ?
+                            this.state.messages.map(message => (
+                                this.messageElement(message, false)
+                            ))
+                            :
+                            this.state.exampleMessages.map(exampleMessage => (
+                                this.messageElement(exampleMessage, true)
+                            ))
+                        }
                     </div>
                     
                     <div style={styles.controls}>
@@ -131,13 +244,49 @@ class CreateExampleConversationScreen extends Component {
                             value={dropdownItems.find(x => x.value == this.state.selectedUser)}
                             isSearchable={false}
                         />
-                        <CustomInput value={this.state.messageText} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText="Texto de Mensaje" onChange={(value) => this.handleTextChange(value)}/>
-                        <CustomButton text="Agregar Mensaje"  width="150px" height="45px" classStyle='btnGreen' onClickCallback={this.handleAddMessage}/>
+                        <CustomButton 
+                            text={this.state.editingId !== null ? 'Guardar Cambios' : 'Agregar Mensaje'} 
+                            width="150px" 
+                            height="45px" 
+                            classStyle={this.state.editingId !== null ? 'btnGreen-clicked' : 'btnGreen'}
+                            onClickCallback={this.handleAddMessage}
+                        />
+                        {
+                            this.state.editingId ?
+                                <CustomButton 
+                                    text="Cancelar Edicion" 
+                                    width="150px" 
+                                    height="45px" 
+                                    classStyle={'btnRed-clicked'}
+                                    onClickCallback={() => this.setState({editingId: null, messageText: ''})}
+                                />
+                            :
+                                <></>
+                        }
                         <CustomButton text="Limpiar Conversacion"  width="200px" height="45px" classStyle='btnRed' onClickCallback={this.handleClearConversation}/>
                     </div>
+                    <CustomTextArea 
+                        value={this.state.messageText} 
+                        noPadding={false} 
+                        width='600px' 
+                        height='250px' 
+                        dataType="text" 
+                        placeHolderText="Texto de Mensaje" 
+                        onChange={(value) => this.handleTextChange(value)}
+                    />
                 </div>
             </div>
         );
+    }
+}
+
+const messageBubbleStyle = (isExample) => {
+    return {
+        padding: '10px 15px',
+        borderRadius: '15px',
+        marginBottom: '10px',
+        maxWidth: '70%',
+        opacity: isExample ? '0.5' : '1'
     }
 }
 
@@ -154,12 +303,6 @@ const styles = {
         padding: '20px',
         marginBottom: '20px'
     },
-    messageBubble: {
-        padding: '10px 15px',
-        borderRadius: '15px',
-        marginBottom: '10px',
-        maxWidth: '70%'
-    },
     user1: {
         backgroundColor: '#e0e0e0',
         marginRight: 'auto'
@@ -173,7 +316,6 @@ const styles = {
         marginBottom: '5px',
         fontSize: '0.9em',
         display: 'flex',
-        justifyContent: 'space-between'
     },
     senderName: {
         fontWeight: 'bold'
@@ -183,7 +325,8 @@ const styles = {
     },
     controls: {
         display: 'flex',
-        gap: '10px'
+        gap: '10px',
+        marginBottom: '15px'
     },
     select: {
         padding: '8px',

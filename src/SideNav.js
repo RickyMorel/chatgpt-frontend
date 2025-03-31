@@ -48,17 +48,19 @@ function SideNav(props)  {
         return;
     }
 
-    const ref = firestore.collection('globalConfig').doc(String(props.botNumber));
+    setMessageCount(props?.globalConfig?.usedMonthlyMessages)
+    setTotalClientsToMessage(props?.globalConfig?.maxMonthlyMessages)
+    // const ref = firestore.collection('globalConfig').doc(String(props.botNumber));
 
-    ref.get()
-      .then((doc) => {
-        const response = doc.data()
-        setMessageCount(response.messageCount)
-        setTotalClientsToMessage(response.totalClientsToMessage)
-      })
-      .catch((error) => {
-        console.error('Error getting document:', error);
-      });
+    // ref.get()
+    //   .then((doc) => {
+    //     const response = doc.data()
+    //     setMessageCount(response.messageCount)
+    //     setTotalClientsToMessage(response.totalClientsToMessage)
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error getting document:', error);
+    //   });
   }
 
   const handleLogOut = () => {
@@ -89,6 +91,17 @@ function SideNav(props)  {
     if(currentPath == "/problematicChats") { setHasNewProblematicChat(false); }
   };
 
+  const handleLinkClick = (e, link) => {
+    console.log("props.setupConditions.minimumConditionsMet", props.setupConditions)
+    const disableCondition = !props.setupConditions.minimumConditionsMet && link != "/aiConfiguration" &&  link != "/inventory"
+    
+    if(disableCondition) {
+      e.preventDefault();
+      console.log("props a", props)
+      props.showSetupPopup(props.setupConditions, props.history)
+    }
+  }
+
   const navBarButton = [
     {icon: faCartShopping, nameText: "Pedidos", link: "/orders"},
     {icon: faUserGroup, nameText: "Clientes", link: "/blockChats"},
@@ -97,14 +110,17 @@ function SideNav(props)  {
     {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
     {icon: faChartSimple, nameText: "Estadisticas", link: "/stats"},
     {icon: faCloud, nameText: "Cargar Datos", link: "/loadData"},
-    {icon: faRobot, nameText: "Configuración IA", link: "/createExampleConversation"},
+    {icon: faRobot, nameText: "Configuración IA", link: "/aiConfiguration"},
   ]
 
   const navBarButtonHtmls = navBarButton.map(x => {
-    const navBarButtonStyle = GetNavButtonStyle(x.link)
+    if(x.link == "/inventory" && props?.globalConfig?.usesInventory == false) { return; }
+    
+    const disableCondition = !props?.setupConditions?.minimumConditionsMet && x.link != "/aiConfiguration" &&  x.link != "/inventory"
+    const navBarButtonStyle = GetNavButtonStyle(x.link, disableCondition)
 
     return (
-    <Link to={x.link} style={navBarButtonStyle} className='nav-item rounded'>
+    <Link  onClick={(e) => handleLinkClick(e, x.link)} to={x.link} style={navBarButtonStyle} className='nav-item rounded'>
       <FontAwesomeIcon icon={x.icon} style={{ fontSize: '25px' }}/>
       <p style={{...CssProperties.BodyTextStyle, paddingLeft: '10px', marginTop: '15px'}}>{x.nameText}</p>
     </Link>
@@ -137,10 +153,11 @@ function SideNav(props)  {
   );
 };
 
-function GetNavButtonStyle(navPath) {
+function GetNavButtonStyle(navPath, isDisabled) {
   const currentPath = useLocation().pathname;
 
   let navBarButtonStyle = {
+    opacity: isDisabled ? 0.5 : 1,
     display: 'flex',
     width: '100%',
     height: '45px',

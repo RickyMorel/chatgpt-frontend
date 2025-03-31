@@ -7,6 +7,9 @@ class CustomToggle extends Component {
     constructor(props) {
         super(props);
 
+        // Generate a unique ID for each instance
+        this.id = `custom-toggle-${Math.random().toString(36).substr(2, 9)}`;
+
         this.state = {
           showHint: false
         }
@@ -16,35 +19,38 @@ class CustomToggle extends Component {
     }
 
     handleMouseEnter() {
-        this.setState({
-          showHint: true
-        })
+        this.setState({ showHint: true });
     }
 
     handleMouseLeave() {
-      this.setState({
-        showHint: false
-      })
+        this.setState({ showHint: false });
     }
 
     render() {
-      const { text, value, onChange, width, height, explinationText } = this.props;
-
-      console.log("value", value)
+      const { text, value, onChange, width, explinationText, explinationPopupWidth, explinationPopupHeight } = this.props;
 
       return (
         <>
-          <div style={{ display: 'inline-block', position: 'relative', padding: '5px 0'}} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
+          <div 
+            style={{ 
+              display: 'inline-block',
+              position: 'relative',
+              padding: '5px 0',
+              verticalAlign: 'middle' // Ensure proper vertical alignment
+            }} 
+            onMouseEnter={this.handleMouseEnter} 
+            onMouseLeave={this.handleMouseLeave}
+          >
             <input
-              style={{ opacity: 0, width: 0, height: 0}}
+              style={{ opacity: 0, width: 0, height: 0 }}
               type="checkbox"
               role="switch"
               checked={value}
               onChange={onChange}
-              id="flexSwitchCheckDefault"
+              id={this.id} // Use unique ID
             />
             <label
-              htmlFor="flexSwitchCheckDefault"
+              htmlFor={this.id} // Reference unique ID
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -54,7 +60,7 @@ class CustomToggle extends Component {
               <div
                 style={{
                   position: 'relative',
-                  width: '55px',
+                  width: width ?? '55px',
                   height: '25px',
                   backgroundColor: value ? ColorHex.GreenDark_1 : '#ccc',
                   borderRadius: '15px',
@@ -62,20 +68,24 @@ class CustomToggle extends Component {
                   padding: '3px',
                 }}
               >
-                <span
-                  style={handleStyle(value)}
-                />
+                <span style={handleStyle(value)} />
               </div>
-              <span style={{ marginLeft: '10px', ...CssProperties.BodyTextStyle, color: ColorHex.TextBody}}>{text}</span>
+              <span style={{ marginLeft: '10px', ...CssProperties.BodyTextStyle, color: ColorHex.TextBody }}>
+                {text}
+              </span>
             </label>
+            {this.state.showHint && (
+              <ExplinationPopup 
+                width={explinationPopupWidth} 
+                height={explinationPopupHeight} 
+                text={explinationText} 
+              />
+            )}
           </div>
-
-          {this.state.showHint ? <ExplinationPopup text={explinationText} /> : null}
         </>
       );
   }
 }
-
 const handleStyle = (value) => ({
   position: 'absolute',
   top: '2px',

@@ -11,6 +11,7 @@ import CustomButton from '../Searchbar/CustomButton';
 import CustomToggle from '../Searchbar/CustomToggle';
 import { faFloppyDisk, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
+import HttpRequest from '../HttpRequest';
 
 class InventoryScreen extends Component {
     constructor(props) {
@@ -57,7 +58,7 @@ class InventoryScreen extends Component {
     
     fetchProductData = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/allItems`);
+            const response = await HttpRequest.get(`/inventory/allItems`);
             this.setState({
             products: response.data,
             filteredProducts: response.data,
@@ -67,7 +68,7 @@ class InventoryScreen extends Component {
 
     fetchProductReccomendations = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/product-correlation/getAllItemReccomendationsList`);
+            const response = await HttpRequest.get(`/product-correlation/getAllItemReccomendationsList`);
             this.setState({
                 productReccomendations: response.data,
             });
@@ -76,7 +77,7 @@ class InventoryScreen extends Component {
 
     fetchGlobalConfig = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+            const response = await HttpRequest.get(`/global-config`);
             let selectedInventoryItems = {day: response.data.dayInventories[0].day , items: this.state.products.filter(x => response.data.dayInventories[0].itemIds.includes(x.code))}
 
             this.setState({
@@ -214,13 +215,13 @@ class InventoryScreen extends Component {
         let reccomendedItems = this.state.productReccomendations.find(x => x.itemCode == item.code)?.reccomendedItemCodes
         
         if(!this.state.hasShownPromoPopup) {
-            this.props.showPopup_2_Buttons(
-                "Promociones Recomendados",
-                `Elegiste poner “${item.name}” de promoción. Recomendamos poner los siguientes items en promoción tambien.`,
-                "Te gustaria poner estos items de promoción?",
-                [item.name, ...reccomendedItems.map(x => this.state.products.find(y => y.code == x).name)].slice(0, 3),
-                () => this.handleSelectPromoItem(item, true),
-            )
+            // this.props.showPopup_2_Buttons(
+            //     "Promociones Recomendados",
+            //     `Elegiste poner “${item.name}” de promoción. Recomendamos poner los siguientes items en promoción tambien.`,
+            //     "Te gustaria poner estos items de promoción?",
+            //     [item.name, ...reccomendedItems.map(x => this.state.products.find(y => y.code == x).name)].slice(0, 3),
+            //     () => this.handleSelectPromoItem(item, true),
+            // )
 
             this.setState({ hasShownPromoPopup: true })
         }
@@ -265,6 +266,7 @@ class InventoryScreen extends Component {
     }
 
     saveDailyInventories = async () => {
+        console.log("saveDailyInventories")
         if(this.state.selectedDayInventory?.items?.length < 5) {this.props.showPopup(new Error("Cargar al menos 5 productos!")); return;}
         if(this.state.promoItemCodes.length < 3) {this.props.showPopup(new Error("Hace falta marcar 3 productos especiales!")); return;}
 
@@ -291,7 +293,7 @@ class InventoryScreen extends Component {
         });
 
         try {
-            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config/dayInventory`, {inventories: newDayInventoriesDto});
+            const response = await HttpRequest.put(`/global-config/dayInventory`, {inventories: newDayInventoriesDto});
             this.setState({
                 dayInventories: response.data,
             });

@@ -10,6 +10,7 @@ import CustomToggle from '../Searchbar/CustomToggle';
 import SearchBar from '../Searchbar/Searchbar';
 import CustomSelect from '../Searchbar/CustomSelect';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import HttpRequest from '../HttpRequest';
 
 class BlockChatScreen extends Component {
   constructor(props) {
@@ -50,7 +51,7 @@ class BlockChatScreen extends Component {
 
   fetchClientsToMessageTommorrowAmount = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/countClientsToDeliverTommorrow`);
+      const response = await HttpRequest.get(`/client-crud/countClientsToDeliverTommorrow`);
       this.setState({
         clientsToMessageTommorrow: response.data
       });
@@ -61,7 +62,7 @@ class BlockChatScreen extends Component {
 
   fetchClientData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/blockChat?pageNumber=${this.state.pageNumber}&pageSize=${this.state.pageSize}`);
+      const response = await HttpRequest.get(`/client-crud/blockChat?pageNumber=${this.state.pageNumber}&pageSize=${this.state.pageSize}`);
       let newList = [...this?.state?.clientIsBlockedStateList]
       let newClientList = [...this?.state?.clients]
       for(const client of response.data) {
@@ -88,7 +89,7 @@ class BlockChatScreen extends Component {
 
   fetchGlobalData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/global-config`);
+      const response = await HttpRequest.get(`/global-config`);
       this.setState({
         isGloballyBlocked: response.data.isGloballyBlocked,
         nextDayIndex: response.data.nextMessageDayIndex,
@@ -101,7 +102,7 @@ class BlockChatScreen extends Component {
 
   fetchAllClientLocations = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/getAllClientZones`);
+      const response = await HttpRequest.get(`/client-crud/getAllClientZones`);
 
       this.setState({
         clientLocations: [...response.data]
@@ -114,9 +115,7 @@ class BlockChatScreen extends Component {
 
   GetCanMessageTommorrowsClients = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/canMessageTommorrowsClients`);
-
-      console.log("canMessageTommorrowsClients", response.data)
+      const response = await HttpRequest.get(`/chat-gpt-ai/canMessageTommorrowsClients`);
 
       this.setState({
         canMessageTommorrowsClients: response.data
@@ -133,7 +132,7 @@ class BlockChatScreen extends Component {
     if(this.state.filteredClients.length > 5) {return;}
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/searchClientByNumber?searchNumber=${this.state.searchInput}&limit=${5}`);
+      const response = await HttpRequest.get(`/client-crud/searchClientByNumber?searchNumber=${this.state.searchInput}&limit=${5}`);
       console.log("tryFetchSearchedClients response", response.data)
       let clients = [...this.state.clients]
       let filteredClients = [...this.state.filteredClients]
@@ -179,7 +178,7 @@ class BlockChatScreen extends Component {
   handleSendMessages = async () => {
     if(this.state.canMessageTommorrowsClients == false) {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/canMessageTommorrowsClients`);
+        const response = await HttpRequest.get(`/chat-gpt-ai/canMessageTommorrowsClients`);
       } catch(error) {
         this.props.showPopup(new Error(error.response.data.message))
       }
@@ -189,7 +188,7 @@ class BlockChatScreen extends Component {
       this.setState({
         canMessageTommorrowsClients: false
       })
-      const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/chat-gpt-ai/messageTommorrowsClients`);
+      const response = await HttpRequest.post(`/chat-gpt-ai/messageTommorrowsClients`);
     } catch (error) {
       this.props.showPopup(new Error(error.response.data.message))
     }
@@ -204,7 +203,7 @@ class BlockChatScreen extends Component {
   handleGlobalBlock = async (event) => {
     try {
       const globallyBlocked = event.target.checked;
-      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/global-config`, {isGloballyBlocked: globallyBlocked});
+      const response = await HttpRequest.put(`/global-config`, {isGloballyBlocked: globallyBlocked});
       this.setState({
         isGloballyBlocked: globallyBlocked
       });
@@ -216,7 +215,7 @@ class BlockChatScreen extends Component {
 
   handleClearAllBlocks = async (event) => {
     try {
-      const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/client-crud/unblockAllChats`);
+      const response = await HttpRequest.put(`/client-crud/unblockAllChats`);
       let clients = [...this.state.clientIsBlockedStateList]
       clients.forEach(client => {
         client.isBlocked = false

@@ -1,16 +1,18 @@
+import { faClose } from '@fortawesome/free-solid-svg-icons';
 import React, { Component } from 'react';
-import { Circles, ColorRing, RotatingSquare } from 'react-loader-spinner';
+import { ColorRing } from 'react-loader-spinner';
 import { ColorHex } from './Colors';
-import axios from 'axios';
-import { QRCodeCanvas } from 'qrcode.react';
 import CssProperties from './CssProperties';
+import HttpRequest from './HttpRequest';
+import CustomButton from './Searchbar/CustomButton';
 
 class QrCodeScreen extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      qr: null
+      qr: null,
+      tempClose: false
     };
 
     this.intervalId = null
@@ -19,7 +21,7 @@ class QrCodeScreen extends Component {
   componentDidMount() {
     this.GetInstanceQR()
 
-    this.intervalId = setInterval(this.GetInstanceQR, 15000);
+    this.intervalId = setInterval(this.GetInstanceQR, 25000);
   }
 
   componentWillUnmount() {
@@ -27,24 +29,37 @@ class QrCodeScreen extends Component {
   }
 
   GetInstanceQR = async () => {
-    console.log("Get new QR")
     try {
       this.setState({
         qr: null
       })
 
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/whatsapp/getInstanceQR`);
+      const newInstanceResponse = await this.ReInitInstance();
 
       this.setState({
-        qr: response.data.qrCode
+        qr: newInstanceResponse.qrcode,
+        tempClose: false
       })
     } catch (error) {
       console.log("error", error)
     }
   };
 
+  ReInitInstance = async () => {
+    try {
+      this.setState({
+        qr: null
+      })
+
+      const response = await HttpRequest.post(`/whatsapp/initInstance`);
+      return response.data
+    } catch (error) {
+      console.log("error", error)
+    }
+  };
+
   render() {
-    const {status} = this.props
+    let {status} = this.props
 
     const overlayStyles = {
       position: 'absolute',
@@ -58,18 +73,29 @@ class QrCodeScreen extends Component {
       zIndex: 9999,
     };
 
+    const wrongNumberHtml = 
+    <>
+      <div style={{marginBottom: '10px'}}>
+        <img src='./images/wrongNumber.png' alt="QR Code" className="w-60 h-60" />
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row' }}>
+        <img 
+          src='./images/whatsapplogo.png' 
+          alt="Logo" 
+          className="img-fluid" 
+          style={{ width: '65px', height: '65px'}} 
+        />
+        <h4 style={{ margin: 0, ...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody }}>El número vinculado no coincide con el número ingresado</h4>
+      </div>
+      <h3 style={{ margin: 0, ...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody }}>Desvincula el WhatsApp que acabas de escanear y vincúlalo con el WhatsApp asociado al número que ingresaste en la página.</h3>
+    </>
+
     const scanQrHtml = 
     <>
       <div style={{marginBottom: '50px'}}>
         {
           this.state.qr != null ?
-            <QRCodeCanvas
-            value={this.state.qr}
-            size={256} 
-            bgColor="#ffffff"
-            fgColor="#000000"
-            level="L" // Error correction level: L, M, Q, H
-          />
+          <img src={this.state.qr} alt="QR Code" className="w-60 h-60" />
           :
           <ColorRing
             visible={true}
@@ -107,18 +133,29 @@ class QrCodeScreen extends Component {
       />
       <h4 style={{ margin: 0, ...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody }}>Vinculando...</h4>
     </>
-    
-    
-    return (
+
+    return this.state.tempClose ?
+        <></>
+        :
         <div style={overlayStyles}>
+          <div style={{ position: "absolute", top: "10px", right: "10px" }}>
+            <CustomButton
+              width="45px"
+              height="45px"
+              icon={faClose}
+              onClickCallback={() => {this.setState({tempClose: true})}}
+            />
+          </div>
           {
             status == "loading" ?
             loadingHtml
             :
-            scanQrHtml
+            status == "wrong_qr_number" ? 
+              wrongNumberHtml
+              :
+              scanQrHtml
           }
         </div>
-    );
   }
 }
 

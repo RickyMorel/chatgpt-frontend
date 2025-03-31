@@ -9,6 +9,8 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { isMobile, isTablet, isDesktop } from 'react-device-detect';
 import { error } from 'jquery';
+import HttpRequest from '../HttpRequest';
+import { globalEmitter } from '../GlobalEventEmitter';
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -17,7 +19,7 @@ class LoginScreen extends Component {
       this.state = {
         email: '',
         password: '',
-        error: ''
+        error: '',
       }
   }
 
@@ -26,20 +28,42 @@ class LoginScreen extends Component {
 
     const token = Cookies.get('token');
 
+    globalEmitter.addEventListener('signedUp', this.handleSignedUp);
+
     if(!token || token.length < 1) { return; }
 
     window.token = token
     this.props.history.push('/blockChats');
   }
 
+  handleSignedUp() {
+    const timer = setTimeout(() => {
+      toast.success(`Creaste un cuenta!🎉🎉. Ahora solo falta iniciar session`, {
+        style: {
+            backgroundColor: ColorHex.GreenDark_1,
+            color: '#fff',
+            fontWeight: 'bold',
+            padding: '10px',
+        },
+        progressStyle: {
+            backgroundColor: '#fff',
+        },
+        autoClose: 10000,
+        icon: false
+      });
+    }, 500);
+    return () => clearTimeout(timer);
+  }
+
   handleLogin = async () => {
     try {
-        const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/auth/signin`, {email: this.state.email, password: this.state.password});
+        const response = await HttpRequest.post(`/auth/signin`, {email: this.state.email, password: this.state.password}, true);
         console.log("user logged in", response.data)
         Cookies.set('token', response.data.token, { secure: true, sameSite: 'Strict' });
         window.token = response.data.token
         this.props.history.push('/blockChats');
         this.setState({ error: '' })
+        globalEmitter.emit('loggedIn');
     } catch(err) {
       this.setState({
         error: err?.response?.data?.message ?? 'Server Error'
@@ -52,22 +76,6 @@ class LoginScreen extends Component {
     this.setState({
         [name]: value
     })
-  }
-
-  handleCreateAccount = () => {
-    toast.success("Contacte con tu proveedor del servicio para que te cree una cuenta", {
-        style: {
-            backgroundColor: ColorHex.GreenDark_1,
-            color: '#fff',
-            fontWeight: 'bold',
-            padding: '10px',
-        },
-        progressStyle: {
-            backgroundColor: '#fff',
-        },
-        autoClose: 5000,
-        icon: false
-    });
   }
 
   getErrorMessage = () => {
@@ -110,7 +118,7 @@ class LoginScreen extends Component {
             <div style={inputStyling}><CustomButton text="Iniciar Sesión"  width="364px" height="65px" classStyle='btnGreen-clicked' onClickCallback={this.handleLogin}/></div>
             <hr />
             <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, justifySelf: 'center'}}>No tenes una cuenta?</p>
-            <div style={{...inputStyling, marginTop: '15px', justifySelf: 'center'}}><CustomButton text="Crear Cuenta" classStyle='btnGreen'  width="264px" height="65px" onClickCallback={this.handleCreateAccount}/></div>
+            <div style={{...inputStyling, marginTop: '15px', justifySelf: 'center'}}><CustomButton text="Crear Cuenta" classStyle='btnGreen'  width="264px" height="65px" link="createAccount"/></div>
         </div>
       </div>
     );

@@ -5,6 +5,7 @@ import SearchBar from '../Searchbar/Searchbar'
 import Utils from '../Utils'
 import OrderPlacingItem from './OrderPlacingItem'
 import axios from 'axios';
+import HttpRequest from '../HttpRequest'
 
 class ClientOrderPlacingScreen extends Component {
   constructor(props) {
@@ -49,7 +50,7 @@ class ClientOrderPlacingScreen extends Component {
     if(Utils.clientOrderPlacingInventory.length > 0) { return; }
 
     try {
-      const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getTommorowsInventoryWithPictures`);
+      const response = await HttpRequest.get(`/inventory/getTommorowsInventoryWithPictures`);
       this.inventoryItems = response.data
       Utils.clientOrderPlacingInventory = [...response.data]
       this.setState({

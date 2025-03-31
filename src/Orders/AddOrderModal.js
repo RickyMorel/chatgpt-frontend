@@ -10,6 +10,7 @@ import { PopupStyle } from '../Popups/PopupManager';
 import CssProperties from '../CssProperties';
 import CustomSelect from '../Searchbar/CustomSelect';
 import CustomDatePicker from '../Searchbar/CustomDatePicker';
+import HttpRequest from '../HttpRequest';
 
 class AddOrderModal extends Component {
     constructor(props) {
@@ -51,7 +52,7 @@ class AddOrderModal extends Component {
             if(!orderDto.items || orderDto.items.length < 1) { this.props.showPopup(new Error("No se cargo productos!")); return;}
             if(!orderDto.deliveryDate || orderDto.deliveryDate.length < 1) { this.props.showPopup(new Error("No se cargo una fecha de entrega!")); return;}
 
-            const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/order/createOrderFromInterface`, orderDto);
+            const response = await HttpRequest.post(`/order/createOrderFromInterface`, orderDto);
             let orderResponse = {...response.data}
             delete orderResponse._id
             delete orderResponse.chat

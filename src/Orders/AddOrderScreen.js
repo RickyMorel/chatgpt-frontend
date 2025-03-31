@@ -10,6 +10,7 @@ import CustomScroll from '../Searchbar/CustomScroll';
 import CustomSelect from '../Searchbar/CustomSelect';
 import { faFloppyDisk, faRectangleXmark } from '@fortawesome/free-regular-svg-icons';
 import { faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import HttpRequest from '../HttpRequest';
 
 class AddOrderScreen extends Component {
     constructor(props) {
@@ -49,7 +50,7 @@ class AddOrderScreen extends Component {
     
     fetchInventoryItemNames = async () => {
         try {
-        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/inventory/getAllNamesWithCodes`);
+        const response = await HttpRequest.get(`/inventory/getAllNamesWithCodes`);
         this.setState({
             inventoryItemCodes: response.data,
         });
@@ -60,7 +61,7 @@ class AddOrderScreen extends Component {
         this.props.setIsLoading(true)
     
         try {
-          const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/client-crud/phoneNumbers`);
+          const response = await HttpRequest.get(`/client-crud/phoneNumbers`);
           this.setState({
             clientNumbers: response.data,
           })
@@ -75,7 +76,7 @@ class AddOrderScreen extends Component {
     this.props.setIsLoading(true)
 
     try {
-        const response = await axios.get(`${process.env.REACT_APP_HOST_URL}/extentions/getEmporioMoviles`);
+        const response = await HttpRequest.get(`/extentions/getEmporioMoviles`);
         this.setState({
         movilObjs: response.data,
         });
@@ -111,7 +112,7 @@ class AddOrderScreen extends Component {
             if(!orderDto.items || orderDto.items.length < 1) { this.props.showPopup(new Error("No se cargo productos!")); return;}
             if(!orderDto.deliveryDate || orderDto.deliveryDate.length < 1) { this.props.showPopup(new Error("No se cargo una fecha de entrega!")); return;}
 
-            const response = await axios.post(`${process.env.REACT_APP_HOST_URL}/order/createOrderFromInterface`, orderDto);
+            const response = await HttpRequest.post(`/order/createOrderFromInterface`, orderDto);
 
             this.resetScreen()
 
@@ -135,7 +136,7 @@ class AddOrderScreen extends Component {
                 deliveryDate: deliveryDate
             }
     
-            const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, dto);
+            const response = await HttpRequest.put(`/order/editOrder`, dto);
             this.props.history.goBack()         
           } catch (error) {
             this.props.showPopup(error);

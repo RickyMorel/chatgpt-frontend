@@ -9,6 +9,7 @@ import CustomInput from '../Searchbar/CustomInput';
 import CustomSelect from '../Searchbar/CustomSelect';
 import Utils from '../Utils';
 import { faPenToSquare, faPlus } from '@fortawesome/free-solid-svg-icons';
+import HttpRequest from '../HttpRequest';
 const badFormatString = "_BAD_FORMAT"
 
 class OrderComponent extends React.Component {
@@ -141,7 +142,7 @@ class OrderComponent extends React.Component {
           confirmedOrder: orderItems
         })
 
-        const response = await axios.put(`${process.env.REACT_APP_HOST_URL}/order/editOrder`, 
+        const response = await HttpRequest.put(`/order/editOrder`, 
           {
             phoneNumber: this.props.phoneNumber,
             order: orderItems, 

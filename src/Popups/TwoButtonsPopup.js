@@ -5,7 +5,7 @@ import { faRectangleXmark, faSquareCheck } from '@fortawesome/free-regular-svg-i
 import CustomButton from '../Searchbar/CustomButton';
 import Utils from '../Utils';
 
-const TwoButtonsPopup = ({ title, description_1, description_2, bulletPoints, btn1Callback, btn2Callback, closeFunc }) => {
+const TwoButtonsPopup = ({ title, description_1, description_2, bulletPoints, btn1Callback, btn2Callback, closeFunc, btnName_1, btnName_2 }) => {
   return (
     <div>
       <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody, textAlign: 'center'}}>{title}</p>
@@ -23,8 +23,8 @@ const TwoButtonsPopup = ({ title, description_1, description_2, bulletPoints, bt
       }
       <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody, textAlign: 'center'}}>{description_2}</p>
       <div style={{display: 'flex', flexGrow: 1, alignItems: 'center', gap: '15px'}}>
-        <CustomButton text="Quiero marcar manualmente" classStyle="btnRed" width="270px" height="45px" icon={faRectangleXmark} onClickCallback={btn2Callback}/>
-        <CustomButton text="Si, seleccione los mejores" classStyle="btnGreen" width="270px" height="45px" icon={faSquareCheck} onClickCallback={btn1Callback}/>
+        <CustomButton text={btnName_1} classStyle="btnRed" width="270px" height="45px" icon={faRectangleXmark} onClickCallback={btn2Callback}/>
+        <CustomButton text={btnName_2} classStyle="btnGreen" width="270px" height="45px" icon={faSquareCheck} onClickCallback={btn1Callback}/>
       </div>
     </div>
   );
