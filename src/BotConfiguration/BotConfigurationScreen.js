@@ -11,6 +11,7 @@ import { faFloppyDisk, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import CustomTextArea from '../Searchbar/CustomTextArea';
 import CustomToggle from '../Searchbar/CustomToggle';
 import Utils from '../Utils';
+import PhoneNumberComponent from '../Searchbar/PhoneNumberComponent';
 
 class BotConfigurationScreen extends Component {
     constructor(props) {
@@ -22,7 +23,9 @@ class BotConfigurationScreen extends Component {
             customerServiceFrase: '',
             permanentlyBlockClientsAfterCustomerService: false,
             usesInventory: false,
-            needsToSave: false
+            needsToSave: false,
+            globalConfigBotNumber: '',
+            fieldsWithErrors: []
         };
     }
 
@@ -42,7 +45,8 @@ class BotConfigurationScreen extends Component {
                 companyDescriptionFrase: response.data.companyDescriptionFrase,
                 customerServicePhrase: response.data.customerServiceFrase,
                 permanentlyBlockClientsAfterCustomerService: response.data.permanentlyBlockClientsAfterCustomerService,
-                usesInventory: response.data.usesInventory
+                usesInventory: response.data.usesInventory,
+                globalConfigBotNumber: response.data.botNumber
             })
         } catch (error) {}
       }
@@ -54,10 +58,31 @@ class BotConfigurationScreen extends Component {
          });
     }
 
+    hasErrors = async () => {
+        if(this.state.globalConfigBotNumber != this.state.botNumber) {
+            if(this.state.botNumber.length < 9) {
+                this.setState({fieldsWithErrors: ["phoneNumber_empty"]})
+                return true
+            }
+            else if(await PhoneNumberComponent.confirmIfNumberAlreadyExists(this.state.botNumber)) {
+                this.setState({fieldsWithErrors: ["phoneNumber_exists"]})
+                return true
+            }
+        }
+        
+        this.setState({fieldsWithErrors: []})
+
+        return false
+    }
+
     handleSave = async () => {
         this.props.setIsLoading(true)
 
-        console.log("handleSave globalConfig", this.state)
+        const hasErrors = await this.hasErrors()
+
+        console.log("handleSave hasErrors", hasErrors)
+
+        if(hasErrors == true) { this.props.setIsLoading(false); return; } 
 
         try {
             const response = await HttpRequest.put(`/global-config`, {
@@ -95,11 +120,20 @@ class BotConfigurationScreen extends Component {
                     </div>
                     <div className="col-10"></div>
                 </div>
+                <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, marginTop: '10px', marginBottom: '-15px'}}>
+                    {
+                        this.state?.fieldsWithErrors?.map(x => {
+                            if(x == 'phoneNumber_exists') {return "*Ya existe un usuario con este numero.\n"} 
+                            else if(x == 'phoneNumber_empty') {return "*No puedes guardar sin un numero.\n"} 
+                        })
+                    }
+                </p>
                 <div className="row">
                     <div className="col-6">
                         <div style={styles.container}>
                             <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Numero de WhatsApp *</p>
-                            <CustomInput value={this.state.botNumber} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText="Ej: 595971602158" onChange={(value) => this.handleValueChange("botNumber", value)}/>
+                            <PhoneNumberComponent value={this.state.botNumber} hasError={this.state.fieldsWithErrors} OnChangeCallback={(value) => this.handleValueChange("botNumber", value)}/>
+                            {/* <CustomInput value={this.state.botNumber} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText="Ej: 595971602158" onChange={(value) => this.handleValueChange("botNumber", value)}/> */}
                            
                             <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Rol de la IA *</p>
                             <CustomTextArea 

@@ -1,25 +1,23 @@
-import Cookies from 'js-cookie';
 import React, { Component } from 'react';
-import { isDesktop } from 'react-device-detect';
 import { withRouter } from 'react-router-dom/cjs/react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
+import { globalEmitter } from '../GlobalEventEmitter';
 import HttpRequest from '../HttpRequest';
 import CustomButton from '../Searchbar/CustomButton';
 import CustomInput from '../Searchbar/CustomInput';
-import CountryDropdown from '../Searchbar/CountryDropdown';
-import CustomToggle from '../Searchbar/CustomToggle';
-import Utils from '../Utils';
 import CustomTextArea from '../Searchbar/CustomTextArea';
-import { globalEmitter } from '../GlobalEventEmitter';
+import CustomToggle from '../Searchbar/CustomToggle';
+import PhoneNumberComponent from '../Searchbar/PhoneNumberComponent';
+import Utils from '../Utils';
 
 class CreateAccountScreen extends Component {
   constructor(props) {
       super(props);
   
       this.state = {
-        currentStep: 1,
+        currentStep: 2,
         name: ' ',
         email: '',
         password: '',
@@ -27,8 +25,7 @@ class CreateAccountScreen extends Component {
         permanentlyBlockClientsAfterCustomerService: false,
         aiRoleFrase: '',
         companyDescriptionFrase: '',
-        countryCode: '595',
-        nationalNumber: '',
+        phoneNumber: '',
         error: ''
       }
   }
@@ -52,7 +49,7 @@ class CreateAccountScreen extends Component {
   }
 
   validateStep = async (step) => {
-    const { name, email, password, nationalNumber, aiRoleFrase, companyDescriptionFrase  } = this.state;
+    const { name, email, password, phoneNumber, aiRoleFrase, companyDescriptionFrase  } = this.state;
     console.log("validateStep", step)
     switch(step) {
       case 1:
@@ -64,17 +61,18 @@ class CreateAccountScreen extends Component {
           this.setState({ error: 'La contraseña debe tener al menos 6 caracteres, 1 número y 1 mayúscula' });
           return false;
         }
-        else if(await this.configWithEmailAlreadyExists()) {
+        else if(await this.confirmIfEmailAlreadyExists()) {
           this.setState({ error: 'Ya existe un usuario con este correo' });
           return false;
         }
         return true;
       case 2:
-        if (nationalNumber.length != 9) {
+        console.log("phoneNumber", this.state.phoneNumber)
+        if (phoneNumber.length < 9) {
           this.setState({ error: 'Numero invalido' });
           return false;
         }
-        else if(await this.configWithNumberAlreadyExists()) {
+        else if(await PhoneNumberComponent.confirmIfNumberAlreadyExists(this.state.phoneNumber)) {
           this.setState({ error: 'Numero ya exitse' });
           return false;
         }
@@ -97,23 +95,12 @@ class CreateAccountScreen extends Component {
     }
   }
 
-  configWithEmailAlreadyExists = async () => {
+  confirmIfEmailAlreadyExists = async () => {
     try {
       const response = await HttpRequest.get(`/global-config/exists?email=${this.state.email}`, true);
       console.log("user logged in", response.data)
       return response.data
     } catch(err) {}
-  }
-
-  configWithNumberAlreadyExists = async () => {
-    console.log("configWithNumberAlreadyExists", this.state.countryCode)
-    try {
-      const number = this.state.countryCode.toString().replaceAll("+", "") + this.state.nationalNumber
-      console.log("number", number)
-      const response = await HttpRequest.get(`/global-config/exists?phoneNumber=${number}`, true);
-      console.log("user logged in", number, response.data)
-      return response.data
-    } catch(err) { console.log("configWithNumberAlreadyExists ERROR", err)}
   }
 
   handleCreateAccount = async () => {    
@@ -123,7 +110,7 @@ class CreateAccountScreen extends Component {
             name: this.state.name,
             email: this.state.email,
             password: this.state.password,
-            botNumber: this.state.countryCode.replaceAll("+", "") + this.state.nationalNumber,
+            botNumber: this.state.phoneNumber,
             usesInventory: this.state.usesInventory,
             permanentlyBlockClientsAfterCustomerService: this.state.permanentlyBlockClientsAfterCustomerService,
             aiRoleFrase: this.state.aiRoleFrase,
@@ -147,27 +134,8 @@ class CreateAccountScreen extends Component {
   }
 
   renderPhoneInput() {
-    const { error, countryCode, nationalNumber } = this.state;
-    
     return (
-      <>
-        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Número que usará WhatsBot para responder</p>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <div style={{ position: 'relative' }}>
-            <CountryDropdown value={this.state?.countryCode} OnChange={(value) => this.setState({countryCode: value?.code})}/>
-          </div>
-          
-          <CustomInput 
-            hasError={error.includes('teléfono')}
-            width='264px'
-            height='65px'
-            dataType="tel" 
-            placeHolderText="971602289" 
-            value={nationalNumber}
-            onChange={(value) => this.handleChangeData('nationalNumber', value)}
-          />
-        </div>
-      </>
+      <PhoneNumberComponent OnChangeCallback={(value) => { console.log("Changed phone value", value); this.setState({phoneNumber: value} )}}/>
     );
   }
 

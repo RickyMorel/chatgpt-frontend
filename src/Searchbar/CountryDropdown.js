@@ -18,9 +18,11 @@ const CountryDropdown = ({OnChange, value}) => {
   ];
 
   useEffect(() => {
+    if(!value.includes("+")) { value = "+" + value}
+    
     let country = countries.find(x => x.code == value)
     setCountry(country)
-  }, [])
+  }, [value])
 
   const setCountry = (country) => {
     OnChange(country)
