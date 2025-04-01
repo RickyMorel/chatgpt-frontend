@@ -1,16 +1,23 @@
 import axios from 'axios';
 
 class HttpRequest {
-    static async get(link) {
+    static async get(link, noToken = false) {
         const token = window.token
-        const response = await axios.get(
-            `${process.env.REACT_APP_HOST_URL}${link}`,
-            {
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                },
-            }
-        );
+        let response = undefined
+
+        if(noToken) {
+            response = await axios.get(`${process.env.REACT_APP_HOST_URL}${link}`);
+        }
+        else {
+            response = await axios.get(
+                `${process.env.REACT_APP_HOST_URL}${link}`,
+                {
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                    },
+                }
+            );
+        }
         return response
     }
 

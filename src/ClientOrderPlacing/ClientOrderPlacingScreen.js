@@ -46,11 +46,25 @@ class ClientOrderPlacingScreen extends Component {
     Utils.needsRuc = hasRuc
   }
 
+  getClientCartNumber() {
+    if(Utils.clientCartBotNumber.length > 0) { return; }
+
+    const queryString = window?.location?.search;
+    const paramValue = queryString ? queryString.slice(1) : null;
+
+    Utils.clientCartBotNumber = paramValue
+
+    console.log("paramValue", paramValue)
+  }
+
   fetchTommorrowsInventory = async () => {
+    console.log("fetchTommorrowsInventory")
     if(Utils.clientOrderPlacingInventory.length > 0) { return; }
 
+    this.getClientCartNumber()
+
     try {
-      const response = await HttpRequest.get(`/inventory/getTommorowsInventoryWithPictures`);
+      const response = await HttpRequest.get(`/inventory/getTommorowsInventoryWithPictures?botNumber=${Utils.clientCartBotNumber}`, false);
       this.inventoryItems = response.data
       Utils.clientOrderPlacingInventory = [...response.data]
       this.setState({

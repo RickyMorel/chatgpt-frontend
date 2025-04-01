@@ -104,7 +104,7 @@ class QrCodeScreen extends Component {
             ariaLabel="color-ring-loading"
             wrapperStyle={{}}
             wrapperClass="color-ring-wrapper"
-            colors={[ColorHex.First, ColorHex.Fifth, ColorHex.Second, ColorHex.Third, '#849b87']}
+            colors={[ColorHex.GreenFabri, ColorHex.GreenDark_1, ColorHex.GreenDark_2, ColorHex.GreyFabri, ColorHex.BlueFabri]}
           />
         }
       </div>

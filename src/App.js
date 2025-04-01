@@ -52,10 +52,13 @@ class App extends Component {
   componentDidMount() {
     const token = Cookies.get('token');
     window.token = token
-    this.fetchGlobalConfig()
-    this.GetBotNumber()
-    //Get the instance status every second until y link whatsapp
-    this.intervalId = setInterval(this.GetInstanceStatus, 10000);
+
+    if(token) {
+      //Get the instance status every second until y link whatsapp
+      this.intervalId = setInterval(this.GetInstanceStatus, 10000);
+      this.fetchGlobalConfig()
+      this.GetBotNumber()
+    }
 
     globalEmitter.addEventListener('loggedIn', this.handleLoggedIn);
   }
@@ -199,7 +202,6 @@ class App extends Component {
                     {...props}  
                     showPopup={this.props.showPopup} 
                     setIsLoading={this.setIsLoading} 
-                    botNumber={this.state.botNumber}
                   />
                 </div>
               )} 
