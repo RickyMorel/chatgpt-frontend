@@ -3,15 +3,14 @@ import 'firebase/compat/firestore'
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB_GeaQ091OEgoi3pQURwpLNBB1r0JJMyc",
-    authDomain: "fir-test-f2f77.firebaseapp.com",
-    databaseURL: "https://fir-test-f2f77.firebaseio.com",
-    projectId: "fir-test-f2f77",
-    storageBucket: "fir-test-f2f77.appspot.com",
-    messagingSenderId: "1052201920246",
-    appId: "1:1052201920246:web:31dd35d7e1d16ec7beeed7",
-    measurementId: "G-9CVWYCRLQQ"
-};
+    apiKey: "AIzaSyD2Q6G3joQ15SMED35sJ--Yr4QiXc4LRko",
+    authDomain: "whatsbot-e670a.firebaseapp.com",
+    projectId: "whatsbot-e670a",
+    storageBucket: "whatsbot-e670a.firebasestorage.app",
+    messagingSenderId: "78686841353",
+    appId: "1:78686841353:web:40e27ae280d071f446e6d8",
+    measurementId: "G-775330VX1Z"
+  };
 
 const firebaseApp = firebase.initializeApp(firebaseConfig)
 

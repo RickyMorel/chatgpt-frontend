@@ -13,6 +13,8 @@ import { useHistory  } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import Utils from './Utils';
 import { isMobile, isTablet, isDesktop } from 'react-device-detect';
+import CustomFileInput from './Searchbar/CustomFileInput';
+import LogoInput from './Searchbar/LogoInput';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
@@ -132,7 +134,7 @@ function SideNav(props)  {
       <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>
         <div className="d-flex flex-column p-3" style={{ height: '100vh' }}>
           <div className="text-center p-3">
-            <img src={props?.globalConfig?.companyLogoUrl} alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '24px' }} />
+            <LogoInput imageURL={props?.globalConfig?.companyLogoUrl}/>
           </div>
           <hr className='border border-dark'/>
           {navBarButtonHtmls}

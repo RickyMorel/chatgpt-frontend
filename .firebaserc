@@ -1,8 +1,5 @@
 {
   "projects": {
-    "default": "whatsbot-e670a",
-    "whatsbot": "whatsbot-e670a"
-  },
-  "targets": {},
-  "etags": {}
+    "default": "whatsbot-e670a"
+  }
 }

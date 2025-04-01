@@ -1,10 +1,9 @@
 import { faRectangleXmark } from '@fortawesome/free-regular-svg-icons';
+import { faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons';
 import React, { Component } from 'react';
 import { ColorHex } from '../Colors';
 import '../SideNav.css';
 import CustomButton from './CustomButton';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudUpload, faCloudUploadAlt, faFileUpload } from '@fortawesome/free-solid-svg-icons';
 
 class CustomFileInput extends Component {
     fileInputRef = React.createRef();
