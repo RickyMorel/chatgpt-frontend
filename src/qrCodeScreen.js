@@ -147,11 +147,11 @@ class QrCodeScreen extends Component {
             />
           </div>
           {
-            status == "loading" ?
-            loadingHtml
+            status.trim() == "wrong_qr_number" ?
+            wrongNumberHtml
             :
-            status == "wrong_qr_number" ? 
-              wrongNumberHtml
+            status.trim() == "loading" ? 
+              loadingHtml
               :
               scanQrHtml
           }

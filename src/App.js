@@ -154,7 +154,7 @@ class App extends Component {
           <></>
           :
           <div className="col-auto">
-            <SideNav showSetupPopup={this.props.showSetupPopup} setupConditions={this.state.setupConditions} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+            <SideNav showSetupPopup={this.props.showSetupPopup} setupConditionsCallback={this.state.setupConditions} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
           </div>
         }
         <div className="col">
