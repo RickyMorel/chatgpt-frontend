@@ -29,9 +29,10 @@ const SetupBlockedPopup = ({setupConditions, closePopupFunc}) => {
                 {setupConditions.hasBusinessDescription == "unneeded" ? <></> : Condition(setupConditions.hasBusinessDescription == "true", "Dar descripcion de negocio", '/aiConfiguration')}
                 {setupConditions.hasProducts == "unneeded" ? <></> : Condition(setupConditions.hasProducts == "true", "Cargar productos", '/createItem')}
                 {setupConditions.hasExamples == "unneeded" ? <></> : Condition(setupConditions.hasExamples == "true", "Cargar 15 ejemplos de conversacion", '/createExampleConversation')}
-                {setupConditions.hasAnswers == "unneeded" ? <></> : Condition(setupConditions.hasAnswers == "true", "Cargar preguntas y respuestas", '/createExampleConversation')}
+                {setupConditions.hasAnswers == "unneeded" ? <></> : Condition(setupConditions.hasAnswers == "true", "Cargar 5 preguntas y respuestas", '/createExampleConversation')}
             </ul>
         </div>
+        <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center'}}>Recargue la pagina para ver las actualizaciones</p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '20px' }}>
           <CustomButton
             text="Cerrar"

@@ -1,24 +1,23 @@
+import { faClock } from '@fortawesome/free-regular-svg-icons';
+import { faArrowRightFromBracket, faCartShopping, faChartSimple, faClipboardList, faCloud, faRobot, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { isDesktop } from 'react-device-detect';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Sidenav } from 'rsuite';
 import { ColorHex } from './Colors';
 import CssProperties from './CssProperties';
-import { firestore } from './firebaseConfig';
-import './SideNav.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightFromBracket, faCartShopping, faChartSimple, faClipboardList, faCloud, faTriangleExclamation, faUserGroup, faRobot } from '@fortawesome/free-solid-svg-icons';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
 import CustomButton from './Searchbar/CustomButton';
-import { useHistory  } from 'react-router-dom';
-import Cookies from 'js-cookie';
-import Utils from './Utils';
-import { isMobile, isTablet, isDesktop } from 'react-device-detect';
-import CustomFileInput from './Searchbar/CustomFileInput';
 import LogoInput from './Searchbar/LogoInput';
+import './SideNav.css';
+import Utils from './Utils';
+import HttpRequest from './HttpRequest';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
   const [playSound, setPlaySound] = useState(false);
+  const [setupConditions, setSetupConditions] = useState(undefined);
   const [messageCount, setMessageCount] = useState(0);
   const [totalClientsToMessage, setTotalClientsToMessage] = useState(0);
   const history = useHistory();
@@ -37,6 +36,7 @@ function SideNav(props)  {
 
   useEffect(() => {
       fetchChatData();
+      fetchSetupConditions();
   }, [props.botNumber]);
 
   useEffect(() => {
@@ -45,25 +45,23 @@ function SideNav(props)  {
     }
   }, [playSound]);
 
+  const fetchSetupConditions = async () => {
+    try {
+        const response = await HttpRequest.get(`/global-config/getSetupConditions`);
+        console.log("fetchSetupConditions", response.data)
+
+        setSetupConditions(response.data)
+    } catch (error) {}
+  }
+
   const fetchChatData = async () => {
     if (!props.botNumber) {
         return;
     }
 
     setMessageCount(props?.globalConfig?.usedMonthlyMessages)
-    setTotalClientsToMessage(props?.globalConfig?.maxMonthlyMessages)
-    // const ref = firestore.collection('globalConfig').doc(String(props.botNumber));
-
-    // ref.get()
-    //   .then((doc) => {
-    //     const response = doc.data()
-    //     setMessageCount(response.messageCount)
-    //     setTotalClientsToMessage(response.totalClientsToMessage)
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error getting document:', error);
-    //   });
-  }
+      setTotalClientsToMessage(props?.globalConfig?.maxMonthlyMessages)
+    }
 
   const handleLogOut = () => {
     Cookies.remove('token');
@@ -93,14 +91,14 @@ function SideNav(props)  {
     if(currentPath == "/problematicChats") { setHasNewProblematicChat(false); }
   };
 
-  const handleLinkClick = (e, link) => {
-    console.log("props.setupConditions.minimumConditionsMet", props.setupConditions)
-    const disableCondition = !props.setupConditions.minimumConditionsMet && link != "/aiConfiguration" &&  link != "/inventory"
+  const handleLinkClick = async (e, link) => {
+    console.log("props.setupConditions.minimumConditionsMet", setupConditions)
+    const disableCondition = !setupConditions.minimumConditionsMet && link != "/aiConfiguration" &&  link != "/inventory"
     
     if(disableCondition) {
       e.preventDefault();
       console.log("props a", props)
-      props.showSetupPopup(props.setupConditions, props.history)
+      props.showSetupPopup(setupConditions, props.history)
     }
   }
 
@@ -118,7 +116,7 @@ function SideNav(props)  {
   const navBarButtonHtmls = navBarButton.map(x => {
     if(x.link == "/inventory" && props?.globalConfig?.usesInventory == false) { return; }
     
-    const disableCondition = !props?.setupConditions?.minimumConditionsMet && x.link != "/aiConfiguration" &&  x.link != "/inventory"
+    const disableCondition = !setupConditions?.minimumConditionsMet && x.link != "/aiConfiguration" &&  x.link != "/inventory"
     const navBarButtonStyle = GetNavButtonStyle(x.link, disableCondition)
 
     return (

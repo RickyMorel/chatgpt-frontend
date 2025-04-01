@@ -44,7 +44,6 @@ class App extends Component {
       instanceStatus: "a",
       isReloading: false,
       globalConfig: undefined,
-      setupConditions: undefined,
     };
 
     this.intervalId = null
@@ -54,7 +53,6 @@ class App extends Component {
     const token = Cookies.get('token');
     window.token = token
     this.fetchGlobalConfig()
-    this.fetchSetupConditions()
     this.GetBotNumber()
     //Get the instance status every second until y link whatsapp
     this.intervalId = setInterval(this.GetInstanceStatus, 10000);
@@ -67,7 +65,6 @@ class App extends Component {
 
     this.GetInstanceStatus()
     this.fetchGlobalConfig()
-    this.fetchSetupConditions()
     this.GetBotNumber()
   }
 
@@ -84,15 +81,6 @@ class App extends Component {
         const response = await HttpRequest.get(`/global-config`);
 
         this.setState({globalConfig: response.data})
-    } catch (error) {}
-  }
-
-  fetchSetupConditions = async () => {
-    try {
-        const response = await HttpRequest.get(`/global-config/getSetupConditions`);
-        console.log("fetchSetupConditions", response.data)
-
-        this.setState({setupConditions: response.data})
     } catch (error) {}
   }
 
@@ -154,7 +142,7 @@ class App extends Component {
           <></>
           :
           <div className="col-auto">
-            <SideNav showSetupPopup={this.props.showSetupPopup} setupConditionsCallback={this.state.setupConditions} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+            <SideNav showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
           </div>
         }
         <div className="col">
