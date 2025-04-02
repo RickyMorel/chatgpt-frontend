@@ -15,7 +15,7 @@ class Utils {
     static whatsappExplinationText = `Aquí ingresarás el número que deseas que WhatsBot utilice para responder`
     static businessDescriptionExplinationText = `Esto permite que WhatsBot entienda de qué se trata tu negocio y cuál será su rol en él`
     static loadProductsExplinationText = `Aqui cargaras el catalogo entero de tus productos, asi WhatsBot sabra que vender a tus clientes`
-    static conversationExamplesExplinationText = `Le daras ejemplos a WhatsBot de como queres que le responda a tus clientes, asi WhatsBot podra imitar tu forma de responder`
+    static conversationExamplesExplinationText = `Le daras ejemplos a WhatsBot de como queres que le responda a tus clientes, asi WhatsBot podra imitar tu forma de responder.<strong> Empezarmos con 5</strong>, pero <strong>si quieres que WhatsBot responda bien en todos los casos</strong>, le vas a tener que <strong>dar mas ejemplos</strong>`
     static questionsAndAnswersExplinationText = `Aqui cargaras todas las respuestas a preguntas que te suelen hacer tus clientes, como:<br/>-Cuando abren?<br/>-En cuanto tiempo llega mi pedido?<br/>-Trabajan en feriados?`
 
     static countries = [

@@ -30,11 +30,13 @@ const SetupBlockedPopup = ({setupConditions, closePopupFunc}) => {
         </li>
         {
           showPopup == true ? 
+          <div style={{display: 'flex', marginLeft: '-35px'}}>
             <ExplinationPopup 
-              width={500} 
+              width={550} 
               height={popupHeight} 
               text={explinationText} 
             />
+          </div>
           :
           <></>
         }
@@ -52,7 +54,7 @@ const SetupBlockedPopup = ({setupConditions, closePopupFunc}) => {
                 {setupConditions.hasBusinessDescription == "unneeded" ? <></> : Condition(setupConditions.hasBusinessDescription == "true", "Dar descripcion de negocio", '/aiConfiguration', Utils.businessDescriptionExplinationText)}
                 {setupConditions.hasProducts == "unneeded" ? <></> : Condition(setupConditions.hasProducts == "true", "Cargar productos", '/createItem', Utils.loadProductsExplinationText)}
                 {setupConditions.hasAnswers == "unneeded" ? <></> : Condition(setupConditions.hasAnswers == "true", "Cargar 5 preguntas y respuestas", '/createQuestionAndAnswer', Utils.questionsAndAnswersExplinationText, 130)}
-                {setupConditions.hasExamples == "unneeded" ? <></> : Condition(setupConditions.hasExamples == "true", "Cargar 15 ejemplos de conversacion", '/createExampleConversation', Utils.conversationExamplesExplinationText, 80)}
+                {setupConditions.hasExamples == "unneeded" ? <></> : Condition(setupConditions.hasExamples == "true", "Cargar 5 ejemplos de conversacion", '/createExampleConversation', Utils.conversationExamplesExplinationText, 115)}
             </ul>
         </div>
         <p style={{...CssProperties.BodyTextStyle, color: ColorHex.TextBody, textAlign: 'center'}}>Recargue la pagina para ver las actualizaciones</p>
