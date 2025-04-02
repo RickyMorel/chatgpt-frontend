@@ -1,0 +1,326 @@
+import { useState, useRef, useEffect } from 'react';
+import { ColorHex } from '../Colors';
+import CssProperties from '../CssProperties';
+import CustomButton from '../Searchbar/CustomButton';
+import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
+import HttpRequest from '../HttpRequest';
+
+const ChatBotWidget = (props) => {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [messages, setMessages] = useState([
+    { id: 1, text: 'Esribe algo para empezar...', isBot: true }
+  ]);
+  const [inputMessage, setInputMessage] = useState('');
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    console.log("props.ownerId", props.ownerId)
+    fetchConversation()
+  }, [props.ownerId]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const fetchConversation = async () => {
+    try {
+      const response = await HttpRequest.get(`/client-crud/getClientByPhoneNumber?phoneNumber=test_${props.ownerId}`);
+      console.log(`/client-crud/getClientByPhoneNumber?phoneNumber?test_${props.ownerId}`)
+
+      let i = 2
+      let messages = []
+      response.data.lastChat.forEach(message => {
+        const messageObj = { id: i, text: message.content, isBot: message.role != "user" }
+        messages.push(messageObj)
+        i++
+      });
+      setMessages(messages)
+    } catch (error) {}
+  }
+
+  const toggleChat = () => {
+    if (isChatOpen) {
+      setIsClosing(true);
+      setTimeout(() => {
+        setIsChatOpen(false);
+        setIsClosing(false);
+      }, 300);
+    } else {
+      setIsChatOpen(true);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (inputMessage.trim() === '') return;
+
+    const newMessage = {
+      id: messages.length + 1,
+      text: inputMessage,
+      isBot: false
+    };
+
+    setMessages([...messages, newMessage]);
+    setInputMessage('');
+
+    try {
+      const response = await HttpRequest.post(`/chat-gpt-ai/mockReplyToClient`, [{role: "user", content: inputMessage}]);
+      const botResponse = {
+        id: messages.length + 2,
+        text: response.data.content,
+        isBot: true
+      };
+      setMessages(prev => [...prev, botResponse]);
+    } catch(err) {}
+  };
+
+  const parseMessageText = (text) => {
+    // Regular expression to match URLs starting with http or https
+    const urlRegex = /((https?:\/\/[^\s]+))/g;
+    // Split text by URLs
+    const parts = text.split(urlRegex);
+    
+    return parts.map((part, index) => {
+      // If the part matches a URL, render it as a link
+      if (urlRegex.test(part)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'blue', textDecoration: 'underline' }}
+          >
+            {part}
+          </a>
+        );
+      }
+      // Otherwise, return the part as plain text
+      return <div key={index}>{part}</div>;
+    });
+  }
+
+  const MessagesContainer = () => {
+    return (
+      <div className="messages-container">
+        {messages.map((message) => (
+          <div 
+            key={message.id}
+            className={`message ${message.isBot ? 'bot' : 'user'}`}
+          >
+            <p 
+              style={{
+                ...CssProperties.BodyTextStyle, 
+                color: !message.isBot ? ColorHex.White : 'black', 
+                marginBottom: '-5px', 
+                marginTop: '-5px'
+              }}
+            >
+              {parseMessageText(message.text)}
+            </p>
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
+    );
+  };
+
+  return (
+    <div className="chatbot-container">
+      {isChatOpen && (
+        <div className={`chat-window ${isClosing ? 'closing' : ''}`}>
+          <div className="chat-header">
+            <div style={{display: 'flex',  gap: '180px', justifyContent: 'space-between'}}>
+              <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.White}}>WhatsBot</p>
+              <div><CustomButton iconSize="15px" width='30px' height="30px" icon={faArrowsRotate} onClickCallback={() => {}}/></div>
+            </div>
+            <p style={{...CssProperties.BodyTextStyle, color: ColorHex.White, marginTop: '-23px', marginRight: 'auto'}}>Testear tu assistente virtual</p>
+          </div>
+          
+          {MessagesContainer()}
+
+          <div className="input-container">
+            <input
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              placeholder="Escriba tu mensaje..."
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            />
+            <button onClick={handleSendMessage}>Enviar</button>
+          </div>
+        </div>
+      )}
+
+      <button className={`chat-toggle active`} onClick={toggleChat}>
+        <img 
+          src='./images/iconWhite.png' 
+          alt="Logo" 
+          className="img-fluid" 
+          style={{ width: '40px', height: '40px'}} 
+        />
+      </button>
+
+      <style jsx>{`
+        .chatbot-container {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          z-index: 1000;
+          display: flex;
+          flex-direction: column-reverse;
+          gap: 20px;
+          flexDirection: row 
+        }
+
+        .chat-toggle {
+          background: ${ColorHex.GreenDark_1};
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          color: white;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .chat-window {
+          width: 350px;
+          height: 500px;
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+          display: flex;
+          flex-direction: column;
+          animation: slideIn 0.3s ease-out;
+          transform-origin: bottom right;
+        }
+
+        .chat-toggle:active {
+          transform: scale(0.95);
+        }
+
+        .chat-window.closing {
+          animation: slideOut 0.3s ease-in;
+        }
+
+        @keyframes slideIn {
+          from {
+            transform: translateY(100%) scale(0.5);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+        }
+
+        @keyframes slideOut {
+          from {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+          }
+          to {
+            transform: translateY(100%) scale(0.5);
+            opacity: 0;
+          }
+        }
+
+        .chat-header {
+          padding: 15px;
+          background: ${ColorHex.GreenDark_1};
+          color: white;
+          border-radius: 12px 12px 0 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          height: 70px;
+        }
+
+        .messages-container {
+          flex: 1;
+          padding: 16px;
+          overflow-y: auto;
+        }
+
+        .message {
+          margin: 8px 0;
+          padding: 8px 12px;
+          border-radius: 12px;
+          max-width: 80%;
+          animation: messageFade 0.2s ease;
+          width: 300px;
+          word-wrap: break-word;
+        }
+
+        @keyframes messageFade {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .message.user {
+          background: ${ColorHex.GreenDark_1};
+          color: white;
+          margin-left: auto;
+        }
+
+        .message.bot {
+          background: #e0e0e0;
+          color: black;
+        }
+
+        .input-container {
+          padding: 16px;
+          display: flex;
+          gap: 8px;
+          border-top: 1px solid #ddd;
+        }
+
+        .input-container input {
+          flex: 1;
+          padding: 8px 12px;
+          border: 1px solid #ddd;
+          border-radius: 20px;
+          outline: none;
+          transition: all 0.2s ease;
+        }
+
+        .input-container input:focus {
+          border-color: ${ColorHex.GreenDark_1};
+          box-shadow: 0 0 0 2px rgba(0,112,243,0.2);
+        }
+
+        .input-container button {
+          background: ${ColorHex.GreenDark_1};
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 20px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .input-container button:hover {
+          background: ${ColorHex.GreenDark_1};
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default ChatBotWidget;

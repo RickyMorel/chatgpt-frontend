@@ -31,6 +31,7 @@ import QuestionsAndAnswersScreen from './QuestionsAndAnswers/QuestionsAndAnswers
 import CreateQuestionAndAnswerScreen from './QuestionsAndAnswers/CreateQuestionAndAnswerScreen';
 import CreateAccountScreen from './Login/CreateAccountScreen';
 import { globalEmitter } from './GlobalEventEmitter';
+import ChatBotWidget from './TestChatbot/ChatBotWidget';
 
 class App extends Component {
   constructor(props) {
@@ -123,7 +124,6 @@ class App extends Component {
 
   render() {
     const currentPath = window.location.pathname;
-    console.log("this.state.instanceStatus", this.state.instanceStatus)
 
     return (
     this.state.isReloading ? 
@@ -146,6 +146,7 @@ class App extends Component {
           :
           <div className="col-auto">
             <SideNav showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+            <ChatBotWidget ownerId={this.state?.globalConfig?.ownerId}/>
           </div>
         }
         <div className="col">

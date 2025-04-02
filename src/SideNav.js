@@ -48,7 +48,6 @@ function SideNav(props)  {
   const fetchSetupConditions = async () => {
     try {
         const response = await HttpRequest.get(`/global-config/getSetupConditions`);
-        console.log("fetchSetupConditions", response.data)
 
         setSetupConditions(response.data)
     } catch (error) {}
