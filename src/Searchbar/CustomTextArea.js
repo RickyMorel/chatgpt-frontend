@@ -44,7 +44,7 @@ class CustomTextArea extends Component {
 
         const styling = {
             backgroundColor: canEdit ? ColorHex.White : ColorHex.Background,
-            color: ColorHex.red,
+            color: ColorHex.TextBody,
             width: width ?? '800px',
             height: height ?? '150px',  // Increased default height for textarea
             borderRadius: '10px',

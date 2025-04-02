@@ -4,14 +4,25 @@ import CssProperties from '../CssProperties';
 import '../SideNav.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ExplinationPopup from './ExplinationPopup';
 
 class CustomButton extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            showPopup: false
+        };
+    }
+
+    handleMouse = (hasEntered) => {
+        if(!this.props.explinationText) {return;}
+
+        this.setState({ showPopup: hasEntered})
     }
 
     render() {
-        const { text, icon, onClickCallback, link, width, height, classStyle, iconSize, linkData, disabled = false } = this.props;
+        const { text, icon, onClickCallback, link, width, height, classStyle, iconSize, linkData, explinationText = undefined, disabled = false } = this.props;
 
         const styling = {
             width: width ?? 'auto',
@@ -51,9 +62,21 @@ class CustomButton extends Component {
                     {iconHtml}
                 </Link>
             ) : (
-                <button onClick={onClickCallback} disabled={disabled} style={styling} className={!disabled ? classStyle ?? 'nav-item' : ''}>
-                    {iconHtml}
-                </button>
+                <div>
+                    <button onMouseEnter={() => this.handleMouse(true)} onMouseLeave={() => this.handleMouse(false)}onClick={onClickCallback} disabled={disabled} style={styling} className={!disabled ? classStyle ?? 'nav-item' : ''}>
+                        {iconHtml}
+                    </button>
+                    {
+                        this.state.showPopup == true ? 
+                        <ExplinationPopup 
+                            width={width} 
+                            height={"auto"} 
+                            text={this.props?.explinationText} 
+                        />
+                        :
+                        <></>
+                    }
+                </div>
             )
         );
     }

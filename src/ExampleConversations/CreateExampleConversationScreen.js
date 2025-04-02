@@ -24,7 +24,7 @@ class CreateExampleConversationScreen extends Component {
             editingId: null, // New state for tracking edits
         };
 
-        this.catalogLink = "[catalogLink]"
+        this.catalogLink = "[catalogueLink]"
         this.atentionPhrase = "Te pasaremos con atencion al cliente"
         this.handleUserChange = this.handleUserChange.bind(this);
         this.handleTextChange = this.handleTextChange.bind(this);
@@ -78,6 +78,11 @@ class CreateExampleConversationScreen extends Component {
     }
 
     handleUserChange(value) {
+        if(value == "IA" && this.state.messages.length < 1) {
+            this.showErrorToast("La conversacion siempre inicia con el cliente 🙋🏻‍♂️", ColorHex.OrangeFabri)
+            return;
+        }
+
         this.setState({ selectedUser: value });
     }
 
@@ -90,7 +95,7 @@ class CreateExampleConversationScreen extends Component {
         if (!this.state.messageText) return;
 
         if(this.state.messageText.includes(this.catalogLink) && this.state.selectedUser != "IA") {
-            this.showErrorToast("Solo la IA 🤖 puede pasar el link del catalogo", ColorHex.OrangeFabri)
+            this.showErrorToast("Solo la IA 🤖 puede pasar el link del catalogo🛒", ColorHex.OrangeFabri)
             return;
         }
         else if(this.state.messageText.includes(this.atentionPhrase) && this.state.selectedUser != "IA") {
@@ -99,7 +104,7 @@ class CreateExampleConversationScreen extends Component {
         }
 
         if(this.state.messages.find(x => x.text == this.atentionPhrase)) {
-            this.showErrorToast("Una vez que WhatsBot haya pasado la conversacion a atencion al cliente, ya no responde mas", ColorHex.RedFabri)
+            this.showErrorToast("Una vez que haya pasado la conversacion a atencion al cliente 🧑‍💻, WhatsBot ya no responde mas ❌", ColorHex.RedFabri)
             return;
         }
 
@@ -146,6 +151,7 @@ class CreateExampleConversationScreen extends Component {
             messages: [], 
             nextId: 1, 
             selectedUser: 'Cliente',
+            messageText: '',
             editingId: null 
         });
     }
@@ -162,10 +168,24 @@ class CreateExampleConversationScreen extends Component {
         let messageText = this.state.messageText
         messageText = messageText.replaceAll(phrase, "")
 
+        this.handleUserChange("IA")
+
         this.setState({
-            selectedUser: "IA",
             messageText: messageText + phrase
         });
+    }
+
+    handleAddAtentionPhrase = (phrase) => {
+        this.setState({
+            selectedUser: "IA",
+            messageText: phrase
+        }, () => {
+            this.handleAddMessage();
+            this.setState({
+                selectedUser: "Cliente",
+                messageText: ""
+            })
+        })
     }
 
     handleRemoveMessage = (id) => {
@@ -223,8 +243,9 @@ class CreateExampleConversationScreen extends Component {
     }
 
     removeAIMessagesBeforeAtentionMessage = (newMessage) => {
-        //if(this.state.messages[this.state.messages.length - 1].text != this.atentionPhrase) { return; }
         if(newMessage.text != this.atentionPhrase) { return; }
+
+        if(this.state.messages[this.state.messages.length - 1]?.sender != "IA") {return; }
 
         this.showErrorToast("Cuando se envia el mensaje de atencion al cliente, es el unico mensaje que puede enviar", ColorHex.OrangeFabri)
 
@@ -249,6 +270,8 @@ class CreateExampleConversationScreen extends Component {
 
     messageElement = (message, isExample) => {
         let messageOwner = message.sender
+
+        const parsedMessage = message.text.replaceAll(this.catalogLink, "{Aqui saldria tu link del catalogo🛒}")
 
         if(message.text.includes(this.atentionPhrase)) { messageOwner = "atencion" }
 
@@ -276,7 +299,20 @@ class CreateExampleConversationScreen extends Component {
                         </div>
                     }
                 </div>
-                <div style={styles.messageText}>{message.text}</div>
+                <div style={styles.messageText}>
+                    {
+                        parsedMessage.split("{Aqui saldria tu link del catalogo🛒}").map((part, index, arr) => (
+                            <React.Fragment key={index}>
+                                {part}
+                                {index < arr.length - 1 && (
+                                    <span style={{ color: ColorHex.OrangeFabri }}>
+                                    {"{Aqui saldria tu link del catalogo🛒}"}
+                                    </span>
+                                )}
+                            </React.Fragment>
+                        ))
+                    }
+                </div>
             </div>
         )
     }
@@ -363,11 +399,11 @@ class CreateExampleConversationScreen extends Component {
                             <div style={styles.controls}>
                                 {
                                     this.props?.globalConfig?.usesInventory == true ?
-                                    <CustomButton text="Añadir link del catalogo"  width="200px" height="45px" classStyle='btnGreen-clicked' onClickCallback={() => this.handleAddSpecialPhrase(this.catalogLink)}/>
+                                    <CustomButton explinationText="Este boton agregara el link del catalogo a tu respuesta🛒" text="Añadir link del catalogo"  width="200px" height="45px" classStyle='btnOrange-clicked' onClickCallback={() => this.handleAddSpecialPhrase(this.catalogLink)}/>
                                     :
                                     <></>
                                 }
-                                <CustomButton text="Pasar a atencion al cliente"  width="230px" height="45px" classStyle='btnOrange-clicked' onClickCallback={() => this.handleAddSpecialPhrase(this.atentionPhrase)}/>
+                                <CustomButton explinationText="Este boton hara que WhatsBot pare de responder❌, y envie la conversacion a atencion al cliente🧑‍💻" text="Pasar a atencion al cliente"  width="230px" height="45px" classStyle='btnMarron-clicked' onClickCallback={() => this.handleAddAtentionPhrase(this.atentionPhrase)}/>
                             </div>
                         </div>
                     </div>
