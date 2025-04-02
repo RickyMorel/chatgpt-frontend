@@ -88,7 +88,12 @@ class CreateQuestionAndAnswerScreen extends Component {
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
                     <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Crear Pregunta' : 'Editar Pregunta'} classStyle="btnGreen" width="182px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
                     <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="questionsAndAnswers"/></div>
-                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text='Ver Otro Ejemplo' icon={faRotateRight} onClickCallback={this.fetchExample}/></div>
+                    {
+                        this.state.answer.length < 1 && this.state.question.length < 1 ?
+                        <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text='Ver Otro Ejemplo' icon={faRotateRight} onClickCallback={this.fetchExample}/></div>
+                        :
+                        <div className="col-1"></div>
+                    }
                     <div className="col-9"></div>
                 </div>
                 <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Pregunta *</p>

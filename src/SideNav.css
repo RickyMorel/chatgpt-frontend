@@ -40,7 +40,8 @@
 /* Clicked */
 .btnRed-clicked *, 
 .btnGreen-clicked *, 
-.btnBlue-clicked * {
+.btnBlue-clicked *,
+.btnOrange-clicked * {
   color: #ffffff;
 }
 
@@ -59,5 +60,9 @@
 
 .btnRed-clicked {
   background-color: #F74444;
+}
+
+.btnOrange-clicked {
+  background-color: #F7BF44;
 }
   

@@ -12,6 +12,11 @@ class Utils {
     static clientOrderPlacingInventory = []
     static permanantBlockChatExplanationText = `<strong>Caso Bloquear:</strong><br/>En un Instituto de Inglés, se establece que la IA interactúe únicamente en el primer contacto con el cliente. Una vez que el cliente se registra como alumno, la IA deja de responder sus mensajes, bloqueando la conversación.<br/><strong>Caso No Bloquear:</strong><br/>En una panadería o restaurante, se requiere que la IA responda cada vez que el cliente se comunique, proporcionando información como precios o detalles de productos, sin bloquear la conversación.`
     static useInventoryExplinationText = `Se utiliza un catálogo de productos y/o servicios cuando se desea que WhatsBot ofrezca estos a los clientes. En cambio, para un instituto de pilates, por ejemplo, donde solo se requiere que WhatsBot responda consultas y agende citas, no sería necesario.`
+    static whatsappExplinationText = `Aquí ingresarás el número que deseas que WhatsBot utilice para responder`
+    static businessDescriptionExplinationText = `Esto permite que WhatsBot entienda de qué se trata tu negocio y cuál será su rol en él`
+    static loadProductsExplinationText = `Aqui cargaras el catalogo entero de tus productos, asi WhatsBot sabra que vender a tus clientes`
+    static conversationExamplesExplinationText = `Le daras ejemplos a WhatsBot de como queres que le responda a tus clientes, asi WhatsBot podra imitar tu forma de responder`
+    static questionsAndAnswersExplinationText = `Aqui cargaras todas las respuestas a preguntas que te suelen hacer tus clientes, como:<br/>-Cuando abren?<br/>-En cuanto tiempo llega mi pedido?<br/>-Trabajan en feriados?`
 
     static countries = [
       { code: '+595', flag: '🇵🇾', name: 'Paraguay' },
