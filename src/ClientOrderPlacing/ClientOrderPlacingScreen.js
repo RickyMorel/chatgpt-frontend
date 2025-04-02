@@ -40,8 +40,11 @@ class ClientOrderPlacingScreen extends Component {
   checkIfNeedsRuc() {
     if(Utils.needsRuc == true) { return; }
     
-    const searchParams = new URLSearchParams(window.location.search);
-    const hasRuc = searchParams.has('ruc');
+    const queryString = window?.location?.search;
+    const paramValue = queryString ? queryString.slice(1) : null;
+    const hasRuc = paramValue.includes("ruc")
+
+    console.log("hasRuc", hasRuc)
 
     Utils.needsRuc = hasRuc
   }
@@ -50,15 +53,13 @@ class ClientOrderPlacingScreen extends Component {
     if(Utils.clientCartBotNumber.length > 0) { return; }
 
     const queryString = window?.location?.search;
-    const paramValue = queryString ? queryString.slice(1) : null;
+    let paramValue = queryString ? queryString.slice(1) : null;
+    paramValue = paramValue.replaceAll("ruc", "")
 
     Utils.clientCartBotNumber = paramValue
-
-    console.log("paramValue", paramValue)
   }
 
   fetchTommorrowsInventory = async () => {
-    console.log("fetchTommorrowsInventory")
     if(Utils.clientOrderPlacingInventory.length > 0) { return; }
 
     this.getClientCartNumber()
