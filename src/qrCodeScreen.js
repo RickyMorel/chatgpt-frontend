@@ -133,6 +133,8 @@ class QrCodeScreen extends Component {
       />
       <h4 style={{ margin: 0, ...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody }}>Vinculando...</h4>
     </>
+    
+    return <></>
 
     return this.state.tempClose ?
         <></>

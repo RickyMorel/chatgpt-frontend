@@ -43,6 +43,13 @@ const ChatBotWidget = (props) => {
     } catch (error) {}
   }
 
+  const clearChat = async () => {
+    try {
+      const response = await HttpRequest.put(`/client-crud/updateByNumber`, {phoneNumber: `test_${props.ownerId}`, lastChat: []});
+      setMessages(prev => []);
+    } catch(err) {}
+  }
+
   const toggleChat = () => {
     if (isChatOpen) {
       setIsClosing(true);
@@ -136,13 +143,21 @@ const ChatBotWidget = (props) => {
           <div className="chat-header">
             <div style={{display: 'flex',  gap: '180px', justifyContent: 'space-between'}}>
               <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.White}}>WhatsBot</p>
-              <div><CustomButton iconSize="15px" width='30px' height="30px" icon={faArrowsRotate} onClickCallback={() => {}}/></div>
+              <div><CustomButton iconSize="15px" width='30px' height="30px" icon={faArrowsRotate} onClickCallback={clearChat}/></div>
             </div>
             <p style={{...CssProperties.BodyTextStyle, color: ColorHex.White, marginTop: '-23px', marginRight: 'auto'}}>Testear tu assistente virtual</p>
           </div>
           
-          {MessagesContainer()}
-
+          {
+            !props?.setupConditions.minimumConditionsMet ?
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', padding: '20px' }}>
+              <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, textAlign: 'center'}}>Una vez que completes los pasos de configuración, podras usar esta ventana...</p>
+            </div>
+            :
+            <>
+              {MessagesContainer()}
+            </>
+          }
           <div className="input-container">
             <input
               type="text"
@@ -151,11 +166,12 @@ const ChatBotWidget = (props) => {
               placeholder="Escriba tu mensaje..."
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             />
-            <button onClick={handleSendMessage}>Enviar</button>
+            <CustomButton onClickCallback={handleSendMessage} disabled={!props?.setupConditions.minimumConditionsMet} text={"Enviar"} classStyle="btnGreen-clicked"/>
           </div>
         </div>
       )}
 
+      {/* <CustomButton width={"40px"} height={"40px"} onClickCallback={toggleChat} classStyle="btnGreen-clicked"/> */}
       <button className={`chat-toggle active`} onClick={toggleChat}>
         <img 
           src='./images/iconWhite.png' 
@@ -190,6 +206,8 @@ const ChatBotWidget = (props) => {
           box-shadow: 0 4px 12px rgba(0,0,0,0.15);
           color: white;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+          border: 1px solid ${ColorHex.BorderColor};
         }
 
         .chat-window {
@@ -244,6 +262,8 @@ const ChatBotWidget = (props) => {
           justify-content: space-between;
           align-items: center;
           height: 70px;
+          box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.3);
+          border: 1px solid ${ColorHex.BorderColor};
         }
 
         .messages-container {

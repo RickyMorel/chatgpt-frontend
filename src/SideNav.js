@@ -17,7 +17,6 @@ import HttpRequest from './HttpRequest';
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
   const [playSound, setPlaySound] = useState(false);
-  const [setupConditions, setSetupConditions] = useState(undefined);
   const [messageCount, setMessageCount] = useState(0);
   const [totalClientsToMessage, setTotalClientsToMessage] = useState(0);
   const history = useHistory();
@@ -36,7 +35,6 @@ function SideNav(props)  {
 
   useEffect(() => {
       fetchChatData();
-      fetchSetupConditions();
   }, [props.botNumber]);
 
   useEffect(() => {
@@ -44,14 +42,6 @@ function SideNav(props)  {
       handleSoundPlay();
     }
   }, [playSound]);
-
-  const fetchSetupConditions = async () => {
-    try {
-        const response = await HttpRequest.get(`/global-config/getSetupConditions`);
-
-        setSetupConditions(response.data)
-    } catch (error) {}
-  }
 
   const fetchChatData = async () => {
     if (!props.botNumber) {
@@ -91,13 +81,12 @@ function SideNav(props)  {
   };
 
   const handleLinkClick = async (e, link) => {
-    console.log("props.setupConditions.minimumConditionsMet", setupConditions)
-    const disableCondition = !setupConditions.minimumConditionsMet && link != "/aiConfiguration" &&  link != "/inventory"
+    const disableCondition = !props?.setupConditions.minimumConditionsMet && link != "/aiConfiguration" &&  link != "/inventory"
     
     if(disableCondition) {
       e.preventDefault();
       console.log("props a", props)
-      props.showSetupPopup(setupConditions, props.history)
+      props.showSetupPopup(props?.setupConditions, props.history)
     }
   }
 
@@ -115,7 +104,7 @@ function SideNav(props)  {
   const navBarButtonHtmls = navBarButton.map(x => {
     if(x.link == "/inventory" && props?.globalConfig?.usesInventory == false) { return; }
     
-    const disableCondition = !setupConditions?.minimumConditionsMet && x.link != "/aiConfiguration" &&  x.link != "/inventory"
+    const disableCondition = !props?.setupConditions?.minimumConditionsMet && x.link != "/aiConfiguration" &&  x.link != "/inventory"
     const navBarButtonStyle = GetNavButtonStyle(x.link, disableCondition)
 
     return (

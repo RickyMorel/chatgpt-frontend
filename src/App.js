@@ -45,6 +45,7 @@ class App extends Component {
       instanceStatus: "a",
       isReloading: false,
       globalConfig: undefined,
+      setupConditions: undefined
     };
 
     this.intervalId = null
@@ -58,6 +59,7 @@ class App extends Component {
       //Get the instance status every second until y link whatsapp
       this.intervalId = setInterval(this.GetInstanceStatus, 10000);
       this.fetchGlobalConfig()
+      this.fetchSetupConditions()
       this.GetBotNumber()
     }
 
@@ -69,6 +71,7 @@ class App extends Component {
 
     this.GetInstanceStatus()
     this.fetchGlobalConfig()
+    this.fetchSetupConditions()
     this.GetBotNumber()
   }
 
@@ -85,6 +88,16 @@ class App extends Component {
         const response = await HttpRequest.get(`/global-config`);
 
         this.setState({globalConfig: response.data})
+    } catch (error) {}
+  }
+
+  fetchSetupConditions = async () => {
+    try {
+        const response = await HttpRequest.get(`/global-config/getSetupConditions`);
+
+        this.setState({
+          setupConditions: response.data
+        })
     } catch (error) {}
   }
 
@@ -145,8 +158,8 @@ class App extends Component {
           <></>
           :
           <div className="col-auto">
-            <SideNav showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
-            <ChatBotWidget ownerId={this.state?.globalConfig?.ownerId}/>
+            <SideNav setupConditions={this.state.setupConditions} showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+            <ChatBotWidget setupConditions={this.state.setupConditions} ownerId={this.state?.globalConfig?.ownerId}/>
           </div>
         }
         <div className="col">
