@@ -13,6 +13,7 @@ import CustomInput from '../Searchbar/CustomInput';
 import CustomSelect from '../Searchbar/CustomSelect';
 import RemovableItem from '../Searchbar/RemovableItem';
 import HttpRequest from '../HttpRequest';
+import { globalEmitter } from '../GlobalEventEmitter';
 
 class InventoryEditItemScreen extends Component {
     constructor(props) {
@@ -151,6 +152,8 @@ class InventoryEditItemScreen extends Component {
                 if(missingFields.length > 0) {return;}
                 
                 const response = await HttpRequest.post(`/inventory/addItems`, [newItem]);
+
+                if(!this.props.setupConditions.minimumConditionsMet) { globalEmitter.emit('checkMetConditions'); }
             } else {
                 if(this.state.selectedImage) {
                     const imageLink = await this.uploadImageToFirebase(this.state.selectedImage)

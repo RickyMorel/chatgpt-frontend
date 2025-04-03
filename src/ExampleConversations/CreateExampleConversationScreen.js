@@ -9,6 +9,7 @@ import HttpRequest from '../HttpRequest';
 import CustomButton from '../Searchbar/CustomButton';
 import CustomSelect from '../Searchbar/CustomSelect';
 import CustomTextArea from '../Searchbar/CustomTextArea';
+import { globalEmitter } from '../GlobalEventEmitter';
 
 class CreateExampleConversationScreen extends Component {
     constructor(props) {
@@ -234,6 +235,8 @@ class CreateExampleConversationScreen extends Component {
                 this.props.history.goBack()
             }
            this.handleClearConversation()
+
+            if(!this.props.setupConditions.minimumConditionsMet) { globalEmitter.emit('checkMetConditions'); }
           } catch (error) {
             console.log("ERROR", error)
             this.props.showPopup(new Error("No se pudo guardar el ejemplo"));

@@ -8,18 +8,12 @@ import HttpRequest from '../HttpRequest';
 const ChatBotWidget = (props) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [messages, setMessages] = useState([
-    { id: 1, text: 'Esribe algo para empezar...', isBot: true }
-  ]);
+  const [messages, setMessages] = useState([{ id: 1, text: 'Esribe algo para empezar...', isBot: true }]);
   const [inputMessage, setInputMessage] = useState('');
+  const [pressedToggle, setPressedToggle] = useState(false)
   const messagesEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    console.log("props.ownerId", props.ownerId)
     fetchConversation()
   }, [props.ownerId]);
 
@@ -30,7 +24,6 @@ const ChatBotWidget = (props) => {
   const fetchConversation = async () => {
     try {
       const response = await HttpRequest.get(`/client-crud/getClientByPhoneNumber?phoneNumber=test_${props.ownerId}`);
-      console.log(`/client-crud/getClientByPhoneNumber?phoneNumber?test_${props.ownerId}`)
 
       let i = 2
       let messages = []
@@ -50,20 +43,10 @@ const ChatBotWidget = (props) => {
     } catch(err) {}
   }
 
-  const toggleChat = () => {
-    if (isChatOpen) {
-      setIsClosing(true);
-      setTimeout(() => {
-        setIsChatOpen(false);
-        setIsClosing(false);
-      }, 300);
-    } else {
-      setIsChatOpen(true);
-    }
-  };
-
   const handleSendMessage = async () => {
     if (inputMessage.trim() === '') return;
+
+    if(messages.length > 15) { await this.clearChat() }
 
     const newMessage = {
       id: messages.length + 1,
@@ -92,6 +75,30 @@ const ChatBotWidget = (props) => {
       // Remove typing indicator on error
       setMessages(prev => prev.filter(msg => msg.id !== 'typing'));
     }
+  };
+
+  const toggleChat = () => {
+    if(props?.setupConditions.minimumConditionsMet) { 
+      setPressedToggle(true) 
+
+      if(props.tutorialTrigger == true) {
+        
+      }
+    }
+
+    if (isChatOpen) {
+      setIsClosing(true);
+      setTimeout(() => {
+        setIsChatOpen(false);
+        setIsClosing(false);
+      }, 300);
+    } else {
+      setIsChatOpen(true);
+    }
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const parseMessageText = (message) => {
@@ -182,7 +189,6 @@ const ChatBotWidget = (props) => {
     );
   };
 
-
   return (
     <div className="chatbot-container">
       {isChatOpen && (
@@ -219,7 +225,7 @@ const ChatBotWidget = (props) => {
       )}
 
       {/* <CustomButton width={"40px"} height={"40px"} onClickCallback={toggleChat} classStyle="btnGreen-clicked"/> */}
-      <button className={`chat-toggle active`} onClick={toggleChat}>
+      <button className={`chat-toggle ${props.tutorialTrigger && !pressedToggle ? 'glowing' : ''} active`} onClick={toggleChat}>
         <img 
           src='./images/iconWhite.png' 
           alt="Logo" 
@@ -240,9 +246,26 @@ const ChatBotWidget = (props) => {
           flexDirection: row 
         }
 
+        @keyframes glow {
+          0% {
+            box-shadow: 0 0 10px 5px rgba(247, 191, 68, 0.8);
+            filter: brightness(1.1);
+          }
+          50% {
+            box-shadow: 0 0 30px 15px rgba(247, 191, 68, 0.9);
+          }
+          100% {
+            box-shadow: 0 0 10px 5px rgba(247, 191, 68, 0.8);
+          }
+        }
+
+        .chat-toggle.glowing {
+          animation: glow 1.5s infinite;
+          position: relative; /* Ensures proper shadow rendering */
+        }
+
         .chat-toggle {
           background: ${ColorHex.GreenDark_1};
-          border: none;
           border-radius: 50%;
           width: 60px;
           height: 60px;

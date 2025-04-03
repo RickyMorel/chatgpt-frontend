@@ -11,6 +11,7 @@ import axios from 'axios';
 import HttpRequest from '../HttpRequest';
 import CustomTextArea from '../Searchbar/CustomTextArea';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { globalEmitter } from '../GlobalEventEmitter';
 
 class CreateQuestionAndAnswerScreen extends Component {
     constructor(props) {
@@ -73,6 +74,8 @@ class CreateQuestionAndAnswerScreen extends Component {
                 this.props.history.goBack()
             }
            this.setState({question: '', answer: ''})
+
+           if(!this.props.setupConditions.minimumConditionsMet) { globalEmitter.emit('checkMetConditions'); }
           } catch (error) {
             console.log("ERROR", error)
             this.props.showPopup(new Error("No se pudo guardar el ejemplo"));

@@ -32,6 +32,8 @@ import CreateQuestionAndAnswerScreen from './QuestionsAndAnswers/CreateQuestionA
 import CreateAccountScreen from './Login/CreateAccountScreen';
 import { globalEmitter } from './GlobalEventEmitter';
 import ChatBotWidget from './TestChatbot/ChatBotWidget';
+import ParticleExplosion from './ParticleExplosion';
+import { ToastContainer } from 'react-toastify';
 
 class App extends Component {
   constructor(props) {
@@ -45,7 +47,8 @@ class App extends Component {
       instanceStatus: "a",
       isReloading: false,
       globalConfig: undefined,
-      setupConditions: undefined
+      setupConditions: undefined,
+      trigger: false
     };
 
     this.intervalId = null
@@ -63,7 +66,12 @@ class App extends Component {
       this.GetBotNumber()
     }
 
+    globalEmitter.addEventListener('checkMetConditions', this.checkMetConditions);
     globalEmitter.addEventListener('loggedIn', this.handleLoggedIn);
+  }
+
+  checkMetConditions = async () => {
+    await this.fetchSetupConditions(true)
   }
 
   handleLoggedIn = () => {
@@ -91,12 +99,18 @@ class App extends Component {
     } catch (error) {}
   }
 
-  fetchSetupConditions = async () => {
+  fetchSetupConditions = async (calledFromEvent = false) => {
     try {
         const response = await HttpRequest.get(`/global-config/getSetupConditions`);
 
         this.setState({
           setupConditions: response.data
+        }, () => {
+          if(!calledFromEvent) {return;}
+
+          console.log("checkMetConditions this.state.setupConditions", this.state.setupConditions)
+
+          if(this.state.setupConditions.minimumConditionsMet) { this.setState({trigger: true})}
         })
     } catch (error) {}
   }
@@ -152,6 +166,10 @@ class App extends Component {
         <></>
       }
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
+      <div>
+      <ParticleExplosion trigger={this.state.trigger}/>
+      <ToastContainer />
+    </div>
       <div className="row">
         {
           Utils.loginExemptPaths.includes(currentPath) ?
@@ -159,7 +177,7 @@ class App extends Component {
           :
           <div className="col-auto">
             <SideNav setupConditions={this.state.setupConditions} showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
-            <ChatBotWidget setupConditions={this.state.setupConditions} ownerId={this.state?.globalConfig?.ownerId}/>
+            <ChatBotWidget tutorialTrigger={this.state.trigger} setupConditions={this.state.setupConditions} ownerId={this.state?.globalConfig?.ownerId}/>
           </div>
         }
         <div className="col">
@@ -227,6 +245,7 @@ class App extends Component {
                     {...props}  
                     showPopup={this.props.showPopup} 
                     setIsLoading={this.setIsLoading} 
+                    setupConditions={this.state.setupConditions}
                   />
                 </div>
               )} 
@@ -241,7 +260,7 @@ class App extends Component {
             <Route exact path="/createExampleConversation" 
               render={(props) => (
                 <div style={{margin: '15px'}}>
-                  <CreateExampleConversationScreen globalConfig={this.state.globalConfig} showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
+                  <CreateExampleConversationScreen setupConditions={this.state.setupConditions} showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />
@@ -262,7 +281,7 @@ class App extends Component {
             <Route exact path="/createQuestionAndAnswer" 
               render={(props) => (
                 <div style={{margin: '15px'}}>
-                  <CreateQuestionAndAnswerScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
+                  <CreateQuestionAndAnswerScreen setupConditions={this.state.setupConditions} showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />
