@@ -71,7 +71,8 @@ const ChatBotWidget = (props) => {
       isBot: false
     };
 
-    setMessages([...messages, newMessage]);
+    // Add user message and typing indicator
+    setMessages(prev => [...prev, newMessage, { id: 'typing', isBot: true, isTyping: true }]);
     setInputMessage('');
 
     try {
@@ -81,35 +82,41 @@ const ChatBotWidget = (props) => {
         text: response.data.content,
         isBot: true
       };
-      setMessages(prev => [...prev, botResponse]);
-    } catch(err) {}
+      
+      // Remove typing indicator and add bot response
+      setMessages(prev => {
+        const filtered = prev.filter(msg => msg.id !== 'typing');
+        return [...filtered, botResponse];
+      });
+    } catch(err) {
+      // Remove typing indicator on error
+      setMessages(prev => prev.filter(msg => msg.id !== 'typing'));
+    }
   };
 
   const parseMessageText = (text) => {
-    // Regular expression to match URLs starting with http or https
-    const urlRegex = /((https?:\/\/[^\s]+))/g;
-    // Split text by URLs
-    const parts = text.split(urlRegex);
-    
-    return parts.map((part, index) => {
-      // If the part matches a URL, render it as a link
-      if (urlRegex.test(part)) {
-        return (
-          <a
-            key={index}
-            href={part}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'blue', textDecoration: 'underline' }}
-          >
-            {part}
-          </a>
-        );
+    const textParts = text.split("---");
+    const bodyText = textParts[1] ? textParts[1] : text
+    // console.log("parseMessageText", text, bodyText)
+    const items = textParts[0].split("\n\n");
+
+    let itemMessages = []
+    for(const item of items) {
+      if(item.length < 1) { continue; }
+
+      const itemParts = item.split("\n")
+
+      const itemMessage = {
+        text: itemParts[0] + itemParts[1],
+        image: itemParts[2],
+        isBot: true
       }
-      // Otherwise, return the part as plain text
-      return <div key={index}>{part}</div>;
-    });
-  }
+      itemMessages.push(itemMessage)
+    }
+    console.log("itemMessages", itemMessages)
+
+    return highlightLinks(bodyText);
+  };
 
   const MessagesContainer = () => {
     return (
@@ -119,7 +126,7 @@ const ChatBotWidget = (props) => {
             key={message.id}
             className={`message ${message.isBot ? 'bot' : 'user'}`}
           >
-            <p 
+            <div 
               style={{
                 ...CssProperties.BodyTextStyle, 
                 color: !message.isBot ? ColorHex.White : 'black', 
@@ -127,14 +134,23 @@ const ChatBotWidget = (props) => {
                 marginTop: '-5px'
               }}
             >
-              {parseMessageText(message.text)}
-            </p>
+              {message.isTyping ? (
+                <div className="typing-animation">
+                  <div className="typing-dot" style={{ animationDelay: '0s' }}></div>
+                  <div className="typing-dot" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="typing-dot" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+              ) : (
+                parseMessageText(message.text)
+              )}
+            </div>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
     );
   };
+
 
   return (
     <div className="chatbot-container">
@@ -338,9 +354,59 @@ const ChatBotWidget = (props) => {
         .input-container button:hover {
           background: ${ColorHex.GreenDark_1};
         }
+
+      .typing-animation {
+        display: flex;
+        align-items: center;
+        height: 25px;
+        width: 50px;
+      }
+
+      .typing-dot {
+        height: 7px;
+        width: 7px;
+        margin: 0 2px;
+        background-color: #666;
+        border-radius: 50%;
+        animation: typing 1.4s infinite ease-in-out;
+      }
+
+      @keyframes typing {
+        0%, 80%, 100% { 
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-7px);
+        }
+      }
       `}</style>
     </div>
   );
 };
 
 export default ChatBotWidget;
+
+function highlightLinks(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  // Split text by URLs
+  const parts = text.split(urlRegex);
+
+  return parts.map((part, index) => {
+    // Check if the part is a URL (use test() on the same regex)
+    if (urlRegex.test(part)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'blue', textDecoration: 'underline' }}
+        >
+          {part}
+        </a>
+      );
+    }
+    // Return plain text for non-URL parts (skip empty strings from split)
+    return part ? <div key={index}>{part}</div> : null;
+  });
+}
