@@ -4,6 +4,7 @@ import CssProperties from '../CssProperties';
 import CustomButton from '../Searchbar/CustomButton';
 import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons';
 import HttpRequest from '../HttpRequest';
+import Utils from '../Utils';
 
 const ChatBotWidget = (props) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -82,7 +83,7 @@ const ChatBotWidget = (props) => {
       setPressedToggle(true) 
 
       if(props.tutorialTrigger == true) {
-        
+        props?.toastCallback(Utils.deativateBlockClientsToast)
       }
     }
 

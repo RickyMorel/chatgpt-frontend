@@ -61,7 +61,7 @@ class LoginScreen extends Component {
         console.log("user logged in", response.data)
         Cookies.set('token', response.data.token, { secure: true, sameSite: 'Strict' });
         window.token = response.data.token
-        this.props.history.push('/blockChats');
+        this.props.history.push('/aiConfiguration');
         this.setState({ error: '' })
         globalEmitter.emit('loggedIn');
     } catch(err) {

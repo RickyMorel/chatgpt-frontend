@@ -11,6 +11,7 @@ import SearchBar from '../Searchbar/Searchbar';
 import CustomSelect from '../Searchbar/CustomSelect';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import HttpRequest from '../HttpRequest';
+import Utils from '../Utils';
 
 class BlockChatScreen extends Component {
   constructor(props) {
@@ -45,6 +46,8 @@ class BlockChatScreen extends Component {
     await this.fetchGlobalData()
     await this.fetchAllClientLocations()
     await this.GetCanMessageTommorrowsClients()
+
+    this.props.toastCallback(Utils.deativateBlockClientsToast, ColorHex.OrangeFabri);
 
     this.props.setIsLoading(false)
   }
@@ -314,7 +317,7 @@ class BlockChatScreen extends Component {
           <div style={{flexGrow: 0}}>
             <CustomButton text="Enviar Mensajes" classStyle={this.state?.canMessageTommorrowsClients ? `btnBlue` : 'btnGrey-clicked'} icon={faPaperPlane} onClickCallback={this.handleSendMessages}/>
           </div>
-          <div style={{flexGrow: 0, marginLeft: '45px'}}><CustomToggle text="Bloquear WhatsBot" explinationText="Bloquea envio de mensajes a todos los clientes. SOLO EMERGENCIAS " onChange={this.handleGlobalBlock} value={this.state.isGloballyBlocked}/></div>
+          <div style={{flexGrow: 0, marginLeft: '45px'}}><CustomToggle text="Bloquear WhatsBot" explinationText="Bloquea envio de mensajes a todos los clientes" onChange={this.handleGlobalBlock} value={this.state.isGloballyBlocked}/></div>
         </div>
 
         <div style={orderPanelStyling}>

@@ -17,6 +17,7 @@ class Utils {
     static loadProductsExplinationText = `Aqui cargaras el catalogo entero de tus productos, asi WhatsBot sabra que vender a tus clientes`
     static conversationExamplesExplinationText = `Le daras ejemplos a WhatsBot de como queres que le responda a tus clientes, asi WhatsBot podra imitar tu forma de responder.<strong> Empezarmos con 5</strong>, pero <strong>si quieres que WhatsBot responda bien en todos los casos</strong>, le vas a tener que <strong>dar mas ejemplos</strong>`
     static questionsAndAnswersExplinationText = `Aqui cargaras todas las respuestas a preguntas que te suelen hacer tus clientes, como:<br/>-Cuando abren?<br/>-En cuanto tiempo llega mi pedido?<br/>-Trabajan en feriados?`
+    static deativateBlockClientsToast = `Cuando quieras que WhatsBot empieze a responder a tus clientes🙋🏻‍♂️, tenes que desactivar el toggle✔️ "Bloquear WhatsBot". Se encuentra en el panel de Clientes => "Bloquear WhatsBot"`
 
     static countries = [
       { code: '+595', flag: '🇵🇾', name: 'Paraguay' },

@@ -54,28 +54,16 @@ class EmojiParticle {
   }
 }
 
-const handleSuccessToast = () => {
-  toast.success(`Completaste la configuracion inicial de WhatsBot!🎉🎉. Ahora podes empezar a testear. Haga click en el boton que te esta resaltando!`, {
-    style: {
-        backgroundColor: ColorHex.GreenDark_1,
-        color: '#fff',
-        fontWeight: 'bold',
-        padding: '10px',
-    },
-    progressStyle: {
-        backgroundColor: '#fff',
-    },
-    autoClose: 15000,
-    icon: false
-  });
-}
-
-const ParticleExplosion = ({ trigger }) => {
+const ParticleExplosion = ({ trigger, toastCallback }) => {
   const canvasRef = useRef(null);
   const particles = useRef([]);
   const animationFrameId = useRef(null);
   const intervalId = useRef(null);
   const particlesCreated = useRef(0);
+
+  const handleSuccessToast = () => {
+    toastCallback(`Completaste la configuracion inicial de WhatsBot!🎉🎉. Ahora podes empezar a testear. Haga click en el boton que te esta resaltando!`)
+  }
 
   const handleResize = useCallback(() => {
     const canvas = canvasRef.current;
@@ -147,7 +135,6 @@ const ParticleExplosion = ({ trigger }) => {
 
   return (
     <>
-      <ToastContainer />
       <Canvas ref={canvasRef} />;
     </>
   )

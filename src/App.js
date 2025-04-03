@@ -33,7 +33,7 @@ import CreateAccountScreen from './Login/CreateAccountScreen';
 import { globalEmitter } from './GlobalEventEmitter';
 import ChatBotWidget from './TestChatbot/ChatBotWidget';
 import ParticleExplosion from './ParticleExplosion';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 
 class App extends Component {
   constructor(props) {
@@ -74,13 +74,13 @@ class App extends Component {
     await this.fetchSetupConditions(true)
   }
 
-  handleLoggedIn = () => {
+  handleLoggedIn = async () => {
     console.log("handleLoggedIn")
 
     this.GetInstanceStatus()
-    this.fetchGlobalConfig()
     this.fetchSetupConditions()
     this.GetBotNumber()
+    const globalConfig = await this.fetchGlobalConfig()  
   }
 
   componentWillUnmount() {
@@ -95,7 +95,11 @@ class App extends Component {
     try {
         const response = await HttpRequest.get(`/global-config`);
 
+        console.log("fetchGlobalConfig isGloballyBlocked", response?.data?.isGloballyBlocked)
+
         this.setState({globalConfig: response.data})
+
+        return response.data
     } catch (error) {}
   }
 
@@ -149,6 +153,22 @@ class App extends Component {
     })
   }
 
+  handleToast = (message, color) => {
+    toast.success(message, {
+      style: {
+          backgroundColor: color ?? ColorHex.GreenDark_1,
+          color: '#fff',
+          fontWeight: 'bold',
+          padding: '10px',
+      },
+      progressStyle: {
+          backgroundColor: '#fff',
+      },
+      autoClose: 10000,
+      icon: false
+    });
+  }
+
   render() {
     const currentPath = window.location.pathname;
 
@@ -167,7 +187,7 @@ class App extends Component {
       }
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
       <div>
-      <ParticleExplosion trigger={this.state.trigger}/>
+      <ParticleExplosion toastCallback={this.handleToast} trigger={this.state.trigger}/>
       <ToastContainer />
     </div>
       <div className="row">
@@ -177,7 +197,7 @@ class App extends Component {
           :
           <div className="col-auto">
             <SideNav setupConditions={this.state.setupConditions} showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
-            <ChatBotWidget tutorialTrigger={this.state.trigger} setupConditions={this.state.setupConditions} ownerId={this.state?.globalConfig?.ownerId}/>
+            <ChatBotWidget toastCallback={this.handleToast} tutorialTrigger={this.state.trigger} setupConditions={this.state.setupConditions} ownerId={this.state?.globalConfig?.ownerId}/>
           </div>
         }
         <div className="col">
@@ -195,7 +215,7 @@ class App extends Component {
               <div style={{margin: '15px'}}><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/blockChats">
-              <div style={{margin: '15px'}}><BlockChatScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
+              <div style={{margin: '15px'}}><BlockChatScreen toastCallback={this.handleToast} showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/orders">
               <div style={{margin: '15px'}}><OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
