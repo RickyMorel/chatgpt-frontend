@@ -94,11 +94,13 @@ const ChatBotWidget = (props) => {
     }
   };
 
-  const parseMessageText = (text) => {
-    const textParts = text.split("---");
-    const bodyText = textParts[1] ? textParts[1] : text
-    // console.log("parseMessageText", text, bodyText)
-    const items = textParts[0].split("\n\n");
+  const parseMessageText = (message) => {
+    let textParts = message.text.split("---");
+    if(!message.text.includes("---")) { textParts = undefined}
+    const bodyText = textParts ? textParts[1] : message.text
+    console.log("parseMessageText", message)
+    console.log("textParts", textParts)
+    const items = textParts ? textParts[0].split("\n\n") : [];
 
     let itemMessages = []
     for(const item of items) {
@@ -107,44 +109,73 @@ const ChatBotWidget = (props) => {
       const itemParts = item.split("\n")
 
       const itemMessage = {
-        text: itemParts[0] + itemParts[1],
-        image: itemParts[2],
+        text: itemParts[0],
+        image: itemParts[1],
         isBot: true
       }
       itemMessages.push(itemMessage)
     }
-    console.log("itemMessages", itemMessages)
 
-    return highlightLinks(bodyText);
+    console.log("items", items)
+    
+    const returnedHtml = itemMessages.map((itemMessage, index) => (
+      MessageHtml(
+        message,
+        <>
+          <img src={itemMessage.image} style={{ width: '100%', height: 'auto' }} />
+          {highlightLinks(itemMessage.text)}
+        </>
+      )
+    ));
+    
+    const additionalHtml = (
+      MessageHtml(
+        message,
+        highlightLinks(bodyText)
+      )
+    );
+    
+    return (
+      <>
+        {itemMessages.length > 0 ? returnedHtml : <></>}
+        {additionalHtml}
+      </>
+    );
   };
+
+  const MessageHtml = (message, content) => {
+    return (
+      <div className={`message ${message.isBot ? 'bot' : 'user'}`}>
+        <div
+          style={{
+            ...CssProperties.BodyTextStyle,
+            color: !message.isBot ? ColorHex.White : 'black',
+            marginBottom: '-5px',
+            marginTop: '-5px'
+          }}
+        >
+          {content}
+        </div>
+      </div>
+    )
+  }
 
   const MessagesContainer = () => {
     return (
       <div className="messages-container">
         {messages.map((message) => (
-          <div 
-            key={message.id}
-            className={`message ${message.isBot ? 'bot' : 'user'}`}
-          >
-            <div 
-              style={{
-                ...CssProperties.BodyTextStyle, 
-                color: !message.isBot ? ColorHex.White : 'black', 
-                marginBottom: '-5px', 
-                marginTop: '-5px'
-              }}
-            >
-              {message.isTyping ? (
+              message.isTyping ? (
+              MessageHtml(
+                message,
                 <div className="typing-animation">
                   <div className="typing-dot" style={{ animationDelay: '0s' }}></div>
                   <div className="typing-dot" style={{ animationDelay: '0.2s' }}></div>
                   <div className="typing-dot" style={{ animationDelay: '0.4s' }}></div>
                 </div>
-              ) : (
-                parseMessageText(message.text)
-              )}
-            </div>
-          </div>
+              )
+            ) : (
+              parseMessageText(message)
+            )
         ))}
         <div ref={messagesEndRef} />
       </div>
@@ -406,7 +437,10 @@ function highlightLinks(text) {
         </a>
       );
     }
+
+    part = part.replaceAll("\n", "<br/>")
+
     // Return plain text for non-URL parts (skip empty strings from split)
-    return part ? <div key={index}>{part}</div> : null;
+    return part ? <div key={index} dangerouslySetInnerHTML={{ __html: part }}/>: null;
   });
 }
