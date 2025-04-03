@@ -31,7 +31,7 @@ class CustomFileInput extends Component {
         if (event.target.files && event.target.files[0]) {
           const file = event.target.files[0];
           this.setState({selectedImage: URL.createObjectURL(file)});
-          this.props.onChange(URL.createObjectURL(file))
+          this.props.onChange(event)
         }
     };
 
@@ -40,7 +40,7 @@ class CustomFileInput extends Component {
         const { selectedImage, imageURL } = this.state;
 
         return (
-            <div style={{...blockStyle, height: '405px', position: 'relative'}}>
+            <div style={{...blockStyle, height: '350px', position: 'relative'}}>
                 <div style={scrollStyle}>
                     {
                         selectedImage || imageURL.length > 0 ? 
@@ -52,7 +52,7 @@ class CustomFileInput extends Component {
                         </>
                         :
                         <>
-                            <CustomButton icon={faCloudUploadAlt} width='300px' height='300px' iconSize={200} onClickCallback={() => this.fileInputRef.current.click()}/>
+                            <CustomButton icon={faCloudUploadAlt} width='250px' height='250px' iconSize={150} onClickCallback={() => this.fileInputRef.current.click()}/>
                             <input
                                 type="file"
                                 accept="image/*"

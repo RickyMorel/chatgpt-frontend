@@ -1,19 +1,17 @@
 import { faRectangleXmark, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { Component } from 'react';
 import "react-datepicker/dist/react-datepicker.css";
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
-import { storage } from '../firebaseConfig';
+import { globalEmitter } from '../GlobalEventEmitter';
+import HttpRequest from '../HttpRequest';
 import CustomButton from '../Searchbar/CustomButton';
 import CustomFileInput from '../Searchbar/CustomFileInput';
 import CustomInput from '../Searchbar/CustomInput';
+import CustomTextArea from '../Searchbar/CustomTextArea';
 import CustomSelect from '../Searchbar/CustomSelect';
 import RemovableItem from '../Searchbar/RemovableItem';
-import HttpRequest from '../HttpRequest';
-import { globalEmitter } from '../GlobalEventEmitter';
 
 class InventoryEditItemScreen extends Component {
     constructor(props) {
@@ -28,7 +26,7 @@ class InventoryEditItemScreen extends Component {
                 description: '',
                 tags: [],
                 price: '',
-                imageLink: ''
+                imageBase64: ''
             },
             newTagInput: '',
             isCreateItem: true,
@@ -68,25 +66,6 @@ class InventoryEditItemScreen extends Component {
         } catch (error) {}
     };
 
-    uploadImageToFirebase = async (imageUri) => {
-        const response = await fetch(imageUri);
-        let blob = await response.blob();
-
-        const storageRef = ref(storage, `chabot-product-images/${this.state.itemToEdit.name}.jpg`);
-
-        try {
-            const snapshot = await uploadBytes(storageRef, blob)
-    
-            const downloadURL = await getDownloadURL(snapshot.ref);
-
-            blob = null;
-    
-            return downloadURL;
-        } catch(err) {
-            console.log("error", err)
-        }
-    };
-
     getAllTags = (products) => {
         let allTags = this.state.allTags
 
@@ -117,8 +96,19 @@ class InventoryEditItemScreen extends Component {
         })
     }
 
-    handleImageChange = (selectedImage) => {
-        this.setState({ selectedImage: selectedImage});
+    handleImageChange = (event) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const base64 = e.target.result;
+                console.log("setState base64", base64)
+                this.setState({ selectedImage: base64 });
+            };
+            
+            reader.readAsDataURL(file);
+        }
       };
 
     handleSave = async () => {
@@ -134,13 +124,12 @@ class InventoryEditItemScreen extends Component {
 
                 console.log("this.state.selectedImage", this.state.selectedImage)
                 if(this.state.selectedImage) {
-                    const imageLink = await this.uploadImageToFirebase(this.state.selectedImage)
-                    newItem.imageLink = imageLink
+                    newItem.imageBase64 = this.state.selectedImage
                 }
 
                 let missingFields = []
                 if(!newItem.name || newItem.name.length < 1) { missingFields.push("name");}
-                if(!newItem.imageLink || newItem.imageLink.length < 1) { missingFields.push("imageLink");}
+                if(!newItem.imageBase64 || newItem.imageBase64.length < 1) { missingFields.push("imageBase64");}
                 if(!newItem.description || newItem.description.length < 1) { missingFields.push("description");}
                 if(!newItem.price || newItem.price.length < 1) { missingFields.push("price");}
                 // if(!newItem.tags || newItem.tags.length < 1) { missingFields.push("tags");}
@@ -151,20 +140,19 @@ class InventoryEditItemScreen extends Component {
 
                 if(missingFields.length > 0) {return;}
                 
-                const response = await HttpRequest.post(`/inventory/addItems`, [newItem]);
+                const response = await HttpRequest.post(`/inventory/createItem`, newItem);
 
                 if(!this.props.setupConditions.minimumConditionsMet) { globalEmitter.emit('checkMetConditions'); }
             } else {
                 if(this.state.selectedImage) {
-                    const imageLink = await this.uploadImageToFirebase(this.state.selectedImage)
-                    itemToEdit.imageLink = imageLink
+                    itemToEdit.imageBase64 = this.state.selectedImage
                 }
                 const response = await HttpRequest.put(`/inventory/updateItem`, itemToEdit);
             }
             this.props.history.goBack()
           } catch (error) {
             console.log("ERROR", error)
-            this.props.showPopup(new Error("Ya existe un item con este nombre!"));
+            // this.props.showPopup(new Error("Ya existe un item con este nombre!"));
           }
 
         this.props.setIsLoading(false)
@@ -209,18 +197,33 @@ class InventoryEditItemScreen extends Component {
         }));
     }
 
-    formInput = (title, placeholder, dataName, dataType = 'text') => (
+    formInput = (title, placeholder, dataName, explinationText, dataType = 'text', isTextArea=false) => (
         <>
             <p style={headersStyle}>{title}</p>
-            <CustomInput
-                width='800px'
-                height='75px'
-                placeHolderText={placeholder}
-                dataType={dataType}
-                onChange={(value) => this.handleStringChange(dataName, value)}
-                value={this.state.itemToEdit[dataName]}
-                hasError={this.state.fieldsWithErrors.includes(dataName)}
-            />
+            {
+                isTextArea ? 
+                <CustomTextArea
+                    width='800px'
+                    height='95px'
+                    explinationText={explinationText}
+                    placeHolderText={placeholder}
+                    dataType={dataType}
+                    onChange={(value) => this.handleStringChange(dataName, value)}
+                    value={this.state.itemToEdit[dataName]}
+                    hasError={this.state.fieldsWithErrors.includes(dataName)}
+                />
+                :
+                <CustomInput
+                    width='800px'
+                    height='75px'
+                    explinationText={explinationText}
+                    placeHolderText={placeholder}
+                    dataType={dataType}
+                    onChange={(value) => this.handleStringChange(dataName, value)}
+                    value={this.state.itemToEdit[dataName]}
+                    hasError={this.state.fieldsWithErrors.includes(dataName)}
+                />
+            }
         </>
     )
 
@@ -243,7 +246,7 @@ class InventoryEditItemScreen extends Component {
                         this.state.fieldsWithErrors.map(x => {
                             if(x == 'name') {return "*Falta nombre.\n"} 
                             else if(x == 'description') {return "*Falta descripcion.\n"} 
-                            else if(x == 'imageLink') {return "*Falta imagen.\n"} 
+                            else if(x == 'imageBase64') {return "*Falta imagen.\n"} 
                             else if(x == 'tags') {return "*Falta etiquetas.\n"} 
                             else if(x == 'price') {return "*Falta precio.\n"} 
                         })
@@ -251,27 +254,11 @@ class InventoryEditItemScreen extends Component {
                 </p>
                 <div className="row">
                     <div className="col-6">
-                        {this.formInput("Nombre del item *", "Ingresar nombre de item......", "name")}
-                        {this.formInput("Descripcion del item *", "Ingresar descripcion de item......", "description")}
-                        {this.formInput("Precio del item *", "Ingresar precio de item......", "price", "number")}
+                        {this.formInput("Nombre del item *", "Ej: Pan de Leche", "name", "Aca solo pondras el nombre del producto")}
+                        {this.formInput("Descripcion del item *", "Ej: Es un pan suave y esponjoso, con un toque ligeramente dulce, ideal para el desayuno o la merienda. Está elaborado con harina de trigo, leche, mantequilla y azúcar", "description",  "Aquí debes describir el producto y agregar información relevante, como su valor nutricional, si se vende por kilo o metro cuadrado, si viene en paquete y cuántas unidades incluye, entre otros detalles", "text", true)}
+                        {this.formInput("Precio del item *", "Ej: 25000", "price", "Cuanto cuesta tu producto", "number")}
                         <p style={{...headersStyle, marginBottom: '-25px'}}>Imagen *</p>
                         <CustomFileInput imageURL={this.state?.itemToEdit?.imageLink} onChange={this.handleImageChange}/>
-                        {/* {this.formInput("URL De Imagen *", "Ingresar URL del imagen......", "imageLink")} */}
-                        {/* <div style={{...blockStyle, height: '305px'}}>
-                            <div style={{
-                                display: 'flex',
-                                justifyContent: 'center', 
-                                alignItems: 'center', 
-                                ...scrollStyle
-                            }}>
-                                {
-                                    this.state?.itemToEdit?.imageLink?.length > 0 ?
-                                    <img style={{ maxWidth: '100%', maxHeight: '100%' }} src={this.state?.itemToEdit?.imageLink} alt="Example Image" />
-                                    :
-                                    <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody}}>Imagen No Encontrado</p>
-                                }
-                            </div>
-                        </div> */}
                     </div>
                     <div className="col-6">
                         <p style={headersStyle}>Agregar Nuevas Etiquetas</p>
@@ -280,7 +267,8 @@ class InventoryEditItemScreen extends Component {
                                 <CustomInput
                                     width='700px'
                                     height='75px'
-                                    placeHolderText="Ingresar una nueva etiqueta para agregar......"
+                                    placeHolderText="Ej: harina de trigo"
+                                    explinationText="Aquí debes agregar etiquetas a tu producto para que WhatsBot pueda encontrarlo fácilmente. Por ejemplo, un brownie podría tener las etiquetas: 'chocolate', 'nuez', 'dulce'"
                                     dataType="text"
                                     onChange={(value) => this.handleStringChange("newTagInput", value)}
                                 />
@@ -324,7 +312,7 @@ const initialItemToEditState = {
     description: '',
     tags: [],
     price: '',
-    imageLink: ''
+    imageBase64: ''
 }
 
 const scrollStyle = {

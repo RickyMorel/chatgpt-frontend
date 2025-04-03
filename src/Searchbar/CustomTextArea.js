@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
 import Utils from '../Utils';
+import ExplinationPopup from './ExplinationPopup';
 
 class CustomTextArea extends Component {
     constructor(props) {
         super(props);    
         this.state = {
-            input: ''
+            input: '',
+            showPopup: false
         };
     }
 
@@ -32,15 +34,14 @@ class CustomTextArea extends Component {
         });
     };
 
+    handleMouse = (hasEntered) => {
+        if(!this.props.explinationText) {return;}
+
+        this.setState({ showPopup: hasEntered})
+    }
+
     render() {
-        const { 
-            placeHolderText, 
-            width, 
-            height, 
-            hasError, 
-            noPadding = false, 
-            canEdit = true 
-        } = this.props;
+        const { placeHolderText, width, height, hasError, noPadding = false, canEdit = true ,explinationText} = this.props;
 
         const styling = {
             backgroundColor: canEdit ? ColorHex.White : ColorHex.Background,
@@ -64,16 +65,28 @@ class CustomTextArea extends Component {
         };
 
         return (
-            <textarea 
-                name='pointsUsed'
-                value={this.state.input}
-                placeholder={placeHolderText}
-                className="validate"
-                style={styling}
-                onChange={this.handleChange}
-                disabled={!canEdit}
-                rows={5}  // Default number of visible rows
-            />
+            <div onMouseEnter={() => this.handleMouse(true)} onMouseLeave={() => this.handleMouse(false)}>
+                <textarea 
+                    name='pointsUsed'
+                    value={this.state.input}
+                    placeholder={placeHolderText}
+                    className="validate"
+                    style={styling}
+                    onChange={this.handleChange}
+                    disabled={!canEdit}
+                    rows={5} 
+                />
+                {
+                    this.state.showPopup == true ? 
+                    <ExplinationPopup 
+                        width={width} 
+                        height={"auto"} 
+                        text={explinationText} 
+                    />
+                    :
+                    <></>
+                }
+            </div>
         );
     }
 }

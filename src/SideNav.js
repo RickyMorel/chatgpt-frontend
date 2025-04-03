@@ -23,6 +23,12 @@ function SideNav(props)  {
   let fetchSoundCount = 0
 
   useEffect(() => {
+    console.log("props?.globalConfig", props?.globalConfig)
+    setMessageCount(props?.globalConfig?.usedMonthlyMessages)
+    setTotalClientsToMessage(props?.globalConfig?.maxMonthlyMessages)
+  })
+
+  useEffect(() => {
     if(window.token && window.token.length > 0) { return; }
 
     if(!isDesktop) { history.push('/clientOrderPlacing'); return; }
@@ -32,25 +38,11 @@ function SideNav(props)  {
     history.push('/');
   }, []);
 
-
-  useEffect(() => {
-      fetchChatData();
-  }, [props.botNumber]);
-
   useEffect(() => {
     if (playSound) {
       handleSoundPlay();
     }
   }, [playSound]);
-
-  const fetchChatData = async () => {
-    if (!props.botNumber) {
-        return;
-    }
-
-    setMessageCount(props?.globalConfig?.usedMonthlyMessages)
-      setTotalClientsToMessage(props?.globalConfig?.maxMonthlyMessages)
-    }
 
   const handleLogOut = () => {
     Cookies.remove('token');
@@ -83,7 +75,7 @@ function SideNav(props)  {
   const handleLinkClick = async (e, link) => {
     const disableCondition = !props?.setupConditions.minimumConditionsMet && link != "/aiConfiguration" &&  link != "/inventory"
     
-    if(props.globalConfig.isGloballyBlocked) {props.toastCallback(Utils.deativateBlockClientsToast, ColorHex.OrangeFabri);}
+    if(props.globalConfig.isGloballyBlocked && !disableCondition) {props.toastCallback(Utils.deativateBlockClientsToast, ColorHex.OrangeFabri);}
 
     if(disableCondition) {
       e.preventDefault();

@@ -3,12 +3,14 @@ import "react-datepicker/dist/react-datepicker.css";
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
 import Utils from '../Utils';
+import ExplinationPopup from './ExplinationPopup';
 
 class CustomInput extends Component {
     constructor(props) {
         super(props);    
         this.state = {
-            input: ''
+            input: '',
+            showPopup: false
         };
         this.datePickerRef = React.createRef();
     }
@@ -34,8 +36,14 @@ class CustomInput extends Component {
         });
     };
 
+    handleMouse = (hasEntered) => {
+        if(!this.props.explinationText) {return;}
+
+        this.setState({ showPopup: hasEntered})
+    }
+
     render() {
-        const { placeHolderText, dataType, onChange, width, height, hasError, noPadding = false, canEdit = true } = this.props;
+        const { placeHolderText, explinationText, dataType, onChange, width, height, hasError, noPadding = false, canEdit = true } = this.props;
 
         const styling = {
             backgroundColor: canEdit ? ColorHex.White : ColorHex.Background,
@@ -53,12 +61,25 @@ class CustomInput extends Component {
             paddingRight: noPadding ? '15px' : '0px',
             textAlign: 'center',
             outline: 'none',
+            marginBottom: '10px',
             ...CssProperties.SmallHeaderTextStyle,
           };
 
         return (
             canEdit ?
-            <input name='pointsUsed' type={dataType} value={this.state.input} placeholder={placeHolderText} class="validate" style={styling} onChange={(e) => this.handleChange(e, onChange)}/>
+            <div onMouseEnter={() => this.handleMouse(true)} onMouseLeave={() => this.handleMouse(false)}>
+                <input name='pointsUsed' type={dataType} value={this.state.input} placeholder={placeHolderText} class="validate" style={styling} onChange={(e) => this.handleChange(e, onChange)}/>
+                {
+                    this.state.showPopup == true ? 
+                    <ExplinationPopup 
+                        width={width} 
+                        height={"auto"} 
+                        text={explinationText} 
+                    />
+                    :
+                    <></>
+                }
+            </div>
             :
             <input disabled name='pointsUsed' type={dataType} value={this.state.input} placeholder={placeHolderText} class="validate" style={styling} onChange={(e) => this.handleChange(e, onChange)}/>
         );

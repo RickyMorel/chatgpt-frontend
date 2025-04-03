@@ -797,3 +797,262 @@
 [info] 
 [info] Project Console: https://console.firebase.google.com/project/whatsbot-e670a/overview
 [info] Hosting URL: https://whatsbot-e670a.web.app
+[debug] [2025-04-03T16:59:04.358Z] ----------------------------------------------------------------------
+[debug] [2025-04-03T16:59:04.361Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ricky\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --debug
+[debug] [2025-04-03T16:59:04.362Z] CLI Version:   14.0.1
+[debug] [2025-04-03T16:59:04.362Z] Platform:      win32
+[debug] [2025-04-03T16:59:04.362Z] Node Version:  v20.9.0
+[debug] [2025-04-03T16:59:04.362Z] Time:          Thu Apr 03 2025 12:59:04 GMT-0400 (Paraguay Standard Time)
+[debug] [2025-04-03T16:59:04.362Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-03T16:59:04.365Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-04-03T16:59:04.598Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-03T16:59:04.600Z] > authorizing via signed-in user (ricardomorel0903@gmail.com)
+[debug] [2025-04-03T16:59:04.600Z] [iam] checking project whatsbot-e670a for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-04-03T16:59:04.601Z] Checked if tokens are valid: false, expires at: 1743611596821
+[debug] [2025-04-03T16:59:04.602Z] Checked if tokens are valid: false, expires at: 1743611596821
+[debug] [2025-04-03T16:59:04.602Z] > refreshing access token with scopes: []
+[debug] [2025-04-03T16:59:04.603Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-04-03T16:59:04.604Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-04-03T16:59:04.767Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-04-03T16:59:04.768Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-04-03T16:59:04.782Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions [none]
+[debug] [2025-04-03T16:59:04.783Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions x-goog-quota-user=projects/whatsbot-e670a
+[debug] [2025-04-03T16:59:04.783Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-04-03T16:59:05.134Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-04-03T16:59:05.135Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2025-04-03T16:59:05.743Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions 200
+[debug] [2025-04-03T16:59:05.743Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-04-03T16:59:05.744Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:05.745Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:05.745Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/whatsbot-e670a [none]
+[debug] [2025-04-03T16:59:06.149Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/whatsbot-e670a 200
+[debug] [2025-04-03T16:59:06.149Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/whatsbot-e670a {"projectId":"whatsbot-e670a","projectNumber":"78686841353","displayName":"WhatsBot","name":"projects/whatsbot-e670a","resources":{"hostingSite":"whatsbot-e670a"},"state":"ACTIVE","etag":"1_e5ed7f92-8ecc-471f-a5ff-5d1604452f38"}
+[info] 
+[info] === Deploying to 'whatsbot-e670a'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-04-03T16:59:06.155Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:06.155Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:06.156Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions [none]
+[debug] [2025-04-03T16:59:06.156Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-04-03T16:59:08.253Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions 200
+[debug] [2025-04-03T16:59:08.253Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions {"name":"projects/78686841353/sites/whatsbot-e670a/versions/28fd59e02c5b4010","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[whatsbot-e670a]: beginning deploy... 
+[info] i  hosting[whatsbot-e670a]: found 18 files in build 
+[debug] [2025-04-03T16:59:08.270Z] [hosting] uploading with 200 concurrency
+[debug] [2025-04-03T16:59:09.621Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:09.621Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:09.622Z] [hosting] hash cache [YnVpbGQ] stored for 18 files
+[debug] [2025-04-03T16:59:09.623Z] [hosting][hash queue][FINAL] {"max":1346,"min":0,"avg":87.33333333333333,"active":0,"complete":18,"success":18,"errored":0,"retried":0,"total":18,"elapsed":1351}
+[debug] [2025-04-03T16:59:09.624Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/78686841353/sites/whatsbot-e670a/versions/28fd59e02c5b4010:populateFiles [none]
+[debug] [2025-04-03T16:59:09.624Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/78686841353/sites/whatsbot-e670a/versions/28fd59e02c5b4010:populateFiles {"files":{"/manifest.json":"039be1affb690621eb9de696383090ff7f428f17d3094cafb67fa392a61188d6","/images/x-button.png":"2c2d650595b55c9716301992c22c53d7ddc0fc6aeec825f32ff87f51e1c28131","/images/wrongNumber.png":"c2c83c6c0cb691dbea6c47973d038c437356febb7991de7aca8bb416c386835f","/images/Whatsbot_Green.png":"956cfc280c13cce3edfadd75c094a76d2017e8aa3c644fc6f5a627fd4635da73","/images/whatsapplogo.png":"1ed8b6e3a21107c8526cdf4eb3832cfa14cde32b8bee870bc083c23a045109f6","/images/tick.png":"b2c366a186fbb8b64270ab29bd2563e1849ebe5e296495a075108ce472a32122","/images/splash.png":"cd1d5290b29db2c35a63455fa1ecdbd48afa620fc2961a556dd8cf2ca7826d76","/images/icon.png":"249c1108c02439ca3041e4fab1d4f885555f364523ff8cc600fd738ef9474802","/images/failIcon.png":"41afda739a428a560de8c38da752b95d67ce0068b6213e876e1343f8591e8177","/images/checkmark.jpeg":"b22c6166ca3b37277dc11bbe99909623771d8e825e7b8e8273705e53415cee7b","/index.html":"9289eadf0b58b7c7d4a0a49883726ec1735e686b25e4f7cc8e56353845e9674c","/asset-manifest.json":"4eb1641ac47d51b2aaebefef70d0aa3fe563002f85ca4bf887c29443937f0d82","/static/js/main.abf22476.js.LICENSE.txt":"95e15a8467815cd709f3de46cae8d26791b32d0e47a82b91b23ea187751f51c8","/images/iconWhite.png":"a48debbe50e42f94f102d39d6bbd827ba3b661a24763ffb6c635f782b2029d36","/static/css/main.f4c1d8e3.css":"0eee8189548ac1d9ad5d10c3f66bb2e5a23a5ddee4c208b99a2d2d39333ceac3","/static/css/main.f4c1d8e3.css.map":"51ba6585b3ca242af48527d76c29820da64eb785a051c8f1183acf34f4e674a1","/static/js/main.abf22476.js":"d3deacaf5f968fa2a9fdc36df2b5a591e5ae2fbce31ee3e1abfdd89c67e5c227","/static/js/main.abf22476.js.map":"8cc46fc2dad692e7093379362eeb973f82f9d72113fceeac263275eb9b85863d"}}
+[info] i  hosting: adding files to version [0/18] (0%) 
+[debug] [2025-04-03T16:59:10.317Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/78686841353/sites/whatsbot-e670a/versions/28fd59e02c5b4010:populateFiles 200
+[debug] [2025-04-03T16:59:10.317Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/78686841353/sites/whatsbot-e670a/versions/28fd59e02c5b4010:populateFiles {"uploadRequiredHashes":["a48debbe50e42f94f102d39d6bbd827ba3b661a24763ffb6c635f782b2029d36","4eb1641ac47d51b2aaebefef70d0aa3fe563002f85ca4bf887c29443937f0d82","8cc46fc2dad692e7093379362eeb973f82f9d72113fceeac263275eb9b85863d","d3deacaf5f968fa2a9fdc36df2b5a591e5ae2fbce31ee3e1abfdd89c67e5c227","9289eadf0b58b7c7d4a0a49883726ec1735e686b25e4f7cc8e56353845e9674c"],"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files"}
+[debug] [2025-04-03T16:59:10.318Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.318Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.319Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.319Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.320Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.320Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.320Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.321Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.321Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.322Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:10.322Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/a48debbe50e42f94f102d39d6bbd827ba3b661a24763ffb6c635f782b2029d36 [none]
+[debug] [2025-04-03T16:59:10.322Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/a48debbe50e42f94f102d39d6bbd827ba3b661a24763ffb6c635f782b2029d36 [stream]
+[debug] [2025-04-03T16:59:10.325Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/4eb1641ac47d51b2aaebefef70d0aa3fe563002f85ca4bf887c29443937f0d82 [none]
+[debug] [2025-04-03T16:59:10.325Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/4eb1641ac47d51b2aaebefef70d0aa3fe563002f85ca4bf887c29443937f0d82 [stream]
+[debug] [2025-04-03T16:59:10.328Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/8cc46fc2dad692e7093379362eeb973f82f9d72113fceeac263275eb9b85863d [none]
+[debug] [2025-04-03T16:59:10.329Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/8cc46fc2dad692e7093379362eeb973f82f9d72113fceeac263275eb9b85863d [stream]
+[debug] [2025-04-03T16:59:10.331Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/d3deacaf5f968fa2a9fdc36df2b5a591e5ae2fbce31ee3e1abfdd89c67e5c227 [none]
+[debug] [2025-04-03T16:59:10.332Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/d3deacaf5f968fa2a9fdc36df2b5a591e5ae2fbce31ee3e1abfdd89c67e5c227 [stream]
+[debug] [2025-04-03T16:59:10.334Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/9289eadf0b58b7c7d4a0a49883726ec1735e686b25e4f7cc8e56353845e9674c [none]
+[debug] [2025-04-03T16:59:10.335Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/9289eadf0b58b7c7d4a0a49883726ec1735e686b25e4f7cc8e56353845e9674c [stream]
+[debug] [2025-04-03T16:59:10.337Z] [hosting][populate queue][FINAL] {"max":701,"min":701,"avg":701,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":716}
+[debug] [2025-04-03T16:59:10.338Z] [hosting] uploads queued: 5
+[debug] [2025-04-03T16:59:12.078Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/a48debbe50e42f94f102d39d6bbd827ba3b661a24763ffb6c635f782b2029d36 200
+[debug] [2025-04-03T16:59:12.078Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/a48debbe50e42f94f102d39d6bbd827ba3b661a24763ffb6c635f782b2029d36 [stream]
+[debug] [2025-04-03T16:59:12.186Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/d3deacaf5f968fa2a9fdc36df2b5a591e5ae2fbce31ee3e1abfdd89c67e5c227 200
+[debug] [2025-04-03T16:59:12.187Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/d3deacaf5f968fa2a9fdc36df2b5a591e5ae2fbce31ee3e1abfdd89c67e5c227 [stream]
+[debug] [2025-04-03T16:59:12.187Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/4eb1641ac47d51b2aaebefef70d0aa3fe563002f85ca4bf887c29443937f0d82 200
+[debug] [2025-04-03T16:59:12.188Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/4eb1641ac47d51b2aaebefef70d0aa3fe563002f85ca4bf887c29443937f0d82 [stream]
+[debug] [2025-04-03T16:59:12.286Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/9289eadf0b58b7c7d4a0a49883726ec1735e686b25e4f7cc8e56353845e9674c 200
+[debug] [2025-04-03T16:59:12.287Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/9289eadf0b58b7c7d4a0a49883726ec1735e686b25e4f7cc8e56353845e9674c [stream]
+[info] i  hosting: uploading new files [4/5] (80%) 
+[info] i  hosting: uploading new files [4/5] (80%) 
+[debug] [2025-04-03T16:59:15.372Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/8cc46fc2dad692e7093379362eeb973f82f9d72113fceeac263275eb9b85863d 200
+[debug] [2025-04-03T16:59:15.373Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/28fd59e02c5b4010/files/8cc46fc2dad692e7093379362eeb973f82f9d72113fceeac263275eb9b85863d [stream]
+[debug] [2025-04-03T16:59:15.373Z] [hosting][upload queue][FINAL] {"max":5054,"min":1761,"avg":2503.4,"active":0,"complete":5,"success":5,"errored":0,"retried":0,"total":5,"elapsed":5055}
+[info] i  hosting: upload complete 
+[info] +  hosting[whatsbot-e670a]: file upload complete 
+[debug] [2025-04-03T16:59:15.374Z] [hosting] deploy completed after 7118ms
+[debug] [2025-04-03T16:59:15.375Z] [
+  {
+    "config": {
+      "public": "build",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "site": "whatsbot-e670a"
+    },
+    "version": "projects/78686841353/sites/whatsbot-e670a/versions/28fd59e02c5b4010"
+  }
+]
+[info] i  hosting[whatsbot-e670a]: finalizing version... 
+[debug] [2025-04-03T16:59:15.378Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:15.378Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:15.379Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions/28fd59e02c5b4010 updateMask=status%2Cconfig
+[debug] [2025-04-03T16:59:15.379Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions/28fd59e02c5b4010 {"status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]}}
+[debug] [2025-04-03T16:59:17.272Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions/28fd59e02c5b4010 200
+[debug] [2025-04-03T16:59:17.273Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions/28fd59e02c5b4010 {"name":"projects/78686841353/sites/whatsbot-e670a/versions/28fd59e02c5b4010","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2025-04-03T16:59:08.099152Z","createUser":{"email":"ricardomorel0903@gmail.com"},"finalizeTime":"2025-04-03T16:59:17.807131Z","finalizeUser":{"email":"ricardomorel0903@gmail.com"}}
+[debug] [2025-04-03T16:59:17.275Z] [hosting] finalized version for whatsbot-e670a:[object Object]
+[info] +  hosting[whatsbot-e670a]: version finalized 
+[info] i  hosting[whatsbot-e670a]: releasing new version... 
+[debug] [2025-04-03T16:59:17.276Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:17.276Z] Checked if tokens are valid: true, expires at: 1743703143769
+[debug] [2025-04-03T16:59:17.276Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/channels/live/releases versionName=projects%2F78686841353%2Fsites%2Fwhatsbot-e670a%2Fversions%2F28fd59e02c5b4010
+[debug] [2025-04-03T16:59:17.276Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/channels/live/releases {}
+[debug] [2025-04-03T16:59:18.094Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/channels/live/releases 200
+[debug] [2025-04-03T16:59:18.094Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/channels/live/releases {"name":"projects/78686841353/sites/whatsbot-e670a/channels/live/releases/1743699557990000","version":{"name":"projects/78686841353/sites/whatsbot-e670a/versions/28fd59e02c5b4010","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2025-04-03T16:59:08.099152Z","createUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"},"finalizeTime":"2025-04-03T16:59:17.807131Z","finalizeUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"}},"type":"DEPLOY","releaseTime":"2025-04-03T16:59:17.990Z","releaseUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"}}
+[debug] [2025-04-03T16:59:18.096Z] [hosting] release: {"name":"projects/78686841353/sites/whatsbot-e670a/channels/live/releases/1743699557990000","version":{"name":"projects/78686841353/sites/whatsbot-e670a/versions/28fd59e02c5b4010","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2025-04-03T16:59:08.099152Z","createUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"},"finalizeTime":"2025-04-03T16:59:17.807131Z","finalizeUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"}},"type":"DEPLOY","releaseTime":"2025-04-03T16:59:17.990Z","releaseUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"}}
+[info] +  hosting[whatsbot-e670a]: release complete 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/whatsbot-e670a/overview
+[info] Hosting URL: https://whatsbot-e670a.web.app
+[debug] [2025-04-03T18:13:28.472Z] ----------------------------------------------------------------------
+[debug] [2025-04-03T18:13:28.475Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ricky\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --debug
+[debug] [2025-04-03T18:13:28.475Z] CLI Version:   14.0.1
+[debug] [2025-04-03T18:13:28.475Z] Platform:      win32
+[debug] [2025-04-03T18:13:28.476Z] Node Version:  v20.9.0
+[debug] [2025-04-03T18:13:28.476Z] Time:          Thu Apr 03 2025 14:13:28 GMT-0400 (Paraguay Standard Time)
+[debug] [2025-04-03T18:13:28.476Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-03T18:13:28.655Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-03T18:13:28.656Z] > authorizing via signed-in user (ricardomorel0903@gmail.com)
+[debug] [2025-04-03T18:13:28.657Z] [iam] checking project whatsbot-e670a for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-04-03T18:13:28.658Z] Checked if tokens are valid: false, expires at: 1743703143769
+[debug] [2025-04-03T18:13:28.659Z] Checked if tokens are valid: false, expires at: 1743703143769
+[debug] [2025-04-03T18:13:28.659Z] > refreshing access token with scopes: []
+[debug] [2025-04-03T18:13:28.661Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-04-03T18:13:28.661Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-04-03T18:13:29.012Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-04-03T18:13:29.012Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-04-03T18:13:29.024Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions [none]
+[debug] [2025-04-03T18:13:29.024Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions x-goog-quota-user=projects/whatsbot-e670a
+[debug] [2025-04-03T18:13:29.024Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-04-03T18:13:29.941Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions 200
+[debug] [2025-04-03T18:13:29.941Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/whatsbot-e670a:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-04-03T18:13:29.942Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:29.942Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:29.943Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/whatsbot-e670a [none]
+[debug] [2025-04-03T18:13:30.350Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/whatsbot-e670a 200
+[debug] [2025-04-03T18:13:30.351Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/whatsbot-e670a {"projectId":"whatsbot-e670a","projectNumber":"78686841353","displayName":"WhatsBot","name":"projects/whatsbot-e670a","resources":{"hostingSite":"whatsbot-e670a"},"state":"ACTIVE","etag":"1_e5ed7f92-8ecc-471f-a5ff-5d1604452f38"}
+[info] 
+[info] === Deploying to 'whatsbot-e670a'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-04-03T18:13:30.357Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:30.357Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:30.357Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions [none]
+[debug] [2025-04-03T18:13:30.358Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-04-03T18:13:32.453Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions 200
+[debug] [2025-04-03T18:13:32.454Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions {"name":"projects/78686841353/sites/whatsbot-e670a/versions/631c7fb0657f4d06","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[whatsbot-e670a]: beginning deploy... 
+[info] i  hosting[whatsbot-e670a]: found 18 files in build 
+[debug] [2025-04-03T18:13:32.470Z] [hosting] uploading with 200 concurrency
+[debug] [2025-04-03T18:13:33.922Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:33.922Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:33.924Z] [hosting] hash cache [YnVpbGQ] stored for 18 files
+[debug] [2025-04-03T18:13:33.924Z] [hosting][hash queue][FINAL] {"max":1449,"min":1,"avg":92.83333333333333,"active":0,"complete":18,"success":18,"errored":0,"retried":0,"total":18,"elapsed":1453}
+[debug] [2025-04-03T18:13:33.925Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/78686841353/sites/whatsbot-e670a/versions/631c7fb0657f4d06:populateFiles [none]
+[debug] [2025-04-03T18:13:33.926Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/78686841353/sites/whatsbot-e670a/versions/631c7fb0657f4d06:populateFiles {"files":{"/manifest.json":"039be1affb690621eb9de696383090ff7f428f17d3094cafb67fa392a61188d6","/images/x-button.png":"2c2d650595b55c9716301992c22c53d7ddc0fc6aeec825f32ff87f51e1c28131","/images/wrongNumber.png":"c2c83c6c0cb691dbea6c47973d038c437356febb7991de7aca8bb416c386835f","/images/Whatsbot_Green.png":"956cfc280c13cce3edfadd75c094a76d2017e8aa3c644fc6f5a627fd4635da73","/images/whatsapplogo.png":"1ed8b6e3a21107c8526cdf4eb3832cfa14cde32b8bee870bc083c23a045109f6","/images/tick.png":"b2c366a186fbb8b64270ab29bd2563e1849ebe5e296495a075108ce472a32122","/images/splash.png":"cd1d5290b29db2c35a63455fa1ecdbd48afa620fc2961a556dd8cf2ca7826d76","/images/iconWhite.png":"a48debbe50e42f94f102d39d6bbd827ba3b661a24763ffb6c635f782b2029d36","/images/icon.png":"249c1108c02439ca3041e4fab1d4f885555f364523ff8cc600fd738ef9474802","/images/failIcon.png":"41afda739a428a560de8c38da752b95d67ce0068b6213e876e1343f8591e8177","/images/checkmark.jpeg":"b22c6166ca3b37277dc11bbe99909623771d8e825e7b8e8273705e53415cee7b","/index.html":"3a9926d99a69be439fb79ded549ade65ab3e4e7f33683a18751c39edbeb5f4fe","/asset-manifest.json":"28c5470eeaa5c5facf05be9e6d3be99b3359e4aa9865883809eeb81684033f0a","/static/js/main.5a0a5dda.js.LICENSE.txt":"95e15a8467815cd709f3de46cae8d26791b32d0e47a82b91b23ea187751f51c8","/static/css/main.f4c1d8e3.css":"0eee8189548ac1d9ad5d10c3f66bb2e5a23a5ddee4c208b99a2d2d39333ceac3","/static/css/main.f4c1d8e3.css.map":"51ba6585b3ca242af48527d76c29820da64eb785a051c8f1183acf34f4e674a1","/static/js/main.5a0a5dda.js":"bd4e5b0475f2b0e405153797811df7c98f797feda00ddca8953001fe6adc7ff3","/static/js/main.5a0a5dda.js.map":"7a30361ca9fb517a53af44d63dd2688833c0079955417ff050c6f6718fba51e7"}}
+[info] i  hosting: adding files to version [0/18] (0%) 
+[debug] [2025-04-03T18:13:34.578Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/78686841353/sites/whatsbot-e670a/versions/631c7fb0657f4d06:populateFiles 200
+[debug] [2025-04-03T18:13:34.578Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/78686841353/sites/whatsbot-e670a/versions/631c7fb0657f4d06:populateFiles {"uploadRequiredHashes":["7a30361ca9fb517a53af44d63dd2688833c0079955417ff050c6f6718fba51e7","bd4e5b0475f2b0e405153797811df7c98f797feda00ddca8953001fe6adc7ff3","28c5470eeaa5c5facf05be9e6d3be99b3359e4aa9865883809eeb81684033f0a","3a9926d99a69be439fb79ded549ade65ab3e4e7f33683a18751c39edbeb5f4fe"],"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files"}
+[debug] [2025-04-03T18:13:34.579Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:34.579Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:34.580Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:34.580Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:34.580Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:34.580Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:34.581Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:34.581Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:34.581Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/7a30361ca9fb517a53af44d63dd2688833c0079955417ff050c6f6718fba51e7 [none]
+[debug] [2025-04-03T18:13:34.581Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/7a30361ca9fb517a53af44d63dd2688833c0079955417ff050c6f6718fba51e7 [stream]
+[debug] [2025-04-03T18:13:34.583Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/bd4e5b0475f2b0e405153797811df7c98f797feda00ddca8953001fe6adc7ff3 [none]
+[debug] [2025-04-03T18:13:34.583Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/bd4e5b0475f2b0e405153797811df7c98f797feda00ddca8953001fe6adc7ff3 [stream]
+[debug] [2025-04-03T18:13:34.585Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/28c5470eeaa5c5facf05be9e6d3be99b3359e4aa9865883809eeb81684033f0a [none]
+[debug] [2025-04-03T18:13:34.585Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/28c5470eeaa5c5facf05be9e6d3be99b3359e4aa9865883809eeb81684033f0a [stream]
+[debug] [2025-04-03T18:13:34.587Z] >>> [apiv2][query] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/3a9926d99a69be439fb79ded549ade65ab3e4e7f33683a18751c39edbeb5f4fe [none]
+[debug] [2025-04-03T18:13:34.587Z] >>> [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/3a9926d99a69be439fb79ded549ade65ab3e4e7f33683a18751c39edbeb5f4fe [stream]
+[debug] [2025-04-03T18:13:34.588Z] [hosting][populate queue][FINAL] {"max":659,"min":659,"avg":659,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":666}
+[debug] [2025-04-03T18:13:34.589Z] [hosting] uploads queued: 4
+[debug] [2025-04-03T18:13:36.208Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/28c5470eeaa5c5facf05be9e6d3be99b3359e4aa9865883809eeb81684033f0a 200
+[debug] [2025-04-03T18:13:36.209Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/28c5470eeaa5c5facf05be9e6d3be99b3359e4aa9865883809eeb81684033f0a [stream]
+[debug] [2025-04-03T18:13:36.362Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/3a9926d99a69be439fb79ded549ade65ab3e4e7f33683a18751c39edbeb5f4fe 200
+[debug] [2025-04-03T18:13:36.362Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/3a9926d99a69be439fb79ded549ade65ab3e4e7f33683a18751c39edbeb5f4fe [stream]
+[debug] [2025-04-03T18:13:36.391Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/bd4e5b0475f2b0e405153797811df7c98f797feda00ddca8953001fe6adc7ff3 200
+[debug] [2025-04-03T18:13:36.391Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/bd4e5b0475f2b0e405153797811df7c98f797feda00ddca8953001fe6adc7ff3 [stream]
+[info] i  hosting: uploading new files [3/4] (75%) 
+[info] i  hosting: uploading new files [3/4] (75%) 
+[debug] [2025-04-03T18:13:39.340Z] <<< [apiv2][status] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/7a30361ca9fb517a53af44d63dd2688833c0079955417ff050c6f6718fba51e7 200
+[debug] [2025-04-03T18:13:39.341Z] <<< [apiv2][body] POST https://upload-firebasehosting.googleapis.com/upload/sites/whatsbot-e670a/versions/631c7fb0657f4d06/files/7a30361ca9fb517a53af44d63dd2688833c0079955417ff050c6f6718fba51e7 [stream]
+[debug] [2025-04-03T18:13:39.342Z] [hosting][upload queue][FINAL] {"max":4763,"min":1629,"avg":2496.5,"active":0,"complete":4,"success":4,"errored":0,"retried":0,"total":4,"elapsed":4763}
+[info] i  hosting: upload complete 
+[info] +  hosting[whatsbot-e670a]: file upload complete 
+[debug] [2025-04-03T18:13:39.343Z] [hosting] deploy completed after 6886ms
+[debug] [2025-04-03T18:13:39.343Z] [
+  {
+    "config": {
+      "public": "build",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "site": "whatsbot-e670a"
+    },
+    "version": "projects/78686841353/sites/whatsbot-e670a/versions/631c7fb0657f4d06"
+  }
+]
+[info] i  hosting[whatsbot-e670a]: finalizing version... 
+[debug] [2025-04-03T18:13:39.346Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:39.346Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:39.347Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions/631c7fb0657f4d06 updateMask=status%2Cconfig
+[debug] [2025-04-03T18:13:39.347Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions/631c7fb0657f4d06 {"status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]}}
+[debug] [2025-04-03T18:13:40.001Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions/631c7fb0657f4d06 200
+[debug] [2025-04-03T18:13:40.002Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/versions/631c7fb0657f4d06 {"name":"projects/78686841353/sites/whatsbot-e670a/versions/631c7fb0657f4d06","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2025-04-03T18:13:32.257469Z","createUser":{"email":"ricardomorel0903@gmail.com"},"finalizeTime":"2025-04-03T18:13:40.505068Z","finalizeUser":{"email":"ricardomorel0903@gmail.com"}}
+[debug] [2025-04-03T18:13:40.003Z] [hosting] finalized version for whatsbot-e670a:[object Object]
+[info] +  hosting[whatsbot-e670a]: version finalized 
+[info] i  hosting[whatsbot-e670a]: releasing new version... 
+[debug] [2025-04-03T18:13:40.004Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:40.004Z] Checked if tokens are valid: true, expires at: 1743707608012
+[debug] [2025-04-03T18:13:40.004Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/channels/live/releases versionName=projects%2F78686841353%2Fsites%2Fwhatsbot-e670a%2Fversions%2F631c7fb0657f4d06
+[debug] [2025-04-03T18:13:40.004Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/channels/live/releases {}
+[debug] [2025-04-03T18:13:40.806Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/channels/live/releases 200
+[debug] [2025-04-03T18:13:40.807Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/whatsbot-e670a/channels/live/releases {"name":"projects/78686841353/sites/whatsbot-e670a/channels/live/releases/1743704020597000","version":{"name":"projects/78686841353/sites/whatsbot-e670a/versions/631c7fb0657f4d06","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2025-04-03T18:13:32.257469Z","createUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"},"finalizeTime":"2025-04-03T18:13:40.505068Z","finalizeUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"}},"type":"DEPLOY","releaseTime":"2025-04-03T18:13:40.597Z","releaseUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"}}
+[debug] [2025-04-03T18:13:40.808Z] [hosting] release: {"name":"projects/78686841353/sites/whatsbot-e670a/channels/live/releases/1743704020597000","version":{"name":"projects/78686841353/sites/whatsbot-e670a/versions/631c7fb0657f4d06","status":"FINALIZED","config":{"rewrites":[{"glob":"**","path":"/index.html"}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2025-04-03T18:13:32.257469Z","createUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"},"finalizeTime":"2025-04-03T18:13:40.505068Z","finalizeUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"}},"type":"DEPLOY","releaseTime":"2025-04-03T18:13:40.597Z","releaseUser":{"email":"ricardomorel0903@gmail.com","imageUrl":"https://lh3.googleusercontent.com/a/ACg8ocKVQGA2oD_brvQfXeV530ozjizIqISgNHF0RxFbhOnuVLKt=mo"}}
+[info] +  hosting[whatsbot-e670a]: release complete 
+[info] 
+[info] +  Deploy complete! 
+[info] 
+[info] Project Console: https://console.firebase.google.com/project/whatsbot-e670a/overview
+[info] Hosting URL: https://whatsbot-e670a.web.app

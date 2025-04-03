@@ -267,8 +267,8 @@ class InventoryScreen extends Component {
 
     saveDailyInventories = async () => {
         console.log("saveDailyInventories")
-        if(this.state.selectedDayInventory?.items?.length < 5) {this.props.showPopup(new Error("Cargar al menos 5 productos!")); return;}
-        if(this.state.promoItemCodes.length < 3) {this.props.showPopup(new Error("Hace falta marcar 3 productos especiales!")); return;}
+        //if(this.state.selectedDayInventory?.items?.length < 5) {this.props.showPopup(new Error("Cargar al menos 5 productos!")); return;}
+        //if(this.state.promoItemCodes.length < 3) {this.props.showPopup(new Error("Hace falta marcar 3 productos especiales!")); return;}
 
         this.setState({
             needsToSave: false
@@ -298,6 +298,7 @@ class InventoryScreen extends Component {
                 dayInventories: response.data,
             });
         } catch (error) {
+            console.log("error saving inventory", error)
             this.props.showPopup(error);
         }
     }
