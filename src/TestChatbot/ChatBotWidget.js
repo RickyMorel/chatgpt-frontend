@@ -7,9 +7,10 @@ import HttpRequest from '../HttpRequest';
 import Utils from '../Utils';
 
 const ChatBotWidget = (props) => {
+  const initialMessagesState = [{ id: 1, text: 'Esribe algo para empezar...', isBot: true }]
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [messages, setMessages] = useState([{ id: 1, text: 'Esribe algo para empezar...', isBot: true }]);
+  const [messages, setMessages] = useState(initialMessagesState);
   const [inputMessage, setInputMessage] = useState('');
   const [pressedToggle, setPressedToggle] = useState(false)
   const messagesEndRef = useRef(null);
@@ -33,14 +34,14 @@ const ChatBotWidget = (props) => {
         messages.push(messageObj)
         i++
       });
-      setMessages(messages)
+      setMessages(messages.length > 0 ? messages : initialMessagesState)
     } catch (error) {}
   }
 
   const clearChat = async () => {
     try {
       const response = await HttpRequest.put(`/client-crud/updateByNumber`, {phoneNumber: `test_${props.ownerId}`, lastChat: []});
-      setMessages(prev => []);
+      setMessages(prev => initialMessagesState);
     } catch(err) {}
   }
 

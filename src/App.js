@@ -196,7 +196,7 @@ class App extends Component {
           <></>
           :
           <div className="col-auto">
-            <SideNav setupConditions={this.state.setupConditions} showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+            <SideNav toastCallback={this.handleToast} setupConditions={this.state.setupConditions} showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
             <ChatBotWidget toastCallback={this.handleToast} tutorialTrigger={this.state.trigger} setupConditions={this.state.setupConditions} ownerId={this.state?.globalConfig?.ownerId}/>
           </div>
         }

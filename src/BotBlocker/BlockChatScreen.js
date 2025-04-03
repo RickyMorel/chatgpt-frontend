@@ -47,8 +47,6 @@ class BlockChatScreen extends Component {
     await this.fetchAllClientLocations()
     await this.GetCanMessageTommorrowsClients()
 
-    this.props.toastCallback(Utils.deativateBlockClientsToast, ColorHex.OrangeFabri);
-
     this.props.setIsLoading(false)
   }
 
@@ -210,6 +208,7 @@ class BlockChatScreen extends Component {
       this.setState({
         isGloballyBlocked: globallyBlocked
       });
+      window.location.reload()
       return response
     } catch (error) {
       return error

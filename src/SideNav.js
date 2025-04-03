@@ -83,6 +83,8 @@ function SideNav(props)  {
   const handleLinkClick = async (e, link) => {
     const disableCondition = !props?.setupConditions.minimumConditionsMet && link != "/aiConfiguration" &&  link != "/inventory"
     
+    if(props.globalConfig.isGloballyBlocked) {props.toastCallback(Utils.deativateBlockClientsToast, ColorHex.OrangeFabri);}
+
     if(disableCondition) {
       e.preventDefault();
       console.log("props a", props)
@@ -97,12 +99,13 @@ function SideNav(props)  {
     {icon: faClock, nameText: "Tiempos y Lugares", link: "/dayLocation"},
     {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
     {icon: faChartSimple, nameText: "Estadisticas", link: "/stats"},
-    {icon: faCloud, nameText: "Cargar Datos", link: "/loadData"},
+    // {icon: faCloud, nameText: "Cargar Datos", link: "/loadData"},
     {icon: faRobot, nameText: "Configuración IA", link: "/aiConfiguration"},
   ]
 
   const navBarButtonHtmls = navBarButton.map(x => {
     if(x.link == "/inventory" && props?.globalConfig?.usesInventory == false) { return; }
+    if(x.link == "/orders" && props?.globalConfig?.usesInventory == false) { return; }
     
     const disableCondition = !props?.setupConditions?.minimumConditionsMet && x.link != "/aiConfiguration" &&  x.link != "/inventory"
     const navBarButtonStyle = GetNavButtonStyle(x.link, disableCondition)
