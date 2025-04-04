@@ -107,7 +107,6 @@ class LoginScreen extends Component {
 
     return (
       <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '200px'}}>
-        <ToastContainer />
         <img src='./images/Whatsbot_Green.png' alt="Logo" className="img-fluid" style={{ width: '350px', height: "350px", marginTop: '7px', marginRight: '250px',  }} />
         <div style={loginCardStyling}>
             <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, position: 'absolute', top: 200}}>

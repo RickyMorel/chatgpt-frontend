@@ -298,7 +298,6 @@ class CreateAccountScreen extends Component {
 
     return (
       <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '50px'}}>
-        <ToastContainer />
         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.GreenDark_1, fontWeight: 'bold', marginTop: '15px', marginRight: '10px'}}>WhatsBot</p>
             <img src='./images/icon.png' alt="Logo" className="img-fluid" style={{ width: '60px', height: "60px"  }} />

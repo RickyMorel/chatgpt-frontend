@@ -403,7 +403,6 @@ class InventoryScreen extends Component {
 
         return (
             <div>
-                <ToastContainer />
                 {editItemModal}
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{`Inventario de ${dayDropdownOptions.find(x => x.value == selectedDayNumber).label}`}</p>
 
