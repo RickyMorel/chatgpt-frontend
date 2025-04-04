@@ -51,6 +51,7 @@ const SetupBlockedPopup = ({setupConditions, history, closePopupFunc}) => {
                 {setupConditions.hasLinkedWhatsapp == "unneeded" ? <></> : Condition(setupConditions.hasLinkedWhatsapp == "true", "Vincular WhatsApp", '/aiConfiguration', Utils.whatsappExplinationText)}
                 {setupConditions.hasBusinessDescription == "unneeded" ? <></> : Condition(setupConditions.hasBusinessDescription == "true", "Dar descripcion de negocio", '/aiConfiguration', Utils.businessDescriptionExplinationText)}
                 {setupConditions.hasProducts == "unneeded" ? <></> : Condition(setupConditions.hasProducts == "true", "Cargar productos", '/createItem', Utils.loadProductsExplinationText)}
+                {setupConditions.hasLoadedInventory == "unneeded" ? <></> : Condition(setupConditions.hasLoadedInventory == "true", "Cargar tu inventario del dia", '/inventory', Utils.loadInventoryExplinationText, 60)}
                 {setupConditions.hasAnswers == "unneeded" ? <></> : Condition(setupConditions.hasAnswers == "true", "Cargar 5 preguntas y respuestas", '/createQuestionAndAnswer', Utils.questionsAndAnswersExplinationText, 130)}
                 {setupConditions.hasExamples == "unneeded" ? <></> : Condition(setupConditions.hasExamples == "true", "Cargar 5 ejemplos de conversacion", '/createExampleConversation', Utils.conversationExamplesExplinationText, 115)}
             </ul>

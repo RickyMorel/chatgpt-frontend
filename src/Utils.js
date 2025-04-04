@@ -17,6 +17,7 @@ class Utils {
     static businessDescriptionExplinationText = `Esto permite que WhatsBot entienda de qué se trata tu negocio y cuál será su rol en él`
     static loadProductsExplinationText = `Aqui cargaras el catalogo entero de tus productos, asi WhatsBot sabra que vender a tus clientes`
     static conversationExamplesExplinationText = `Le daras ejemplos a WhatsBot de como queres que le responda a tus clientes, asi WhatsBot podra imitar tu forma de responder.<strong> Empezarmos con 5</strong>, pero <strong>si quieres que WhatsBot responda bien en todos los casos</strong>, le vas a tener que <strong>dar mas ejemplos</strong>`
+    static loadInventoryExplinationText = `Una vez que crees tus productos, debes especificar qué productos estarán disponibles en cada día`
     static questionsAndAnswersExplinationText = `Aqui cargaras todas las respuestas a preguntas que te suelen hacer tus clientes, como:<br/>-Cuando abren?<br/>-En cuanto tiempo llega mi pedido?<br/>-Trabajan en feriados?`
     static deativateBlockClientsToast = `Cuando quieras que WhatsBot empieze a responder a tus clientes🙋🏻‍♂️, tenes que desactivar el toggle✔️ "Bloquear WhatsBot". Se encuentra en el panel de Clientes => "Bloquear WhatsBot"`
 
@@ -186,7 +187,31 @@ class Utils {
     }).format(number);
   
     return `${formattedNumber}`;
-};
+  };
+
+  static glowingStyle = () => {
+    return (
+      <style jsx>{`
+        @keyframes glow {
+        0% {
+            box-shadow: 0 0 10px 5px rgba(247, 191, 68, 0.8);
+            filter: brightness(1.1);
+        }
+        50% {
+            box-shadow: 0 0 30px 15px rgba(247, 191, 68, 0.9);
+        }
+        100% {
+            box-shadow: 0 0 10px 5px rgba(247, 191, 68, 0.8);
+        }
+        }
+
+        .glowing {
+        animation: glow 1.5s infinite;
+        position: relative;
+        }
+    `}</style>
+    )
+  }
 }
 
 export default Utils

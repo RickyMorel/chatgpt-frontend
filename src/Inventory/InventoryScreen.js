@@ -12,13 +12,14 @@ import CustomToggle from '../Searchbar/CustomToggle';
 import { faFloppyDisk, faSquarePlus } from '@fortawesome/free-regular-svg-icons';
 import { ToastContainer, toast } from 'react-toastify';
 import HttpRequest from '../HttpRequest';
+import { globalEmitter } from '../GlobalEventEmitter';
 
 class InventoryScreen extends Component {
     constructor(props) {
         super(props);
     
         this.state = {
-          products: null,
+          products: [],
           filteredProducts: null,
           dayInventories: null,
           selectedDayInventory: null,
@@ -44,6 +45,7 @@ class InventoryScreen extends Component {
         this.props.setIsLoading(true)
 
         const promise2 = await this.fetchProductData() 
+        // const promise2 = () => {}
         const promise1 = this.fetchGlobalConfig()
         const promise3 = this.fetchProductReccomendations()
           
@@ -294,9 +296,12 @@ class InventoryScreen extends Component {
 
         try {
             const response = await HttpRequest.put(`/global-config/dayInventory`, {inventories: newDayInventoriesDto});
+
             this.setState({
                 dayInventories: response.data,
             });
+
+            if(!this.props.setupConditions.minimumConditionsMet) { globalEmitter.emit('checkMetConditions'); }
         } catch (error) {
             console.log("error saving inventory", error)
             this.props.showPopup(error);
@@ -320,6 +325,9 @@ class InventoryScreen extends Component {
 
     render() {
         const {selectedDayInventory, filteredProducts, filteredSelectedDayInventory, selectedDayNumber} = this.state
+        
+        const hasLoadedInventory = this.props?.setupConditions?.hasLoadedInventory .toLowerCase() === "true"
+        const isTutorial = !hasLoadedInventory
 
         const orderedFilteredProducts = filteredProducts?.sort((a, b) => this.sortByName(a, b, "name"))
         const allProductsList = orderedFilteredProducts?.map(x => {
@@ -332,6 +340,7 @@ class InventoryScreen extends Component {
                     isInDailyInventory={false}
                     handleClickCallback={this.handleItemClick} 
                     handleEditItemCallback={this.handleEditItem}
+                    isTutorial={isTutorial}
                 />
             )
         });
@@ -352,6 +361,7 @@ class InventoryScreen extends Component {
                 handleSelectPromoItemCallback={this.handleSelectPromoItem} 
                 handleEditItemCallback={this.handleEditItem}
                 reccomendations={reccomendedItems}
+                isTutorial={isTutorial}
             />
             )
         });
@@ -409,12 +419,12 @@ class InventoryScreen extends Component {
                         />
                     </div>
                     <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
-                        <CustomButton classStyle={`btnGreen`} text="Crear Item"  width="175px" height="45px" icon={faSquarePlus} link="createItem"/>
+                        <CustomButton classStyle={`btnGreen`} text="Crear Producto"  width="175px" height="45px" icon={faSquarePlus} link="createItem"/>
                     </div>
                     <div class="flex-grow-1" style={{paddingLeft: '25px'}}>
                         {
                             this.state.needsToSave ? 
-                            <CustomButton text="Guardar Cambios"  width="195px" height="45px" classStyle='btnBlue-clicked' icon={faFloppyDisk} onClickCallback={this.saveDailyInventories}/>
+                            <CustomButton isGlowing={isTutorial} text="Guardar Cambios"  width="195px" height="45px" classStyle='btnBlue-clicked' icon={faFloppyDisk} onClickCallback={this.saveDailyInventories}/>
                             :
                             <></>
                         }
@@ -429,7 +439,12 @@ class InventoryScreen extends Component {
                             <SearchBar width='100%' height='45px' itemList={this.state.products} searchText="Buscar Productos..." OnSearchCallback={(value) => this.handleSearch(value, false)}/>
                             <div style={scrollPanelStyle}>
                                 <div style={scrollStyle}>
-                                    {allProductsList}
+                                    {
+                                        this?.state?.products?.length < 1 ?
+                                        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, textAlign: 'center', marginTop: '25px'}}>Primero necesitas crear tus productos antes de poder cargar en el inventario</p>              
+                                        :
+                                        allProductsList
+                                    }
                                 </div>
                             </div>
                         </div>

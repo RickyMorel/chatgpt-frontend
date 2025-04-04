@@ -207,7 +207,7 @@ class App extends Component {
               <div style={{margin: '15px'}}><MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/inventory">
-              <div style={{margin: '15px'}}><InventoryScreen globalConfig={this.state.globalConfig} showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} /></div>
+              <div style={{margin: '15px'}}><InventoryScreen setupConditions={this.state.setupConditions} globalConfig={this.state.globalConfig} showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/dayLocation">
               <div style={{margin: '15px'}}><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>

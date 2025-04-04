@@ -248,24 +248,6 @@ const ChatBotWidget = (props) => {
           flexDirection: row 
         }
 
-        @keyframes glow {
-          0% {
-            box-shadow: 0 0 10px 5px rgba(247, 191, 68, 0.8);
-            filter: brightness(1.1);
-          }
-          50% {
-            box-shadow: 0 0 30px 15px rgba(247, 191, 68, 0.9);
-          }
-          100% {
-            box-shadow: 0 0 10px 5px rgba(247, 191, 68, 0.8);
-          }
-        }
-
-        .chat-toggle.glowing {
-          animation: glow 1.5s infinite;
-          position: relative; /* Ensures proper shadow rendering */
-        }
-
         .chat-toggle {
           background: ${ColorHex.GreenDark_1};
           border-radius: 50%;
@@ -436,6 +418,8 @@ const ChatBotWidget = (props) => {
         }
       }
       `}</style>
+
+      {Utils.glowingStyle()}
     </div>
   );
 };
