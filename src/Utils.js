@@ -10,6 +10,7 @@ class Utils {
     static clientCartBotNumber = ''
     static ruc = ''
     static clientOrderPlacingInventory = []
+    static lastSaveCallback = undefined
     static permanantBlockChatExplanationText = `<strong>Caso Bloquear:</strong><br/>En un Instituto de Inglés, se establece que la IA interactúe únicamente en el primer contacto con el cliente. Una vez que el cliente se registra como alumno, la IA deja de responder sus mensajes, bloqueando la conversación.<br/><strong>Caso No Bloquear:</strong><br/>En una panadería o restaurante, se requiere que la IA responda cada vez que el cliente se comunique, proporcionando información como precios o detalles de productos, sin bloquear la conversación.`
     static useInventoryExplinationText = `Se utiliza un catálogo de productos y/o servicios cuando se desea que WhatsBot ofrezca estos a los clientes. En cambio, para un instituto de pilates, por ejemplo, donde solo se requiere que WhatsBot responda consultas y agende citas, no sería necesario.`
     static whatsappExplinationText = `Aquí ingresarás el número que deseas que WhatsBot utilice para responder`
@@ -29,6 +30,9 @@ class Utils {
       { code: '+598', flag: '🇺🇾', name: 'Uruguay' }
     ];
 
+    static arraysEqual(arr1, arr2) {
+      return JSON.stringify(arr1) == JSON.stringify(arr2);
+    }
 
     static getSplitPhoneNumbers = (phoneNumber) => {
       const sortedCountries = [...this.countries].sort((a, b) => {

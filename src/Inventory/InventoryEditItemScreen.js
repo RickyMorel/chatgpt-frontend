@@ -12,6 +12,7 @@ import CustomInput from '../Searchbar/CustomInput';
 import CustomTextArea from '../Searchbar/CustomTextArea';
 import CustomSelect from '../Searchbar/CustomSelect';
 import RemovableItem from '../Searchbar/RemovableItem';
+import Utils from '../Utils';
 
 class InventoryEditItemScreen extends Component {
     constructor(props) {
@@ -83,6 +84,8 @@ class InventoryEditItemScreen extends Component {
     }
 
     handleAddNewTag = () => {
+        Utils.lastSaveCallback = this.handleSave
+
         const newTag = this.state.newTagInput
 
         const newTagsArray = [...this.state.itemToEdit.tags, newTag]
@@ -97,6 +100,8 @@ class InventoryEditItemScreen extends Component {
     }
 
     handleImageChange = (event) => {
+        Utils.lastSaveCallback = this.handleSave
+
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             const reader = new FileReader();
@@ -113,6 +118,8 @@ class InventoryEditItemScreen extends Component {
 
     handleSave = async () => {
         this.props.setIsLoading(true)
+
+        Utils.lastSaveCallback = undefined
 
         let itemToEdit = this.state.itemToEdit
 
@@ -144,9 +151,10 @@ class InventoryEditItemScreen extends Component {
 
                 if(!this.props.setupConditions.minimumConditionsMet) { globalEmitter.emit('checkMetConditions'); }
             } else {
+                console.log("EDIT this.state.selectedImage", this.state.selectedImage)
                 if(this.state.selectedImage) {
                     itemToEdit.imageBase64 = this.state.selectedImage
-                }
+                } else { itemToEdit.imageBase64 = undefined}
                 const response = await HttpRequest.put(`/inventory/updateItem`, itemToEdit);
             }
             this.props.history.goBack()
@@ -159,6 +167,8 @@ class InventoryEditItemScreen extends Component {
     }
 
     handleStringChange = (name, value) => {
+        Utils.lastSaveCallback = this.handleSave
+
         if(name == "newTagInput") {
             this.setState({
                 newTagInput: value

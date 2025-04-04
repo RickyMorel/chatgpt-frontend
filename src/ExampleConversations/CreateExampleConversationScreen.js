@@ -10,6 +10,7 @@ import CustomButton from '../Searchbar/CustomButton';
 import CustomSelect from '../Searchbar/CustomSelect';
 import CustomTextArea from '../Searchbar/CustomTextArea';
 import { globalEmitter } from '../GlobalEventEmitter';
+import Utils from '../Utils';
 
 class CreateExampleConversationScreen extends Component {
     constructor(props) {
@@ -88,7 +89,6 @@ class CreateExampleConversationScreen extends Component {
     }
 
     handleTextChange(value) {
-        if(value.includes)
         this.setState({ messageText: value });
     }
 
@@ -104,10 +104,14 @@ class CreateExampleConversationScreen extends Component {
             return;
         }
 
-        if(this.state.messages.find(x => x.text == this.atentionPhrase)) {
+        if(this.state.messages.find(x => x.text == this.atentionPhrase) && this.state.editingId == null) {
             this.showErrorToast("Una vez que haya pasado la conversacion a atencion al cliente 🧑‍💻, WhatsBot ya no responde mas ❌", ColorHex.RedFabri)
             return;
         }
+
+        const originalMessages = this.props?.location?.state?.linkData ? this.formatMessages([...this.props?.location?.state?.linkData?.correctedChat]) : []
+
+        console.log("this.state.isCreateExample", this.state.isCreateExample)
 
         if (this.state.editingId !== null) {
             // Update existing message
@@ -127,7 +131,11 @@ class CreateExampleConversationScreen extends Component {
                 messageText: '',
                 selectedUser: prevState.selectedUser === "Cliente" ? "IA" : "Cliente",
                 editingId: null
-            }));
+            }), () => {
+                if(!Utils.arraysEqual(this.state.messages.map(x => x.text), originalMessages.map(x => x.text))) {
+                    Utils.lastSaveCallback = this.handleSave
+                }
+            });
         } else {
             // Add new message
             const newMessage = {
@@ -143,7 +151,11 @@ class CreateExampleConversationScreen extends Component {
                 messageText: '',
                 nextId: prevState.nextId + 1,
                 selectedUser: prevState.selectedUser === "Cliente" ? "IA" : "Cliente"
-            }));
+            }), () => {
+                if(this.state.isCreateExample) {
+                    Utils.lastSaveCallback = this.handleSave
+                }
+            });
         }
     }
 
@@ -212,6 +224,14 @@ class CreateExampleConversationScreen extends Component {
     }
 
     handleSave = async () => {
+        if(this.state.messages.length < 4) { this.showErrorToast("No se puede crear una conversación de ejemplo que tenga menos de 4 mensajes", ColorHex.RedFabri); return;}
+        
+        if(this.state.messages[0].sender == "IA") { this.showErrorToast("La IA no puede empezar la conversacion", ColorHex.RedFabri); return;}
+        
+        if(this.state.messages[this.state.messages.length - 1].sender != "IA") { this.showErrorToast("El mensaje final debe ser de la IA🤖", ColorHex.RedFabri); return;}
+
+        Utils.lastSaveCallback = undefined
+
         this.props.setIsLoading(true)
 
         try {
@@ -331,7 +351,7 @@ class CreateExampleConversationScreen extends Component {
                 <ToastContainer />
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{this.state.isCreateExample ? 'Crear Conversacion Ejemplo' : 'Editar Conversacion Ejemplo'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Crear Ejemplo' : 'Editar Ejemplo'} classStyle="btnGreen" width="182px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
+                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Crear Ejemplo' : 'Guardar Cambios'} classStyle={Utils.lastSaveCallback ? "btnGreen-clicked" : "btnGreen"} width="182px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
                     <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="exampleConversations"/></div>
                     {
                         this.state.messages.length < 1 ?
@@ -401,7 +421,7 @@ class CreateExampleConversationScreen extends Component {
                             />
                             <div style={styles.controls}>
                                 {
-                                    this.props?.globalConfig?.usesInventory == true ?
+                                    this.props?.globalConfig?.usesInventory == true && this.state.selectedUser == "IA" ?
                                     <CustomButton explinationText="Este boton agregara el link del catalogo a tu respuesta🛒" text="Añadir link del catalogo"  width="200px" height="45px" classStyle='btnOrange-clicked' onClickCallback={() => this.handleAddSpecialPhrase(this.catalogLink)}/>
                                     :
                                     <></>

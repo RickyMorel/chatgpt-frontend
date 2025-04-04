@@ -86,8 +86,6 @@ class KPIStatsScreen  extends Component {
       })
     )
 
-    console.log("finalArray", finalArray)
-    
     finalArray.sort((a, b) => b.count - a.count);
     
     let topNItems = finalArray.slice(0, 12);

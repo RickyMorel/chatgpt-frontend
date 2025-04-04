@@ -12,6 +12,7 @@ import HttpRequest from '../HttpRequest';
 import CustomTextArea from '../Searchbar/CustomTextArea';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import { globalEmitter } from '../GlobalEventEmitter';
+import Utils from '../Utils';
 
 class CreateQuestionAndAnswerScreen extends Component {
     constructor(props) {
@@ -21,7 +22,8 @@ class CreateQuestionAndAnswerScreen extends Component {
             answer: '',
             isCreateExample: true,
             exampleQuestion: '',
-            exampleAnswer: ''
+            exampleAnswer: '',
+            fieldsWithErrors: []
         };
     }
 
@@ -50,14 +52,35 @@ class CreateQuestionAndAnswerScreen extends Component {
           console.log("error", error)
           return error
         }
-      };
+    };
+
+    hasErrors = () => { 
+        const { question, answer } = this.state 
+
+        let missingFields = []
+        if(!question || question.length < 1) { missingFields.push("question_empty");}
+        else if(!question.includes("?")) { missingFields.push("question_no_?");}
+        if(!answer || answer.length < 1) { missingFields.push("answer_empty");}
+
+        this.setState({
+            fieldsWithErrors: missingFields
+        })
+
+        return missingFields.length != 0
+    }
 
     handleValueChange(property, value) {
+        Utils.lastSaveCallback = this.handleSave
+
         this.setState({ [property]: value });
     }
 
     handleSave = async () => {
+        if(this.hasErrors()) {return;}
+
         this.props.setIsLoading(true)
+
+        Utils.lastSaveCallback = undefined
 
         try {
             if(this.state.isCreateExample) {
@@ -85,11 +108,13 @@ class CreateQuestionAndAnswerScreen extends Component {
     }
 
     render() {
+        const {question, answer} = this.state
+
         return (
             <div>
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{this.state.isCreateExample ? 'Crear Pregunta y Respuesta' : 'Editar Pregunta y Respuesta'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
-                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Crear Pregunta' : 'Editar Pregunta'} classStyle="btnGreen" width="182px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
+                    <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton disabled={!(question.length > 0 && answer.length > 0)} text={this.state.isCreateExample ? 'Crear Pregunta' : 'Guardar Cambios'} classStyle={"btnGreen-clicked"} width="185px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
                     <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="questionsAndAnswers"/></div>
                     {
                         this.state.answer.length < 1 && this.state.question.length < 1 ?
@@ -99,8 +124,26 @@ class CreateQuestionAndAnswerScreen extends Component {
                     }
                     <div className="col-9"></div>
                 </div>
+                <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, marginTop: '10px', marginBottom: '-5px'}}>
+                    {
+                        this.state.fieldsWithErrors.map(x => {
+                            if(x == 'question_empty') {return "*La pregunta no puede estar vacia\n"} 
+                            else if(x == 'question_no_?') {return "*La pregunta tiene que terminar con '?'\n"} 
+                            else if(x == 'answer_empty') {return "*La respuesta no puede estar vacia\n"} 
+                        })
+                    }
+                </p>
                 <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Pregunta *</p>
-                <CustomInput value={this.state.question} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText={`Ej: ${this.state.exampleQuestion}`} onChange={(value) => this.handleValueChange("question", value)}/>
+                <CustomInput 
+                    value={this.state.question}  
+                    noPadding={false} 
+                    width='600px' 
+                    height='45px' 
+                    dataType="text" 
+                    placeHolderText={`Ej: ${this.state.exampleQuestion}`} 
+                    onChange={(value) => this.handleValueChange("question", value)}
+                    hasError={this.state.fieldsWithErrors.includes("question_empty") || this.state.fieldsWithErrors.includes("question_no_?")}
+                />
                 <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Respuesta *</p>
                 <CustomTextArea 
                     value={this.state.answer} 
@@ -110,6 +153,7 @@ class CreateQuestionAndAnswerScreen extends Component {
                     dataType="text" 
                     placeHolderText={`Ej: ${this.state.exampleAnswer}`}
                     onChange={(value) => this.handleValueChange("answer", value)}
+                    hasError={this.state.fieldsWithErrors.includes("answer_empty")}
                 />
                 {/* <CustomInput value={this.state.answer} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText="Ej: Nosotros abrimos desde las 9:00 hasta las 17:00" onChange={(value) => this.handleValueChange("answer", value)}/> */}
             </div>

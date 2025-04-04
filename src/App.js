@@ -95,8 +95,6 @@ class App extends Component {
     try {
         const response = await HttpRequest.get(`/global-config`);
 
-        console.log("fetchGlobalConfig isGloballyBlocked", response?.data?.isGloballyBlocked)
-
         this.setState({globalConfig: response.data})
 
         return response.data
@@ -196,7 +194,7 @@ class App extends Component {
           <></>
           :
           <div className="col-auto">
-            <SideNav toastCallback={this.handleToast} setupConditions={this.state.setupConditions} showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+            <SideNav toastCallback={this.handleToast} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setupConditions={this.state.setupConditions} showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
             <ChatBotWidget toastCallback={this.handleToast} tutorialTrigger={this.state.trigger} setupConditions={this.state.setupConditions} ownerId={this.state?.globalConfig?.ownerId}/>
           </div>
         }
@@ -280,7 +278,7 @@ class App extends Component {
             <Route exact path="/createExampleConversation" 
               render={(props) => (
                 <div style={{margin: '15px'}}>
-                  <CreateExampleConversationScreen setupConditions={this.state.setupConditions} showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
+                  <CreateExampleConversationScreen globalConfig={this.state.globalConfig} setupConditions={this.state.setupConditions} showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />

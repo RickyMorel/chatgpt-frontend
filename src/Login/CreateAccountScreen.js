@@ -21,6 +21,7 @@ class CreateAccountScreen extends Component {
         name: ' ',
         email: '',
         password: '',
+        confirmPassword: '',
         usesInventory: true,
         permanentlyBlockClientsAfterCustomerService: false,
         aiRoleFrase: '',
@@ -49,7 +50,7 @@ class CreateAccountScreen extends Component {
   }
 
   validateStep = async (step) => {
-    const { name, email, password, phoneNumber, aiRoleFrase, companyDescriptionFrase  } = this.state;
+    const { name, email, password, confirmPassword, phoneNumber, aiRoleFrase, companyDescriptionFrase  } = this.state;
     console.log("validateStep", step)
     switch(step) {
       case 1:
@@ -59,6 +60,10 @@ class CreateAccountScreen extends Component {
         }
         else if (!password.match(/^(?=.*\d)(?=.*[A-Z]).{6,}$/)) {
           this.setState({ error: 'La contraseña debe tener al menos 6 caracteres, 1 número y 1 mayúscula' });
+          return false;
+        }
+        else if (password != confirmPassword) {
+          this.setState({ error: 'Las contraseñas ingresadas no son iguales' });
           return false;
         }
         else if(await this.confirmIfEmailAlreadyExists()) {
@@ -212,7 +217,7 @@ class CreateAccountScreen extends Component {
   }
 
   renderEmailInput = () => {
-    const { currentStep, error, name, email, password, phoneNumber } = this.state;
+    const { currentStep, error, name, email, password, confirmPassword, phoneNumber } = this.state;
 
     return (
       <>
@@ -227,7 +232,7 @@ class CreateAccountScreen extends Component {
           onChange={(value) => this.handleChangeData("email", value)}
         />
         <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Contraseña *</p>
-        <div style={{ marginTop: '25px' }}>
+        <div style={{ marginTop: '10px' }}>
           <CustomInput 
             hasError={error.includes('contraseña')}
             width='364px' 
@@ -236,6 +241,18 @@ class CreateAccountScreen extends Component {
             placeHolderText="Contraseña" 
             value={password}
             onChange={(value) => this.handleChangeData("password", value)}
+          />
+        </div>
+        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Confirmar Contraseña *</p>
+        <div style={{ marginTop: '10px' }}>
+          <CustomInput 
+            hasError={error.includes('contraseña')}
+            width='364px' 
+            height='65px' 
+            dataType="password" 
+            placeHolderText="Contraseña" 
+            value={confirmPassword}
+            onChange={(value) => this.handleChangeData("confirmPassword", value)}
           />
         </div>
       </>

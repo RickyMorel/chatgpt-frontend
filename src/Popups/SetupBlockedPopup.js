@@ -3,13 +3,11 @@ import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
 import CustomButton from '../Searchbar/CustomButton';
 import { Link } from '@mui/material';
-import { useHistory } from 'react-router-dom';
 import ExplinationPopup from '../Searchbar/ExplinationPopup';
+import { withRouter } from 'react-router-dom';
 import Utils from '../Utils';
 
-const SetupBlockedPopup = ({setupConditions, closePopupFunc}) => {
-  const history = useHistory();
-
+const SetupBlockedPopup = ({setupConditions, history, closePopupFunc}) => {
 
   const Condition = (isMet, title, link, explinationText, popupHeight = 50) => {
     const [showPopup, setShowPopup] = useState(false);

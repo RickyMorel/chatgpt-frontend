@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
 import { isDesktop } from 'react-device-detect';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation, withRouter } from 'react-router-dom';
 import { Sidenav } from 'rsuite';
 import { ColorHex } from './Colors';
 import CssProperties from './CssProperties';
@@ -23,7 +23,6 @@ function SideNav(props)  {
   let fetchSoundCount = 0
 
   useEffect(() => {
-    console.log("props?.globalConfig", props?.globalConfig)
     setMessageCount(props?.globalConfig?.usedMonthlyMessages)
     setTotalClientsToMessage(props?.globalConfig?.maxMonthlyMessages)
   })
@@ -82,6 +81,27 @@ function SideNav(props)  {
       console.log("props a", props)
       props.showSetupPopup(props?.setupConditions, props.history)
     }
+
+    console.log("handleLinkClick", Utils.lastSaveCallback)
+
+    if(Utils.lastSaveCallback) {
+      e.preventDefault();
+      openNotSavePopup(link)
+    }
+  }
+
+  
+  const openNotSavePopup = (link) => {
+      props.showPopup_2_Buttons(
+        "Guardar Cambios",
+        `Estas seguro que no queres guardar tus cambios?`,
+        " ",
+        [],
+        () => { Utils.lastSaveCallback(); Utils.lastSaveCallback = undefined},
+        () => { props.history.push(link); Utils.lastSaveCallback = undefined},
+        "No gracias",
+        "Guardar"
+    )
   }
 
   const navBarButton = [
@@ -159,4 +179,4 @@ function GetNavButtonStyle(navPath, isDisabled) {
   return navBarButtonStyle
 }  
 
-export default SideNav;
+export default withRouter(SideNav);
