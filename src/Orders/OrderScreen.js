@@ -262,7 +262,7 @@ class OrderScreen extends Component {
 
     const orderPanelStyling = {
       width: '100%',
-      height: '70vh',
+      height: '87.5vh',
       marginTop: '10px',
       marginTop: '25px',
       padding: '25px',

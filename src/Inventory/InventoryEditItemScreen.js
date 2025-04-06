@@ -129,7 +129,6 @@ class InventoryEditItemScreen extends Component {
                 newItem.code = itemToEdit.name
                 newItem.amount = 20
 
-                console.log("this.state.selectedImage", this.state.selectedImage)
                 if(this.state.selectedImage) {
                     newItem.imageBase64 = this.state.selectedImage
                 }
@@ -139,7 +138,6 @@ class InventoryEditItemScreen extends Component {
                 if(!newItem.imageBase64 || newItem.imageBase64.length < 1) { missingFields.push("imageBase64");}
                 if(!newItem.description || newItem.description.length < 1) { missingFields.push("description");}
                 if(!newItem.price || newItem.price.length < 1) { missingFields.push("price");}
-                // if(!newItem.tags || newItem.tags.length < 1) { missingFields.push("tags");}
 
                 this.setState({
                     fieldsWithErrors: missingFields
@@ -149,15 +147,21 @@ class InventoryEditItemScreen extends Component {
                 
                 const response = await HttpRequest.post(`/inventory/createItem`, newItem);
 
+                this.props.toastCallback(`${this.state.itemToEdit.name} creado exitosamente!🎉`)
+
+                this.setState({itemToEdit: initialItemToEditState})
+
                 if(!this.props.setupConditions.minimumConditionsMet) { globalEmitter.emit('checkMetConditions'); }
             } else {
                 console.log("EDIT this.state.selectedImage", this.state.selectedImage)
                 if(this.state.selectedImage) {
                     itemToEdit.imageBase64 = this.state.selectedImage
                 } else { itemToEdit.imageBase64 = undefined}
+
                 const response = await HttpRequest.put(`/inventory/updateItem`, itemToEdit);
+
+                this.props.history.goBack()
             }
-            this.props.history.goBack()
           } catch (error) {
             console.log("ERROR", error)
             // this.props.showPopup(new Error("Ya existe un item con este nombre!"));

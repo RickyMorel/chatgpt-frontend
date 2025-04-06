@@ -139,7 +139,7 @@ const scrollPanelStyle = {
 
 const inventoryPanelStyling = {
     width: '100%',
-    height: '70vh',
+    height: '87.5vh',
     marginTop: '10px',
     padding: '25px',
     boxShadow: '0px 5px 5px rgba(0, 0, 0, 0.3)',

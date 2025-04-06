@@ -1,22 +1,33 @@
 import axios from 'axios';
 
 class HttpRequest {
-    static async get(link, noToken = false) {
+    static async get(link, noToken = false, retries=3) {
         const token = window.token
         let response = undefined
+
+        console.log("get token", token)
 
         if(noToken) {
             response = await axios.get(`${process.env.REACT_APP_HOST_URL}${link}`);
         }
         else {
-            response = await axios.get(
-                `${process.env.REACT_APP_HOST_URL}${link}`,
-                {
-                    headers: {
-                      'Authorization': `Bearer ${token}`,
-                    },
+            try {
+                response = await axios.get(
+                    `${process.env.REACT_APP_HOST_URL}${link}`,
+                    {
+                        headers: {
+                          'Authorization': `Bearer ${token}`,
+                        },
+                    }
+                );
+            } catch(err) {
+                retries--
+                if(retries == 0) { return err}
+                else { 
+                    console.log("Got error in HTTP request, trying again", retries);
+                    return this.get(link, noToken, retries) 
                 }
-            );
+            }
         }
         return response
     }

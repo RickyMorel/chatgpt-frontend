@@ -185,9 +185,8 @@ class App extends Component {
       }
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
       <div>
-      <ParticleExplosion toastCallback={this.handleToast} trigger={this.state.trigger}/>
-      <ToastContainer />
-    </div>
+        <ToastContainer />
+      </div>
       <div className="row">
         {
           Utils.loginExemptPaths.includes(currentPath) ?
@@ -264,6 +263,7 @@ class App extends Component {
                     showPopup={this.props.showPopup} 
                     setIsLoading={this.setIsLoading} 
                     setupConditions={this.state.setupConditions}
+                    toastCallback={this.handleToast}
                   />
                 </div>
               )} 
@@ -324,6 +324,7 @@ class App extends Component {
           </Switch>
         </div>
       </div>
+      <ParticleExplosion toastCallback={this.handleToast} trigger={this.state.trigger}/>
     </Router>
     );
   }

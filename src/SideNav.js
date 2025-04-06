@@ -131,9 +131,9 @@ function SideNav(props)  {
   })
 
   return (
-    <Sidenav>
-      <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>
-        <div className="d-flex flex-column p-3" style={{ height: '100vh' }}>
+    <Sidenav style={{ height: '125vh'}}>
+      <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)', height: '100%'}}>
+        <div className="d-flex flex-column p-3" style={{ height: '100%' }}>
           <div className="text-center p-3">
             <LogoInput imageURL={props?.globalConfig?.companyLogoUrl}/>
           </div>

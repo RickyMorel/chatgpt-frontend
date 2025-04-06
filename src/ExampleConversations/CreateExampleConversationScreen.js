@@ -21,7 +21,6 @@ class CreateExampleConversationScreen extends Component {
             selectedUser: 'Cliente',
             messageText: '',
             creationDate: new Date(),
-            nextId: 1,
             isCreateExample: true,
             editingId: null, // New state for tracking edits
         };
@@ -41,7 +40,6 @@ class CreateExampleConversationScreen extends Component {
             messages: exampleData ? this.formatMessages([...exampleData.correctedChat]) : [],
             creationDate: exampleData ? exampleData.creationDate : new Date(),
             isCreateExample: exampleData == undefined,
-            nextId: exampleData?.length ?? 1
         })
 
         this.fetchExample()
@@ -65,14 +63,12 @@ class CreateExampleConversationScreen extends Component {
 
     formatMessages(dbMessages) {
         let formattedMessages = []
-        let nextId = 0
         dbMessages.forEach(message => {
             const newMessage = {
-                id: nextId,
+                id: message.content+message.role,
                 sender: message.role == "user" ? "Cliente" : "IA",
                 text: message.content
             };
-            nextId++
             formattedMessages.push(newMessage)
         });
 
@@ -139,7 +135,7 @@ class CreateExampleConversationScreen extends Component {
         } else {
             // Add new message
             const newMessage = {
-                id: this.state.nextId,
+                id: this.state.messageText+this.state.selectedUser,
                 sender: this.state.selectedUser,
                 text: this.state.messageText
             };
@@ -149,7 +145,6 @@ class CreateExampleConversationScreen extends Component {
             this.setState(prevState => ({
                 messages: [...prevState.messages, newMessage],
                 messageText: '',
-                nextId: prevState.nextId + 1,
                 selectedUser: prevState.selectedUser === "Cliente" ? "IA" : "Cliente"
             }), () => {
                 if(this.state.isCreateExample) {
@@ -162,7 +157,6 @@ class CreateExampleConversationScreen extends Component {
     handleClearConversation() {
         this.setState({ 
             messages: [], 
-            nextId: 1, 
             selectedUser: 'Cliente',
             messageText: '',
             editingId: null 
