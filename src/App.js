@@ -130,6 +130,7 @@ class App extends Component {
   GetInstanceStatus = async () => {
     try {
       const response = await HttpRequest.get(`/whatsapp/getInstanceStatus`);
+      console.log("GetInstanceStatus", response)
 
       this.setState({
         instanceStatus: response.data,
