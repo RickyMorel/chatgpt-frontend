@@ -21,10 +21,11 @@ const SetupBlockedPopup = ({setupConditions, history, closePopupFunc}) => {
           onMouseEnter={handleMouseEnter} 
           onMouseLeave={handleMouseLeave}
         >
-         <Link onClick={(e) => window.location.href = link} style={navBarButtonStyle} className='nav-item rounded'>
+         <Link onClick={(e) => window.location.href = link} style={navBarButtonStyle} className={`nav-item rounded ${isMet == true ? '' : 'glowing'}`}>
           <img src={isMet == true ? "images/checkmark.jpeg" : "images/x-button.png"}  width="35px"/>
           {title}
          </Link>
+         {Utils.glowingStyle}
         </li>
         {
           showPopup == true ? 

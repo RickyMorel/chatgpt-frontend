@@ -13,7 +13,8 @@ class ExampleConversationsScreen extends Component {
     super(props);
 
     this.state = {
-        examples: []
+        examples: [],
+        filteredExamples: []
     };
   }
 
@@ -26,7 +27,8 @@ class ExampleConversationsScreen extends Component {
       const response = await HttpRequest.get(`/self-learn/all`);
 
       this.setState({
-        examples: [...response.data]
+        examples: [...response.data],
+        filteredExamples: [...response.data]
       })
     } catch (error) {
       console.log("error", error)
@@ -58,17 +60,34 @@ class ExampleConversationsScreen extends Component {
         let updatedExamples = [...this.state.examples]
         updatedExamples = updatedExamples.filter(x => x.creationDate != creationDate)
         console.log("updatedExamples", updatedExamples)
-        this.setState({examples: [...updatedExamples]})
+        this.setState({examples: [...updatedExamples], filteredExamples: [...updatedExamples]})
       } catch (error) {
         console.log("ERROR", error)
         this.props.showPopup(new Error("No se eliminar el ejemplo"));
       }
 
     this.props.setIsLoading(false)
-}
+  }
+
+  handleSearch = (value) => {
+    const filteredConversations = this.state.examples.filter(example => {
+        let conversationHasKeyWord = false
+        for(const message of example.correctedChat) {
+          conversationHasKeyWord = message.content.toLowerCase().includes(value.toLowerCase())
+
+          if(conversationHasKeyWord) {break;}
+        }
+        return conversationHasKeyWord
+      }
+    );
+
+    this.setState({
+      filteredExamples: filteredConversations
+    })
+  }
 
   render() {
-    const allExamplesList = this.state.examples?.map(x => {
+    const allExamplesList = this.state.filteredExamples?.map(x => {
         return(
             <ExampleConversationComponent 
                 key={x.creationDate}
@@ -93,7 +112,7 @@ class ExampleConversationsScreen extends Component {
             </div>
 
             <div style={inventoryPanelStyling}>
-                <SearchBar width='100%' height='45px' itemList={this.state.products} searchText="Buscar Conversacion..." OnSearchCallback={this.handleSearchInputChange}/>
+                <SearchBar width='100%' height='45px' itemList={this.state.filteredExamples} searchText="Buscar palabras claves en las conversaciones..." OnSearchCallback={this.handleSearch}/>
                 <div style={{ alignItems: 'center', height: '45px', display: 'flex', marginTop: '10px'}}>
                     <div style={headerStyle} className='col-8'>Mensajes</div>
                     <div style={headerStyle} className='col-1'>Cantidad Mensajes</div>

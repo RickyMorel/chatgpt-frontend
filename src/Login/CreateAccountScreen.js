@@ -147,7 +147,7 @@ class CreateAccountScreen extends Component {
   renderBusinessQuestionsInput() {
     return (
       <div style={{paddingLeft: '25px'}}>
-        <div style={{marginBottom: '25px'}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"110px"} text={`Usar catalogo de productos y/o servicios`} explinationText={Utils.useInventoryExplinationText} onChange={(e) => this.handleChangeData("usesInventory", e.target.checked)} value={this.state.usesInventory}/></div>
+        <div style={{marginBottom: '25px'}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"110px"} text={`Usar catalogo de productos`} explinationText={Utils.useInventoryExplinationText} onChange={(e) => this.handleChangeData("usesInventory", e.target.checked)} value={this.state.usesInventory}/></div>
         <div><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text={`Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente`} explinationText={Utils.permanantBlockChatExplanationText} onChange={(e) => this.handleChangeData("permanentlyBlockClientsAfterCustomerService", e.target.checked)} value={this.state.permanentlyBlockClientsAfterCustomerService}/></div>
       </div>
     )

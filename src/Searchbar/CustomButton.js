@@ -60,7 +60,7 @@ class CustomButton extends Component {
         return (
             link ? (
                 <>
-                    <Link to={{pathname: `/${link}`, state: {linkData} }} style={styling} className={classStyle ?? 'nav-item'}>
+                    <Link onClick={onClickCallback} to={{pathname: `/${link}`, state: {linkData} }} style={styling} className={classStyle ?? 'nav-item'}>
                         {iconHtml}
                     </Link>
                     {Utils.glowingStyle()}

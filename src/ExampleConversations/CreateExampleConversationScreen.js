@@ -43,6 +43,15 @@ class CreateExampleConversationScreen extends Component {
         })
 
         this.fetchExample()
+
+        console.log("this.props FOR CONVERATIONO", this.props)
+
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.setupConditions === prevProps.setupConditions) { return; }
+
+        if(!this.props?.setupConditions?.minimumConditionsMet) {this.props.toastCallback(Utils.transcribeConversationsToast)}
     }
 
     fetchExample = async () => {
@@ -154,6 +163,19 @@ class CreateExampleConversationScreen extends Component {
         }
     }
 
+    openClearConversationPopup = () => {
+        this.props.showPopup_2_Buttons(
+          "Limpiar Conversacion",
+          `¿Estás seguro de que quieres borrar la conversación?`,
+          " ",
+          [],
+          () => {this.handleClearConversation()},
+          () => {},
+          "No",
+          "Si"
+      )
+    }
+
     handleClearConversation() {
         this.setState({ 
             messages: [], 
@@ -240,6 +262,7 @@ class CreateExampleConversationScreen extends Component {
                     wasGoodResponse: true,
                     correctedChat: formattedMessages,
                 });
+                this.props.toastCallback(`¡La conversación de ejemplo se creó exitosamente!`)
             } else {
                 console.log("creationDate for update", new Date(this.state.creationDate).toISOString())
                 const response = await HttpRequest.put(`/self-learn/update`, {
@@ -345,7 +368,7 @@ class CreateExampleConversationScreen extends Component {
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{this.state.isCreateExample ? 'Crear Conversacion Ejemplo' : 'Editar Conversacion Ejemplo'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
                     <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Crear Ejemplo' : 'Guardar Cambios'} classStyle={Utils.lastSaveCallback ? "btnGreen-clicked" : "btnGreen"} width="182px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
-                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="exampleConversations"/></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="exampleConversations" onClickCallback={() => Utils.lastSaveCallback = undefined}/></div>
                     {
                         this.state.messages.length < 1 ?
                         <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text='Ver Otro Ejemplo' icon={faRotateRight} onClickCallback={this.fetchExample}/></div>
@@ -396,12 +419,12 @@ class CreateExampleConversationScreen extends Component {
                                             width="150px" 
                                             height="45px" 
                                             classStyle={'btnRed-clicked'}
-                                            onClickCallback={() => this.setState({editingId: null, messageText: ''})}
+                                            onClickCallback={() => { Utils.lastSaveCallback = undefined; this.setState({editingId: null, messageText: ''})} }
                                         />
                                     :
                                         <></>
                                 }
-                                <CustomButton text="Limpiar Conversacion"  width="200px" height="45px" classStyle='btnRed' onClickCallback={this.handleClearConversation}/>
+                                <CustomButton text="Limpiar Conversacion"  width="200px" height="45px" classStyle='btnRed' onClickCallback={this.openClearConversationPopup}/>
                             </div>
                             <CustomTextArea 
                                 value={this.state.messageText} 

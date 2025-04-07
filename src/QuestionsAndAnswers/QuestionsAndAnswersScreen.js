@@ -14,7 +14,8 @@ class QuestionsAndAnswersScreen extends Component {
     super(props);
 
     this.state = {
-        questions: []
+        questions: [],
+        filteredQuestions: []
     };
   }
 
@@ -27,7 +28,8 @@ class QuestionsAndAnswersScreen extends Component {
       const response = await HttpRequest.get(`/questions-and-answers/all`);
 
       this.setState({
-        questions: [...response.data]
+        questions: [...response.data],
+        filteredQuestions: [...response.data]
       })
     } catch (error) {
       console.log("error", error)
@@ -59,17 +61,33 @@ class QuestionsAndAnswersScreen extends Component {
         let updatedExamples = [...this.state.questions]
         updatedExamples = updatedExamples.filter(x => x.creationDate != creationDate)
         console.log("updatedExamples", updatedExamples)
-        this.setState({questions: [...updatedExamples]})
+        this.setState({questions: [...updatedExamples], filteredQuestions: [...updatedExamples]})
       } catch (error) {
         console.log("ERROR", error)
         this.props.showPopup(new Error("No se eliminar la pregunta"));
       }
 
     this.props.setIsLoading(false)
-}
+  }
+
+  handleSearch = (value) => {
+    const filteredQuestions = this.state.questions.filter(questionObj => {
+        let questionHasKeyWord = false
+
+        if(questionObj.question.toLowerCase().includes(value.toLowerCase())) { questionHasKeyWord = true }
+        else if(questionObj.answer.toLowerCase().includes(value.toLowerCase())) { questionHasKeyWord = true }
+
+        return questionHasKeyWord
+      }
+    );
+
+    this.setState({
+      filteredQuestions: filteredQuestions
+    })
+  }
 
   render() {
-    const allExamplesList = this.state.questions?.map(x => {
+    const allExamplesList = this.state.filteredQuestions?.map(x => {
         return(
             <QuestionAndAnswerComponent 
                 key={x.creationDate}
@@ -94,7 +112,7 @@ class QuestionsAndAnswersScreen extends Component {
             </div>
 
             <div style={inventoryPanelStyling}>
-                <SearchBar width='100%' height='45px' itemList={this.state.products} searchText="Buscar Pregunta..." OnSearchCallback={this.handleSearchInputChange}/>
+                <SearchBar width='100%' height='45px' itemList={this.state.filteredExamples} searchText="Buscar palabras claves..." OnSearchCallback={this.handleSearch}/>
                 <div style={{ alignItems: 'center', height: '45px', display: 'flex', marginTop: '10px'}}>
                     <div style={headerStyle} className='col-9'>Pregunta</div>
                     <div style={headerStyle} className='col-2'>Fecha de Creacion</div>

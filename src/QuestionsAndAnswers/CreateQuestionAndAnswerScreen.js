@@ -61,6 +61,7 @@ class CreateQuestionAndAnswerScreen extends Component {
         if(!question || question.length < 1) { missingFields.push("question_empty");}
         else if(!question.includes("?")) { missingFields.push("question_no_?");}
         if(!answer || answer.length < 1) { missingFields.push("answer_empty");}
+        else if(answer.includes("?")) { missingFields.push("answer_has_?");}
 
         this.setState({
             fieldsWithErrors: missingFields
@@ -88,6 +89,7 @@ class CreateQuestionAndAnswerScreen extends Component {
                     question: this.state.question,
                     answer: this.state.answer
                 });
+                this.props.toastCallback(`¡Tu pregunta y respuesta fue creada exitosamente!`)
             } else {
                 const response = await HttpRequest.put(`/questions-and-answers/update`, {
                     question: this.state.question,
@@ -115,7 +117,7 @@ class CreateQuestionAndAnswerScreen extends Component {
                 <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody}}>{this.state.isCreateExample ? 'Crear Pregunta y Respuesta' : 'Editar Pregunta y Respuesta'}</p>
                 <div style={{display: 'flex', width: '100%', paddingTop: '25px', marginTop: '-25px'}}>
                     <div class="flex-grow-1" style={{paddingRight: '25px'}}><CustomButton disabled={!(question.length > 0 && answer.length > 0)} text={this.state.isCreateExample ? 'Crear Pregunta' : 'Guardar Cambios'} classStyle={"btnGreen-clicked"} width="185px" height="45px" icon={this.state.isCreateExample ? faSquarePlus : faPenToSquare} onClickCallback={this.handleSave}/></div>
-                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="questionsAndAnswers"/></div>
+                    <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text={this.state.isCreateExample ? 'Cancelar Creacion' : 'Cancelar Edicion'} classStyle="btnRed" icon={faRectangleXmark} link="questionsAndAnswers" onClickCallback={() => Utils.lastSaveCallback = undefined}/></div>
                     {
                         this.state.answer.length < 1 && this.state.question.length < 1 ?
                         <div class="flex-grow-1"style={{paddingRight: '25px'}}><CustomButton text='Ver Otro Ejemplo' icon={faRotateRight} onClickCallback={this.fetchExample}/></div>
@@ -130,6 +132,7 @@ class CreateQuestionAndAnswerScreen extends Component {
                             if(x == 'question_empty') {return "*La pregunta no puede estar vacia\n"} 
                             else if(x == 'question_no_?') {return "*La pregunta tiene que terminar con '?'\n"} 
                             else if(x == 'answer_empty') {return "*La respuesta no puede estar vacia\n"} 
+                            else if(x == 'answer_has_?') {return "*La respuesta no puede contener una pregunta\n"} 
                         })
                     }
                 </p>
@@ -153,7 +156,7 @@ class CreateQuestionAndAnswerScreen extends Component {
                     dataType="text" 
                     placeHolderText={`Ej: ${this.state.exampleAnswer}`}
                     onChange={(value) => this.handleValueChange("answer", value)}
-                    hasError={this.state.fieldsWithErrors.includes("answer_empty")}
+                    hasError={this.state.fieldsWithErrors.includes("answer_empty") || this.state.fieldsWithErrors.includes("answer_has_?")}
                 />
                 {/* <CustomInput value={this.state.answer} noPadding={false} width='600px' height='45px' dataType="text" placeHolderText="Ej: Nosotros abrimos desde las 9:00 hasta las 17:00" onChange={(value) => this.handleValueChange("answer", value)}/> */}
             </div>
