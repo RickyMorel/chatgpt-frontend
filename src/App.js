@@ -36,6 +36,7 @@ import ParticleExplosion from './ParticleExplosion';
 import { toast, ToastContainer } from 'react-toastify';
 import CustomButton from './Searchbar/CustomButton';
 import { faGears } from '@fortawesome/free-solid-svg-icons';
+import LandingPage from './LandingPage/LandingPage';
 
 class App extends Component {
   constructor(props) {
@@ -248,7 +249,7 @@ class App extends Component {
             <Route exact path="/problematicChats">
               <div style={{margin: '15px'}}><ProblematicChatsScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
-            <Route exact path="/" 
+            <Route exact path="/login" 
               render={(props) => (
                 <div style={{margin: '15px'}}>
                   <LoginScreen 
@@ -256,6 +257,17 @@ class App extends Component {
                     showPopup={this.props.showPopup} 
                     setIsLoading={this.setIsLoading} 
                     botNumber={this.state.botNumber}
+                  />
+                </div>
+              )} 
+            />
+            <Route exact path="/" 
+              render={(props) => (
+                <div>
+                  <LandingPage 
+                    {...props}  
+                    showPopup={this.props.showPopup} 
+                    setIsLoading={this.setIsLoading} 
                   />
                 </div>
               )} 
