@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ColorHex } from '../Colors';
 import CssProperties from '../CssProperties';
+import Utils from '../Utils';
 
 class PriceCard extends Component {
     constructor() {
@@ -11,48 +12,49 @@ class PriceCard extends Component {
     }
 
     render() {
+        const { data } = this.props
+
         const bulletPoints = [
-            `1000 messages/month`,
-            `24/7 Automated Responses`,
-            `Quick WhatsApp integration`,
-            `Real-Time Analytics`,
-            `Easy, Self-Service Setup`,
-            `Dedicated Support`,
+            `${Utils.formatNumber(data.messageAmount)} mensajes/mes`,
+            `Respuestas automáticas 24/7`,
+            `Integración rápida con WhatsApp`,
+            `Análisis en tiempo real`,
+            `Configuración fácil y autogestionada`,
+            `Soporte dedicado`,
         ]
 
         const bulletPointsHTML = bulletPoints.map((bulletPoint, index) => 
             <li key={index} style={listItemStyle}>
                 <img width="20" height="20" src={"images/tick.png"} className="circle responsive-img" style={{marginRight: '5px'}}/>
-                <div style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody}}>{bulletPoint}</div>
+                <div style={{...CssProperties.BodyBoldTextStyle, color: ColorHex.TextBody}}>{bulletPoint}</div>
             </li> 
         );
 
         return (
             <div 
                 style={{
-                    ...cardContainerStyle,
+                    ...cardContainerStyle(data.cardColor),
                     boxShadow: this.state.isHovered ? '0 8px 16px rgba(0, 0, 0, 0.2)' : cardContainerStyle.boxShadow,
                     transform: this.state.isHovered ? 'translateY(-10px)' : 'none'
                 }}
                 onMouseEnter={() => this.setState({ isHovered: true })}
                 onMouseLeave={() => this.setState({ isHovered: false })}
             >
-                <div style={badgeStyle}>$3.19 Per Day</div>
+                <div style={badgeStyle(data.cardColor)}>${(data.discountedPrice / 31).toFixed(2).toString()} Por Dia</div>
 
-                <h1 style={titleStyle}>Starter Pack</h1>
+                <h1 style={titleStyle}>{data.packName}</h1>
 
                 <div style={pricingContainerStyle}>
-                    <span style={originalPriceStyle}>$149</span>
-                    <span style={currentPriceStyle}>$99</span>
-                    <span style={{...CssProperties.SmallHeaderTextStyle}}>/month</span>
-                    <div style={billedAnnuallyStyle}>Billed annually</div>
+                    <span style={originalPriceStyle}>${data.price}</span>
+                    <span style={currentPriceStyle}>${data.discountedPrice}</span>
+                    <span style={{...CssProperties.SmallHeaderTextStyle}}>/mes</span>
+                    <div style={billedAnnuallyStyle(data.cardColor)}>Facturado anualmente</div>
                 </div>
 
                 <hr style={{color: ColorHex.TextBody, marginTop: '5px', marginBottom: '-5px', width: '300px', borderTop: '3px solid ' + ColorHex.TextBody}}/>
 
                 <p style={descriptionStyle}>
-                    The smartest way to automate customer interactions and enhance engagement effortlessly.
-                    Ideal for growing businesses.
+                    {data.description}
                 </p>
 
                 <ul style={listStyle}>
@@ -63,10 +65,10 @@ class PriceCard extends Component {
     }
 }
 
-const cardContainerStyle = {
+const cardContainerStyle = (cardColor) => ({
     maxWidth: '400px',
     height: '480px',
-    border: `10px solid ${ColorHex.GreenDark_1}`,
+    border: `10px solid ${cardColor}`,
     borderRadius: '20px', 
     fontFamily: 'sans-serif',
     position: 'relative',
@@ -76,21 +78,21 @@ const cardContainerStyle = {
     alignItems: 'center',
     transition: 'all 0.3s ease',
     boxShadow: '0px 15px 15px rgba(0, 0, 0, 0.5)',
-};
+});
 
-const badgeStyle = {
+const badgeStyle  = (cardColor) => ({
     position: 'absolute',
     top: '-30px',
     left: '50%',
     transform: 'translateX(-50%)',
-    backgroundColor: '#66bb6a',
+    backgroundColor: cardColor,
     color: '#fff',
     borderRadius: '16px',
     padding: '4px 12px',
     fontWeight: '600',
     fontSize: '0.85rem',
     ...CssProperties.SmallHeaderTextStyle,
-  };
+  });
 
   const titleStyle = {
     margin: '15px 0 10px',
@@ -120,10 +122,10 @@ const badgeStyle = {
     ...CssProperties.MediumHeaderBoldTextStyle,
   };
 
-  const billedAnnuallyStyle = {
+  const billedAnnuallyStyle = (cardColor) => ({
     fontSize: '0.9rem',
     color: '#888',
-    backgroundColor: ColorHex.GreenDark_1,
+    backgroundColor: cardColor,
     borderRadius: '20px',
     color: ColorHex.White,
     height: '30px',
@@ -131,8 +133,9 @@ const badgeStyle = {
     paddingTop: '3px',
     marginTop: '5px',
     marginBottom: '5px',
+    width: '200px',
     ...CssProperties.BodyTextStyle,
-  };
+  });
 
   const descriptionStyle = {
     fontSize: '0.9rem',

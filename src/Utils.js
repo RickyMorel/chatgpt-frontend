@@ -190,6 +190,10 @@ class Utils {
     return `${formattedNumber}`;
   };
 
+  static formatNumber = (number) => {
+    return number.toLocaleString();
+  };
+
   static glowingStyle = () => {
     return (
       <style jsx>{`

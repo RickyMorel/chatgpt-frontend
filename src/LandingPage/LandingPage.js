@@ -26,6 +26,33 @@ const LandingPage = () => {
       },
   ];
 
+  const prices = [
+    {
+        price: 149,
+        discountedPrice: 99,
+        cardColor: ColorHex.GreenDark_1,
+        packName: "Paquete Inicial",
+        messageAmount: 1000,
+        description: "La forma más inteligente de automatizar las interacciones con clientes y aumentar el compromiso sin esfuerzo. Ideal para empresas en crecimiento" 
+    },
+    {
+        price: 299,
+        discountedPrice: 215,
+        cardColor: ColorHex.OrangeFabri,
+        packName: "Paquete Empresarial",
+        messageAmount: 5000,
+        description: "Una forma simple y asequible de automatizar las interacciones con clientes. Ideal para pequeñas empresas que buscan mejorar el compromiso y la eficiencia" 
+    },
+    {
+        price: 399,
+        discountedPrice: 299,
+        cardColor: ColorHex.RedFabri,
+        packName: "Paquete Pro",
+        messageAmount: 10000,
+        description: "En lugar de un equipo de ventas, solo una persona asistida por IA. Ideal para empresas medianas que interactúan con más de 100 clientes a diario" 
+    }
+  ]
+
   const titleHTML = 
     <section className="hero-section">
         <div className="container">
@@ -68,8 +95,8 @@ const LandingPage = () => {
         <div className="container">
             <h2 style={{...CssProperties.LargeHeaderTextStyle}}>Precios</h2>
             <div style={{display: 'flex', flexDirection: 'row', gap: '25px', justifyContent: 'space-between'}}>
-                {features.map((feature, index) => (
-                    <PriceCard/>
+                {prices.map(x => (
+                    <PriceCard data={x}/>
                 ))}
             </div>
         </div>
