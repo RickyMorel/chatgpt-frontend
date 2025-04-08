@@ -61,7 +61,7 @@ class LoginScreen extends Component {
         console.log("user logged in", response.data)
         Cookies.set('token', response.data.token, { secure: true, sameSite: 'Strict' });
         window.token = response.data.token
-        this.props.history.push('/blockChats');
+        this.props.history.push('/aiConfiguration');
         this.setState({ error: '' })
         globalEmitter.emit('loggedIn');
     } catch(err) {
@@ -107,7 +107,6 @@ class LoginScreen extends Component {
 
     return (
       <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '200px'}}>
-        <ToastContainer />
         <img src='./images/Whatsbot_Green.png' alt="Logo" className="img-fluid" style={{ width: '350px', height: "350px", marginTop: '7px', marginRight: '250px',  }} />
         <div style={loginCardStyling}>
             <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, position: 'absolute', top: 200}}>

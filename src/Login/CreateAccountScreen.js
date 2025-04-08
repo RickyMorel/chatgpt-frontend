@@ -17,10 +17,11 @@ class CreateAccountScreen extends Component {
       super(props);
   
       this.state = {
-        currentStep: 2,
+        currentStep: 1,
         name: ' ',
         email: '',
         password: '',
+        confirmPassword: '',
         usesInventory: true,
         permanentlyBlockClientsAfterCustomerService: false,
         aiRoleFrase: '',
@@ -49,7 +50,7 @@ class CreateAccountScreen extends Component {
   }
 
   validateStep = async (step) => {
-    const { name, email, password, phoneNumber, aiRoleFrase, companyDescriptionFrase  } = this.state;
+    const { name, email, password, confirmPassword, phoneNumber, aiRoleFrase, companyDescriptionFrase  } = this.state;
     console.log("validateStep", step)
     switch(step) {
       case 1:
@@ -59,6 +60,10 @@ class CreateAccountScreen extends Component {
         }
         else if (!password.match(/^(?=.*\d)(?=.*[A-Z]).{6,}$/)) {
           this.setState({ error: 'La contraseña debe tener al menos 6 caracteres, 1 número y 1 mayúscula' });
+          return false;
+        }
+        else if (password != confirmPassword) {
+          this.setState({ error: 'Las contraseñas ingresadas no son iguales' });
           return false;
         }
         else if(await this.confirmIfEmailAlreadyExists()) {
@@ -142,7 +147,7 @@ class CreateAccountScreen extends Component {
   renderBusinessQuestionsInput() {
     return (
       <div style={{paddingLeft: '25px'}}>
-        <div style={{marginBottom: '25px'}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"110px"} text={`Usar catalogo de productos y/o servicios`} explinationText={Utils.useInventoryExplinationText} onChange={(e) => this.handleChangeData("usesInventory", e.target.checked)} value={this.state.usesInventory}/></div>
+        <div style={{marginBottom: '25px'}}><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"110px"} text={`Usar catalogo de productos`} explinationText={Utils.useInventoryExplinationText} onChange={(e) => this.handleChangeData("usesInventory", e.target.checked)} value={this.state.usesInventory}/></div>
         <div><CustomToggle explinationPopupWidth={"700px"} explinationPopupHeight={"220px"} text={`Bloquear la conversación con el cliente de forma permanente una vez transferido a atención al cliente`} explinationText={Utils.permanantBlockChatExplanationText} onChange={(e) => this.handleChangeData("permanentlyBlockClientsAfterCustomerService", e.target.checked)} value={this.state.permanentlyBlockClientsAfterCustomerService}/></div>
       </div>
     )
@@ -212,7 +217,7 @@ class CreateAccountScreen extends Component {
   }
 
   renderEmailInput = () => {
-    const { currentStep, error, name, email, password, phoneNumber } = this.state;
+    const { currentStep, error, name, email, password, confirmPassword, phoneNumber } = this.state;
 
     return (
       <>
@@ -227,7 +232,7 @@ class CreateAccountScreen extends Component {
           onChange={(value) => this.handleChangeData("email", value)}
         />
         <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Contraseña *</p>
-        <div style={{ marginTop: '25px' }}>
+        <div style={{ marginTop: '10px' }}>
           <CustomInput 
             hasError={error.includes('contraseña')}
             width='364px' 
@@ -236,6 +241,18 @@ class CreateAccountScreen extends Component {
             placeHolderText="Contraseña" 
             value={password}
             onChange={(value) => this.handleChangeData("password", value)}
+          />
+        </div>
+        <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.TextBody, marginTop: '15px'}}>Confirmar Contraseña *</p>
+        <div style={{ marginTop: '10px' }}>
+          <CustomInput 
+            hasError={error.includes('contraseña')}
+            width='364px' 
+            height='65px' 
+            dataType="password" 
+            placeHolderText="Contraseña" 
+            value={confirmPassword}
+            onChange={(value) => this.handleChangeData("confirmPassword", value)}
           />
         </div>
       </>
@@ -281,7 +298,6 @@ class CreateAccountScreen extends Component {
 
     return (
       <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '50px'}}>
-        <ToastContainer />
         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.GreenDark_1, fontWeight: 'bold', marginTop: '15px', marginRight: '10px'}}>WhatsBot</p>
             <img src='./images/icon.png' alt="Logo" className="img-fluid" style={{ width: '60px', height: "60px"  }} />

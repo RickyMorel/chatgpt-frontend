@@ -23,8 +23,8 @@ const TwoButtonsPopup = ({ title, description_1, description_2, bulletPoints, bt
       }
       <p style={{...CssProperties.MediumHeadetTextStyle, color: ColorHex.TextBody, textAlign: 'center'}}>{description_2}</p>
       <div style={{display: 'flex', flexGrow: 1, alignItems: 'center', gap: '15px'}}>
-        <CustomButton text={btnName_1} classStyle="btnRed" width="270px" height="45px" icon={faRectangleXmark} onClickCallback={btn2Callback}/>
-        <CustomButton text={btnName_2} classStyle="btnGreen" width="270px" height="45px" icon={faSquareCheck} onClickCallback={btn1Callback}/>
+        <CustomButton text={btnName_1} classStyle="btnRed" width="270px" height="45px" icon={faRectangleXmark} onClickCallback={() => {btn2Callback(); closeFunc()}}/>
+        <CustomButton text={btnName_2} classStyle="btnGreen" width="270px" height="45px" icon={faSquareCheck} onClickCallback={() => {btn1Callback(); closeFunc()}}/>
       </div>
     </div>
   );

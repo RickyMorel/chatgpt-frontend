@@ -1,18 +1,18 @@
+import { faClock } from '@fortawesome/free-regular-svg-icons';
+import { faArrowRightFromBracket, faCartShopping, faChartSimple, faClipboardList, faCloud, faRobot, faTriangleExclamation, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { isDesktop } from 'react-device-detect';
+import { Link, useHistory, useLocation, withRouter } from 'react-router-dom';
 import { Sidenav } from 'rsuite';
 import { ColorHex } from './Colors';
 import CssProperties from './CssProperties';
-import { firestore } from './firebaseConfig';
-import './SideNav.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRightFromBracket, faCartShopping, faChartSimple, faClipboardList, faCloud, faTriangleExclamation, faUserGroup, faRobot } from '@fortawesome/free-solid-svg-icons';
-import { faClock } from '@fortawesome/free-regular-svg-icons';
 import CustomButton from './Searchbar/CustomButton';
-import { useHistory  } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import LogoInput from './Searchbar/LogoInput';
+import './SideNav.css';
 import Utils from './Utils';
-import { isMobile, isTablet, isDesktop } from 'react-device-detect';
+import HttpRequest from './HttpRequest';
 
 function SideNav(props)  {
   const [hasNewProblematicChat, setHasNewProblematicChat] = useState(false);
@@ -21,6 +21,11 @@ function SideNav(props)  {
   const [totalClientsToMessage, setTotalClientsToMessage] = useState(0);
   const history = useHistory();
   let fetchSoundCount = 0
+
+  useEffect(() => {
+    setMessageCount(props?.globalConfig?.usedMonthlyMessages)
+    setTotalClientsToMessage(props?.globalConfig?.maxMonthlyMessages)
+  })
 
   useEffect(() => {
     if(window.token && window.token.length > 0) { return; }
@@ -32,36 +37,11 @@ function SideNav(props)  {
     history.push('/');
   }, []);
 
-
-  useEffect(() => {
-      fetchChatData();
-  }, [props.botNumber]);
-
   useEffect(() => {
     if (playSound) {
       handleSoundPlay();
     }
   }, [playSound]);
-
-  const fetchChatData = async () => {
-    if (!props.botNumber) {
-        return;
-    }
-
-    setMessageCount(props?.globalConfig?.usedMonthlyMessages)
-    setTotalClientsToMessage(props?.globalConfig?.maxMonthlyMessages)
-    // const ref = firestore.collection('globalConfig').doc(String(props.botNumber));
-
-    // ref.get()
-    //   .then((doc) => {
-    //     const response = doc.data()
-    //     setMessageCount(response.messageCount)
-    //     setTotalClientsToMessage(response.totalClientsToMessage)
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error getting document:', error);
-    //   });
-  }
 
   const handleLogOut = () => {
     Cookies.remove('token');
@@ -91,15 +71,37 @@ function SideNav(props)  {
     if(currentPath == "/problematicChats") { setHasNewProblematicChat(false); }
   };
 
-  const handleLinkClick = (e, link) => {
-    console.log("props.setupConditions.minimumConditionsMet", props.setupConditions)
-    const disableCondition = !props.setupConditions.minimumConditionsMet && link != "/aiConfiguration" &&  link != "/inventory"
+  const handleLinkClick = async (e, link) => {
+    const disableCondition = !props?.setupConditions.minimumConditionsMet && link != "/aiConfiguration" &&  link != "/inventory"
     
+    if(props.globalConfig.isGloballyBlocked && !disableCondition) {props.toastCallback(Utils.deativateBlockClientsToast, ColorHex.OrangeFabri);}
+
     if(disableCondition) {
       e.preventDefault();
       console.log("props a", props)
-      props.showSetupPopup(props.setupConditions, props.history)
+      props.showSetupPopup(props?.setupConditions, props.history)
     }
+
+    console.log("handleLinkClick", Utils.lastSaveCallback)
+
+    if(Utils.lastSaveCallback) {
+      e.preventDefault();
+      openNotSavePopup(link)
+    }
+  }
+
+  
+  const openNotSavePopup = (link) => {
+      props.showPopup_2_Buttons(
+        "Guardar Cambios",
+        `Estas seguro que no queres guardar tus cambios?`,
+        " ",
+        [],
+        () => { Utils.lastSaveCallback(); Utils.lastSaveCallback = undefined},
+        () => { props.history.push(link); Utils.lastSaveCallback = undefined},
+        "No gracias",
+        "Guardar"
+    )
   }
 
   const navBarButton = [
@@ -109,12 +111,13 @@ function SideNav(props)  {
     {icon: faClock, nameText: "Tiempos y Lugares", link: "/dayLocation"},
     {icon: faTriangleExclamation, nameText: "Atención Especial", link: "/problematicChats"},
     {icon: faChartSimple, nameText: "Estadisticas", link: "/stats"},
-    {icon: faCloud, nameText: "Cargar Datos", link: "/loadData"},
+    // {icon: faCloud, nameText: "Cargar Datos", link: "/loadData"},
     {icon: faRobot, nameText: "Configuración IA", link: "/aiConfiguration"},
   ]
 
   const navBarButtonHtmls = navBarButton.map(x => {
     if(x.link == "/inventory" && props?.globalConfig?.usesInventory == false) { return; }
+    if(x.link == "/orders" && props?.globalConfig?.usesInventory == false) { return; }
     
     const disableCondition = !props?.setupConditions?.minimumConditionsMet && x.link != "/aiConfiguration" &&  x.link != "/inventory"
     const navBarButtonStyle = GetNavButtonStyle(x.link, disableCondition)
@@ -128,11 +131,11 @@ function SideNav(props)  {
   })
 
   return (
-    <Sidenav>
-      <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)'}}>
-        <div className="d-flex flex-column p-3" style={{ height: '100vh' }}>
+    <Sidenav style={{ height: '125vh'}}>
+      <Sidenav.Body style={{ backgroundColor: ColorHex.White, boxShadow: '5px 5px 10px rgba(0, 0, 0, 0.5)', height: '100%'}}>
+        <div className="d-flex flex-column p-3" style={{ height: '100%' }}>
           <div className="text-center p-3">
-            <img src={props?.globalConfig?.companyLogoUrl} alt="Logo" className="img-fluid" style={{ width: '125px', height: "125px", borderRadius: '24px' }} />
+            <LogoInput imageURL={props?.globalConfig?.companyLogoUrl}/>
           </div>
           <hr className='border border-dark'/>
           {navBarButtonHtmls}
@@ -176,4 +179,4 @@ function GetNavButtonStyle(navPath, isDisabled) {
   return navBarButtonStyle
 }  
 
-export default SideNav;
+export default withRouter(SideNav);

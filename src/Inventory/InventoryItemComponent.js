@@ -7,7 +7,8 @@ import { faMinus, faPenToSquare, faPlus, faTag } from '@fortawesome/free-solid-s
 
 class InventoryItemComponent extends React.Component {
     render() {
-        const { item, isInDailyInventory, isPromoItem, handleClickCallback, handleSelectPromoItemCallback, handleEditItemCallback, reccomendations } = this.props;
+        const { item, isInDailyInventory, isPromoItem, handleClickCallback, handleSelectPromoItemCallback, handleEditItemCallback, reccomendations, isTutorial } = this.props;
+        console.log("isTutorial", isTutorial)
 
         return (
         <div className="row" style={trStyle}>
@@ -32,7 +33,7 @@ class InventoryItemComponent extends React.Component {
                 <></>
             }
             <div className="col-1">
-                <CustomButton iconSize="25px" width='40px' classStyle={isInDailyInventory == true ? "btnRed" : "btnGreen"} height="40px" icon={isInDailyInventory == true ? faMinus : faPlus} onClickCallback={() => handleClickCallback(item, isInDailyInventory)}/>
+                <CustomButton isGlowing={isTutorial && !isInDailyInventory} iconSize="25px" width='40px' classStyle={isInDailyInventory == true ? "btnRed" : "btnGreen"} height="40px" icon={isInDailyInventory == true ? faMinus : faPlus} onClickCallback={() => handleClickCallback(item, isInDailyInventory)}/>
             </div>
         </div>
         );

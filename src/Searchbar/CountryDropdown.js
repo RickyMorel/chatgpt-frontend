@@ -12,11 +12,11 @@ const CountryDropdown = ({OnChange, value}) => {
     if(!value.includes("+")) { value = "+" + value}
     
     let country = Utils.countries.find(x => x.code == value)
-    setCountry(country)
+    setCountry(country, false)
   }, [value])
 
-  const setCountry = (country) => {
-    OnChange(country)
+  const setCountry = (country, userChanged=true) => {
+    if(userChanged) { OnChange(country) }
     setSelectedCountry(country);
     setIsOpen(false);
   }

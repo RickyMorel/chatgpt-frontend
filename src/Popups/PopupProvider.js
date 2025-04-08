@@ -34,9 +34,9 @@ export const PopupProvider = ({ children }) => {
     setCurrentPopup(newPopup);
   };
 
-  const showSetupPopup = (setupConditions) => {
+  const showSetupPopup = (setupConditions, history) => {
     const closePopupFunc = () => { setCurrentPopup(null);}
-    const popupHtml = <SetupBlockedPopup setupConditions={setupConditions} closePopupFunc={closePopupFunc}/>;
+    const popupHtml = <SetupBlockedPopup setupConditions={setupConditions} history={history} closePopupFunc={closePopupFunc}/>;
     const newPopup = spawnPopup(true, popupHtml, PopupStyle.Medium);
     setCurrentPopup(newPopup);
   };

@@ -25,7 +25,6 @@ class PhoneNumberComponent extends React.Component {
         if(phoneNumber.length < 1) { return; }
 
         const splitNumbers = Utils.getSplitPhoneNumbers(phoneNumber)
-        console.log("splitNumbers", splitNumbers)
         
         this.setState({
             countryCode: splitNumbers.countryCode,
@@ -34,6 +33,7 @@ class PhoneNumberComponent extends React.Component {
     }
 
     handleChange = (property ,value, OnChangeCallback) => {
+      console.log("PHONENUMBER HANDLE CHANGE", property, value)
         if(property == "countryCode" && value) 
         { 
             this.setState({countryCode: value.code}); 
@@ -72,7 +72,7 @@ class PhoneNumberComponent extends React.Component {
                 width='264px'
                 height='65px'
                 dataType="tel" 
-                placeHolderText="971602289" 
+                placeHolderText="Ej: 971602289" 
                 value={nationalNumber}
                 onChange={(value) => this.handleChange('nationalNumber', value, OnChangeCallback)}
               />

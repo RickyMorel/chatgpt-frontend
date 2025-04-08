@@ -162,7 +162,7 @@ const scrollStyle = {
   padding: '10px',
   boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
   overflowY: 'scroll', 
-  height: '70vh',
+  height: '87.5vh',
   width: '100%',
 }
 

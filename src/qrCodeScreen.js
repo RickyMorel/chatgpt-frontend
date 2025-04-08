@@ -104,7 +104,7 @@ class QrCodeScreen extends Component {
             ariaLabel="color-ring-loading"
             wrapperStyle={{}}
             wrapperClass="color-ring-wrapper"
-            colors={[ColorHex.First, ColorHex.Fifth, ColorHex.Second, ColorHex.Third, '#849b87']}
+            colors={[ColorHex.GreenFabri, ColorHex.GreenDark_1, ColorHex.GreenDark_2, ColorHex.GreyFabri, ColorHex.BlueFabri]}
           />
         }
       </div>
@@ -133,6 +133,8 @@ class QrCodeScreen extends Component {
       />
       <h4 style={{ margin: 0, ...CssProperties.LargeHeaderTextStyle, color: ColorHex.TextBody }}>Vinculando...</h4>
     </>
+    
+    // return <></>
 
     return this.state.tempClose ?
         <></>
@@ -147,11 +149,11 @@ class QrCodeScreen extends Component {
             />
           </div>
           {
-            status == "loading" ?
-            loadingHtml
+            status.trim() == "wrong_qr_number" ?
+            wrongNumberHtml
             :
-            status == "wrong_qr_number" ? 
-              wrongNumberHtml
+            status.trim() == "loading" ? 
+              loadingHtml
               :
               scanQrHtml
           }

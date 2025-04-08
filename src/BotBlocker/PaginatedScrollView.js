@@ -70,7 +70,7 @@ const scrollPanelStyle = {
   backgroundColor: ColorHex.Background,
   padding: '10px',
   boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
-  height: '55vh',
+  height: '65vh',
   width: '100%',
   alignItems: 'center',
   paddingTop: '10px'

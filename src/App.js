@@ -31,6 +31,11 @@ import QuestionsAndAnswersScreen from './QuestionsAndAnswers/QuestionsAndAnswers
 import CreateQuestionAndAnswerScreen from './QuestionsAndAnswers/CreateQuestionAndAnswerScreen';
 import CreateAccountScreen from './Login/CreateAccountScreen';
 import { globalEmitter } from './GlobalEventEmitter';
+import ChatBotWidget from './TestChatbot/ChatBotWidget';
+import ParticleExplosion from './ParticleExplosion';
+import { toast, ToastContainer } from 'react-toastify';
+import CustomButton from './Searchbar/CustomButton';
+import { faGears } from '@fortawesome/free-solid-svg-icons';
 
 class App extends Component {
   constructor(props) {
@@ -45,6 +50,8 @@ class App extends Component {
       isReloading: false,
       globalConfig: undefined,
       setupConditions: undefined,
+      trigger: false,
+      hasClickedConfigButton: true
     };
 
     this.intervalId = null
@@ -53,22 +60,38 @@ class App extends Component {
   componentDidMount() {
     const token = Cookies.get('token');
     window.token = token
-    this.fetchGlobalConfig()
-    this.fetchSetupConditions()
-    this.GetBotNumber()
-    //Get the instance status every second until y link whatsapp
-    this.intervalId = setInterval(this.GetInstanceStatus, 10000);
 
+    if(token) {
+      //Get the instance status every second until y link whatsapp
+      this.intervalId = setInterval(this.GetInstanceStatus, 10000);
+      this.fetchGlobalConfig()
+      this.fetchSetupConditions()
+      this.GetBotNumber()
+    }
+
+    globalEmitter.addEventListener('checkMetConditions', this.checkMetConditions);
     globalEmitter.addEventListener('loggedIn', this.handleLoggedIn);
   }
 
-  handleLoggedIn = () => {
+  checkMetConditions = async () => {
+    await this.fetchSetupConditions(true)
+  }
+
+  handleLoggedIn = async () => {
     console.log("handleLoggedIn")
 
-    this.GetInstanceStatus()
-    this.fetchGlobalConfig()
-    this.fetchSetupConditions()
     this.GetBotNumber()
+    this.fetchGlobalConfig()  
+    const setupConditions = await this.fetchSetupConditions()
+    if(!setupConditions.minimumConditionsMet) {
+      // this.props.showSetupPopup(setupConditions)
+      this.handleToast(`¡Solo falta que completes estos últimos pasos de configuración para que WhatsBot empiece a responder! 🚀🤖`)
+      setTimeout(() => {this.GetInstanceStatus()}, 15000)
+      this.setState({hasClickedConfigButton: false})
+    }
+    else {
+      this.GetInstanceStatus()
+    }
   }
 
   componentWillUnmount() {
@@ -84,15 +107,25 @@ class App extends Component {
         const response = await HttpRequest.get(`/global-config`);
 
         this.setState({globalConfig: response.data})
+
+        return response.data
     } catch (error) {}
   }
 
-  fetchSetupConditions = async () => {
+  fetchSetupConditions = async (calledFromEvent = false) => {
     try {
         const response = await HttpRequest.get(`/global-config/getSetupConditions`);
-        console.log("fetchSetupConditions", response.data)
 
-        this.setState({setupConditions: response.data})
+        this.setState({
+          setupConditions: response.data
+        }, () => {
+          if(!calledFromEvent) {return;}
+
+          console.log("checkMetConditions this.state.setupConditions", this.state.setupConditions)
+
+          if(this.state.setupConditions.minimumConditionsMet) { this.setState({trigger: true})}
+        })
+        return response.data
     } catch (error) {}
   }
 
@@ -109,6 +142,7 @@ class App extends Component {
   GetInstanceStatus = async () => {
     try {
       const response = await HttpRequest.get(`/whatsapp/getInstanceStatus`);
+      console.log("GetInstanceStatus", response)
 
       this.setState({
         instanceStatus: response.data,
@@ -130,9 +164,24 @@ class App extends Component {
     })
   }
 
+  handleToast = (message, color) => {
+    toast.success(message, {
+      style: {
+          backgroundColor: color ?? ColorHex.GreenDark_1,
+          color: '#fff',
+          fontWeight: 'bold',
+          padding: '10px',
+      },
+      progressStyle: {
+          backgroundColor: '#fff',
+      },
+      autoClose: 10000,
+      icon: false
+    });
+  }
+
   render() {
     const currentPath = window.location.pathname;
-    console.log("this.state.instanceStatus", this.state.instanceStatus)
 
     return (
     this.state.isReloading ? 
@@ -148,16 +197,29 @@ class App extends Component {
         <></>
       }
       <LoadSpinner isLoading={this.state.isLoading} loaderMessge={this.state.loaderMessge} />
+      <div>
+        <ToastContainer />
+      </div>
       <div className="row">
         {
           Utils.loginExemptPaths.includes(currentPath) ?
           <></>
           :
           <div className="col-auto">
-            <SideNav showSetupPopup={this.props.showSetupPopup} setupConditions={this.state.setupConditions} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+            <SideNav toastCallback={this.handleToast} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setupConditions={this.state.setupConditions} showSetupPopup={this.props.showSetupPopup} globalConfig={this.state.globalConfig} botNumber={this.state.botNumber} setIsReloading={this.setIsReloading} style={{ height: '100vh', width: '236px'}}/>
+            <ChatBotWidget toastCallback={this.handleToast} tutorialTrigger={this.state.trigger} setupConditions={this.state.setupConditions} ownerId={this.state?.globalConfig?.ownerId}/>
           </div>
         }
         <div className="col">
+          {
+            !this.state?.setupConditions?.minimumConditionsMet && window.token ?
+            <div style={{position: 'absolute', display: 'flex', top: '10px', right: '10px'}}>
+                <CustomButton iconSize="25px" classStyle={`btnGreen ${this.state.hasClickedConfigButton ? '' : 'glowing'}`} text={`Ver pasos de configuracion`} height="40px" icon={faGears} onClickCallback={() => {this.setState({hasClickedConfigButton: true}); this.props.showSetupPopup(this.state.setupConditions)}}/>
+                {Utils.glowingStyle}
+            </div>
+            :
+            <></>
+          }
           <Helmet>
             <style>{`body { background-color: ${ColorHex.Background}; }`}</style>
           </Helmet>
@@ -166,13 +228,13 @@ class App extends Component {
               <div style={{margin: '15px'}}><MainMenu showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/inventory">
-              <div style={{margin: '15px'}}><InventoryScreen globalConfig={this.state.globalConfig} showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} /></div>
+              <div style={{margin: '15px'}}><InventoryScreen setupConditions={this.state.setupConditions} globalConfig={this.state.globalConfig} showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/dayLocation">
               <div style={{margin: '15px'}}><DayLocationForm showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/blockChats">
-              <div style={{margin: '15px'}}><BlockChatScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
+              <div style={{margin: '15px'}}><BlockChatScreen toastCallback={this.handleToast} showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
             </Route>
             <Route exact path="/orders">
               <div style={{margin: '15px'}}><OrderScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} /></div>
@@ -211,7 +273,6 @@ class App extends Component {
                     {...props}  
                     showPopup={this.props.showPopup} 
                     setIsLoading={this.setIsLoading} 
-                    botNumber={this.state.botNumber}
                   />
                 </div>
               )} 
@@ -223,6 +284,8 @@ class App extends Component {
                     {...props}  
                     showPopup={this.props.showPopup} 
                     setIsLoading={this.setIsLoading} 
+                    setupConditions={this.state.setupConditions}
+                    toastCallback={this.handleToast}
                   />
                 </div>
               )} 
@@ -237,7 +300,7 @@ class App extends Component {
             <Route exact path="/createExampleConversation" 
               render={(props) => (
                 <div style={{margin: '15px'}}>
-                  <CreateExampleConversationScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
+                  <CreateExampleConversationScreen toastCallback={this.handleToast} globalConfig={this.state.globalConfig} setupConditions={this.state.setupConditions} showPopup={this.props.showPopup} showPopup_2_Buttons={this.props.showPopup_2_Buttons} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />
@@ -258,7 +321,7 @@ class App extends Component {
             <Route exact path="/createQuestionAndAnswer" 
               render={(props) => (
                 <div style={{margin: '15px'}}>
-                  <CreateQuestionAndAnswerScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
+                  <CreateQuestionAndAnswerScreen toastCallback={this.handleToast} setupConditions={this.state.setupConditions} showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} {...props}/>
                 </div>
               )} 
             />
@@ -283,6 +346,7 @@ class App extends Component {
           </Switch>
         </div>
       </div>
+      <ParticleExplosion toastCallback={this.handleToast} trigger={this.state.trigger}/>
     </Router>
     );
   }

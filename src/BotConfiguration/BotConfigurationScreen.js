@@ -37,7 +37,6 @@ class BotConfigurationScreen extends Component {
         try {
             const response = await HttpRequest.get(`/global-config`);
 
-            console.log("fetchGlobalConfig", response.data)
     
             this.setState({
                 botNumber: response.data.botNumber,
@@ -52,6 +51,8 @@ class BotConfigurationScreen extends Component {
       }
 
     handleValueChange(property, value) {
+        Utils.lastSaveCallback = this.handleSave
+
         this.setState({ 
             [property]: value,
             needsToSave: true
@@ -77,6 +78,8 @@ class BotConfigurationScreen extends Component {
 
     handleSave = async () => {
         this.props.setIsLoading(true)
+
+        Utils.lastSaveCallback = undefined
 
         const hasErrors = await this.hasErrors()
 

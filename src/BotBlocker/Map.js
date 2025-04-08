@@ -118,7 +118,6 @@ const Map = ({ positionObj, clientNumber, locationChangeCallback }) => {
 
     return (
         <div style={{ position: 'relative', height: '100%', width: '100%' }}>
-            <ToastContainer />
             <div ref={mapRef} style={{ height: '100%', width: '100%' }} />
             
             <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1 }}>

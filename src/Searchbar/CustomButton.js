@@ -4,14 +4,26 @@ import CssProperties from '../CssProperties';
 import '../SideNav.css';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ExplinationPopup from './ExplinationPopup';
+import Utils from '../Utils';
 
 class CustomButton extends Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            showPopup: false
+        };
+    }
+
+    handleMouse = (hasEntered) => {
+        if(!this.props.explinationText) {return;}
+
+        this.setState({ showPopup: hasEntered})
     }
 
     render() {
-        const { text, icon, onClickCallback, link, width, height, classStyle, iconSize, linkData, disabled = false } = this.props;
+        const { text, icon, onClickCallback, link, width, height, classStyle, iconSize, linkData, explinationText = undefined, disabled = false, isGlowing = false } = this.props;
 
         const styling = {
             width: width ?? 'auto',
@@ -47,13 +59,29 @@ class CustomButton extends Component {
 
         return (
             link ? (
-                <Link to={{pathname: `/${link}`, state: {linkData} }} style={styling} className={classStyle ?? 'nav-item'}>
-                    {iconHtml}
-                </Link>
+                <>
+                    <Link onClick={onClickCallback} to={{pathname: `/${link}`, state: {linkData} }} style={styling} className={classStyle ?? 'nav-item'}>
+                        {iconHtml}
+                    </Link>
+                    {Utils.glowingStyle()}
+                </>
             ) : (
-                <button onClick={onClickCallback} disabled={disabled} style={styling} className={!disabled ? classStyle ?? 'nav-item' : ''}>
-                    {iconHtml}
-                </button>
+                <div onMouseEnter={() => this.handleMouse(true)} onMouseLeave={() => this.handleMouse(false)}>
+                    <button onClick={onClickCallback} disabled={disabled} style={styling} className={!disabled ? `${classStyle} ${isGlowing ? 'glowing' : ''}` ?? 'nav-item' : ''}>
+                        {iconHtml}
+                    </button>
+                    {
+                        this.state.showPopup == true ? 
+                        <ExplinationPopup 
+                            width={width} 
+                            height={"auto"} 
+                            text={this.props?.explinationText} 
+                        />
+                        :
+                        <></>
+                    }
+                    {Utils.glowingStyle()}
+                </div>
             )
         );
     }

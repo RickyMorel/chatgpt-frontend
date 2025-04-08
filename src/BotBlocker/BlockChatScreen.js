@@ -11,6 +11,7 @@ import SearchBar from '../Searchbar/Searchbar';
 import CustomSelect from '../Searchbar/CustomSelect';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import HttpRequest from '../HttpRequest';
+import Utils from '../Utils';
 
 class BlockChatScreen extends Component {
   constructor(props) {
@@ -207,6 +208,7 @@ class BlockChatScreen extends Component {
       this.setState({
         isGloballyBlocked: globallyBlocked
       });
+      window.location.reload()
       return response
     } catch (error) {
       return error
@@ -306,15 +308,15 @@ class BlockChatScreen extends Component {
 
         <div style={{display: 'flex'}}>
             <div class="flex-grow-1"><StatCard title="Clientes a Mensajear" amountColor={ColorHex.TextBody} amountFunction={() => this.state.clientsToMessageTommorrow}/></div>
-            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Barrios a Mensajear" amountColor={ColorHex.TextBody} amountFunction={() => dayLocations[tomorrowsDayLocationIndex]?.locations.length}/></div>
+            <div class="flex-grow-1" style={{paddingLeft: '25px'}}><StatCard title="Grupos a Mensajear" amountColor={ColorHex.TextBody} amountFunction={() => dayLocations[tomorrowsDayLocationIndex]?.locations.length}/></div>
             <div className="col-10"></div>
         </div>
 
         <div style={{display: 'flex', width: '100%', paddingTop: '25px', justifyContent: 'flex-start', alignItems: 'center'}}>
-          <div style={{flexGrow: 0}}>
+          {/* <div style={{flexGrow: 0}}>
             <CustomButton text="Enviar Mensajes" classStyle={this.state?.canMessageTommorrowsClients ? `btnBlue` : 'btnGrey-clicked'} icon={faPaperPlane} onClickCallback={this.handleSendMessages}/>
-          </div>
-          <div style={{flexGrow: 0, marginLeft: '45px'}}><CustomToggle text="Bloquear WhatsBot" explinationText="Bloquea envio de mensajes a todos los clientes. SOLO EMERGENCIAS " onChange={this.handleGlobalBlock} value={this.state.isGloballyBlocked}/></div>
+          </div> */}
+          <div style={{flexGrow: 0}}><CustomToggle text="Bloquear WhatsBot" explinationText="Bloquea envio de mensajes a todos los clientes" onChange={this.handleGlobalBlock} value={this.state.isGloballyBlocked}/></div>
         </div>
 
         <div style={orderPanelStyling}>
@@ -358,7 +360,7 @@ const headerStyle = {
 
 const orderPanelStyling = {
   width: '100%',
-  height: '70vh',
+  height: '87.5vh',
   marginTop: '10px',
   marginTop: '25px',
   padding: '25px',

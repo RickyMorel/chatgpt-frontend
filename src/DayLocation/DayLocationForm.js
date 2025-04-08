@@ -362,7 +362,7 @@ class DayLocationForm extends Component {
     const timeBlocks = this.state.timeSets.map(x => <TimeBlock isEditing={this.state.isEditingLocations} id={x.id} set={x.set} changeTimesCallback={this.handleChangeProcessTimes} removeTimeCallback={this.handleRemoveTimeSet}/>)
 
     const timesScrollHtml = 
-      <div style={{ alignItems: 'center', width: '100%', marginTop: '25px'}}>
+      <div style={{ alignItems: 'center', width: '100%', marginTop: '-20px'}}>
            <div style={{ alignItems: 'center', height: '45px', width: '98%', display: 'flex'}}>
             <div style={headerStyle} className='col-4'>Dia de Mensaje</div>
             <div style={headerStyle} className='col-4'>Tiempo de Entrega</div>
@@ -411,8 +411,7 @@ class DayLocationForm extends Component {
           </div>
         </div>
 
-
-        <div style={{...orderPanelStyling, height: '70vh'}}>
+        <div style={{...orderPanelStyling, height: '87.5vh'}}>
           {timesScrollHtml}
         </div>
       </div>
@@ -443,7 +442,7 @@ const scrollStyle = {
   padding: '10px',
   boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.3)',
   overflowY: 'scroll', 
-  height: '55vh',
+  height: '67.75vh',
   width: '100%',
   alignItems: 'center'
 }
