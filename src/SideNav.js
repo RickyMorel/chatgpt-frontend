@@ -34,7 +34,7 @@ function SideNav(props)  {
 
     if(Utils.loginExemptPaths.includes(history.location.pathname)) { return; }
 
-    history.push('/');
+    history.push('/login');
   }, []);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function SideNav(props)  {
     Cookies.remove('token');
     window.token = ""
     props.setIsReloading(true)
-    history.push('/');
+    history.push('/login');
     setTimeout(() => window.location.reload(), 100)
   }
 

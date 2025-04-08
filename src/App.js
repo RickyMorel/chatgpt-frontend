@@ -251,7 +251,7 @@ class App extends Component {
             </Route>
             <Route exact path="/login" 
               render={(props) => (
-                <div style={{margin: '15px'}}>
+                <div>
                   <LoginScreen 
                     {...props}  
                     showPopup={this.props.showPopup} 
@@ -273,7 +273,7 @@ class App extends Component {
               )} 
             />
             <Route exact path="/createAccount">
-              <div style={{margin: '15px'}}><CreateAccountScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
+              <div><CreateAccountScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>
             </Route>
             <Route exact path="/clientOrderPlacing">
               <div style={{margin: '15px'}}><ClientOrderPlacingScreen showPopup={this.props.showPopup} setIsLoading={this.setIsLoading} botNumber={this.state.botNumber}/></div>

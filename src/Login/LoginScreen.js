@@ -11,6 +11,7 @@ import { isMobile, isTablet, isDesktop } from 'react-device-detect';
 import { error } from 'jquery';
 import HttpRequest from '../HttpRequest';
 import { globalEmitter } from '../GlobalEventEmitter';
+import './LoginScreen.css';
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -106,7 +107,7 @@ class LoginScreen extends Component {
     }
 
     return (
-      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '200px'}}>
+      <div className='main-content' style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '200px', height: '125vh'}}>
         <img src='./images/Whatsbot_Green.png' alt="Logo" className="img-fluid" style={{ width: '350px', height: "350px", marginTop: '7px', marginRight: '250px',  }} />
         <div style={loginCardStyling}>
             <p style={{...CssProperties.SmallHeaderTextStyle, color: ColorHex.RedFabri, position: 'absolute', top: 200}}>

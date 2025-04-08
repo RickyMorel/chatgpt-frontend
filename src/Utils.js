@@ -1,8 +1,10 @@
 class Utils {
     static loginExemptPaths = [
       "/",
+      "/login",
       "/clientOrderPlacing",
-      "/clientCart"
+      "/clientCart",
+      "/createAccount"
     ]
 
     static clientCartData = []

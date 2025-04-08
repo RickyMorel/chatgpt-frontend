@@ -122,7 +122,7 @@ class CreateAccountScreen extends Component {
             companyDescriptionFrase: this.state.companyDescriptionFrase,
             role: 'manager'
         }, true);
-        this.props.history.push('/');
+        this.props.history.push('/login');
         globalEmitter.emit('signedUp');   
     } catch(err) {
       this.setState({
@@ -297,7 +297,7 @@ class CreateAccountScreen extends Component {
     }
 
     return (
-      <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '50px'}}>
+      <div className='main-content' style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '50px', height: '125vh'}}>
         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
             <p style={{...CssProperties.LargeHeaderTextStyle, color: ColorHex.GreenDark_1, fontWeight: 'bold', marginTop: '15px', marginRight: '10px'}}>WhatsBot</p>
             <img src='./images/icon.png' alt="Logo" className="img-fluid" style={{ width: '60px', height: "60px"  }} />
