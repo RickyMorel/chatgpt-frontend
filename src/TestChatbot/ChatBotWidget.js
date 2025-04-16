@@ -40,7 +40,7 @@ const ChatBotWidget = (props) => {
 
   const clearChat = async () => {
     try {
-      const response = await HttpRequest.put(`/client-crud/updateByNumber`, {phoneNumber: `test_${props.ownerId}`, lastChat: []});
+      const response = await HttpRequest.put(`/client-crud/updateByNumber`, {phoneNumber: `test_${props.ownerId}`, lastChat: [], talkedAboutItems: []});
       setMessages(prev => initialMessagesState);
     } catch(err) {}
   }

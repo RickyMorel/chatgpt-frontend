@@ -63,8 +63,8 @@ const LandingPage = () => {
               <div className="hero-video" style={{ marginTop: '20px', textAlign: 'center' }}>
                 <iframe 
                     width="80%" 
-                    height="600px" 
-                    src="https://www.youtube.com/embed/fhiBVSf_mvg?modestbranding=1&rel=0&showinfo=0" 
+                    height="575px" 
+                    src="https://www.youtube.com/embed/Q9vNgqwS2LM?modestbranding=1&rel=0&showinfo=0" 
                     frameborder="0" 
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                     allowfullscreen>
@@ -95,7 +95,7 @@ const LandingPage = () => {
     <section id="features" className="features-section">
         <div className="container">
             <h2 style={{...CssProperties.LargeHeaderTextStyle}}>Precios</h2>
-            <div style={{display: 'flex', flexDirection: 'row', gap: '25px', justifyContent: 'space-between'}}>
+            <div className="features-grid">
                 {prices.map(x => (
                     <PriceCard data={x}/>
                 ))}

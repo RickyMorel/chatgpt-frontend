@@ -117,8 +117,6 @@ class InventoryEditItemScreen extends Component {
       };
 
     handleSave = async () => {
-        this.props.setIsLoading(true)
-
         Utils.lastSaveCallback = undefined
 
         let itemToEdit = this.state.itemToEdit
@@ -144,6 +142,8 @@ class InventoryEditItemScreen extends Component {
                 })
 
                 if(missingFields.length > 0) {return;}
+
+                this.props.setIsLoading(true)
                 
                 const response = await HttpRequest.post(`/inventory/createItem`, newItem);
 
